@@ -3,7 +3,7 @@
   "extends": ["prettier", "eslint:recommended", "plugin:prettier/recommended"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": { "project": ["./tsconfig.json"] },
-  "plugins": ["prettier"],
+  "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
     "rules": {
       "prettier/prettier": "error"

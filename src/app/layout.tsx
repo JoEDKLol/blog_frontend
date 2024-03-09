@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import LayoutIndex from "./components/layout/Index";
+import RecoilRootProvider from "./utils/RecoilRootProvider";
+import CommonTransaction from "./components/common";
 
+import { PrimeReactProvider } from 'primereact/api';
+        
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -18,7 +22,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-          <LayoutIndex>{children}</LayoutIndex>
+          <RecoilRootProvider>
+            <PrimeReactProvider>
+            {/* <PrimeReactProvider value={{ unstyled: true }}> */}
+              <CommonTransaction>
+                <LayoutIndex>{children}</LayoutIndex>  
+              </CommonTransaction>
+            </PrimeReactProvider>
+          </RecoilRootProvider>
         </body>
     </html>
   );
