@@ -3,10 +3,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import LayoutIndex from "./components/layout/Index";
 import RecoilRootProvider from "./utils/RecoilRootProvider";
-import CommonTransaction from "./components/common";
+import CommonTransaction from "./api/common/Index";
+import { PrimeReactProvider } from "primereact/api";
+import "primereact/resources/themes/lara-light-cyan/theme.css";
 
-import { PrimeReactProvider } from 'primereact/api';
-        
+import AuthSession from "./api/auth/AuthSession";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -23,12 +24,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
           <RecoilRootProvider>
-            <PrimeReactProvider>
-            {/* <PrimeReactProvider value={{ unstyled: true }}> */}
-              <CommonTransaction>
-                <LayoutIndex>{children}</LayoutIndex>  
-              </CommonTransaction>
-            </PrimeReactProvider>
+            {/* <AuthSession> */}
+              <PrimeReactProvider>
+              {/* <PrimeReactProvider value={{ unstyled: true }}> */}
+                <CommonTransaction>
+                  <LayoutIndex>{children}</LayoutIndex>
+                </CommonTransaction>
+              </PrimeReactProvider>
+            {/* </AuthSession> */}
           </RecoilRootProvider>
         </body>
     </html>
