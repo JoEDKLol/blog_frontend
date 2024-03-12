@@ -7,7 +7,7 @@ import CommonTransaction from "./api/common/Index";
 import { PrimeReactProvider } from "primereact/api";
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 
-import AuthSession from "./api/auth/AuthSession";
+import AuthProvider from '@/lib/next-auth';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -24,14 +24,14 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
           <RecoilRootProvider>
-            {/* <AuthSession> */}
+            <AuthProvider>
               <PrimeReactProvider>
               {/* <PrimeReactProvider value={{ unstyled: true }}> */}
                 <CommonTransaction>
                   <LayoutIndex>{children}</LayoutIndex>
                 </CommonTransaction>
               </PrimeReactProvider>
-            {/* </AuthSession> */}
+            </AuthProvider>
           </RecoilRootProvider>
         </body>
     </html>

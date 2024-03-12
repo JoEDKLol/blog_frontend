@@ -9,28 +9,32 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react';
 
 const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
-  let [mainHome, setMainHome] = useState(true);
-  const router = usePathname();
+  type typeMainHome = boolean;
+  let [mainHome, setMainHome] = useState<typeMainHome>(true);
+  const path:any = usePathname();
 
   useEffect(() => {
-    if(router === "/"){
+    if(path === "/"){
       setMainHome(true);
     }else{
       setMainHome(false);
     }    
-  }, []);
+  }, [path]);
   return (
     <>
     {
       (mainHome)?
       <>
-      <MainHeader></MainHeader><MainContent>{children}</MainContent>
-      </>
-      :
-      <>
-      <PriHeader></PriHeader>
-      <PriMainContent>{children}</PriMainContent>
-      </>
+      {(path === "/")?
+        <><MainHeader></MainHeader><MainContent>{children}</MainContent></>
+        :<>
+        {
+          (path === "/blog" || path === "/home")?
+          <><PriHeader></PriHeader><PriMainContent>{children}</PriMainContent></>:''
+        }
+        </>
+      }
+      </>:<>{children}</>
     }     
     </>)
 };

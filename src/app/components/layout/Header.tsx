@@ -1,6 +1,9 @@
 'use client';
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import Modal from "../modal/Indes";
+import Login from "../login/Index";
 
 const MainHeader = (props: any) => {
 
@@ -16,7 +19,6 @@ const MainHeader = (props: any) => {
   }, []);
 
   function onclickMenuButton(e:any){
-    console.log(e)
     if(menu === "hidden"){
       setMenu("");
     }else{
@@ -33,6 +35,18 @@ const MainHeader = (props: any) => {
     headerRef.current?.classList.remove('shadow-[0_5px_7px_0px_#ececec]');
   };
 
+  // 모달 버튼 클릭 유무를 저장할 state
+  const [showModal, setShowModal] = useState(false)
+    
+	// 버튼 클릭시 모달 버튼 클릭 유무를 설정하는 state 함수
+  // const loginOnclickHandler = () => setShowModal(!showModal)
+  function loginOnclickHandler(){
+    setShowModal(!showModal);
+  }
+
+  // function setShowModel(){
+  //   setShowModal(!showModal);
+  // }
   
 
   return (
@@ -55,9 +69,19 @@ const MainHeader = (props: any) => {
                   </button>
                 </div>
               </div>
-              <button className="bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 border border-black-500 hover:border-transparent rounded">
-                login
-              </button>
+              <div>
+                <button className="bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
+                  onClick={()=>loginOnclickHandler()}
+                >Login
+                </button>
+                <button className="bg-cyan-200 hover:bg-cyan-800 text-black-700 font-semibold hover:text-white py-1 px-4 border border-black-500 hover:border-transparent rounded"
+                  onClick={()=>loginOnclickHandler()}
+                >SignIn
+                </button>
+              </div>
+              
+              {showModal && <Modal clickModal={loginOnclickHandler} children={<Login></Login>} />}
+              
             
               
 
