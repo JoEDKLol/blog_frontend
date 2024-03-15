@@ -27,9 +27,9 @@ export default function RootLayout({
             <AuthProvider>
               <PrimeReactProvider>
               {/* <PrimeReactProvider value={{ unstyled: true }}> */}
-                <CommonTransaction>
+                {/* <CommonTransaction> */}
                   <LayoutIndex>{children}</LayoutIndex>
-                </CommonTransaction>
+                {/* </CommonTransaction> */}
               </PrimeReactProvider>
             </AuthProvider>
           </RecoilRootProvider>

@@ -12,8 +12,10 @@ const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
   type typeMainHome = boolean;
   let [mainHome, setMainHome] = useState<typeMainHome>(true);
   const path:any = usePathname();
-
+  const path2:string = path.substr(0,5);
   useEffect(() => {
+    console.log(path);
+    console.log(path2);
     if(path === "/"){
       setMainHome(true);
     }else{
@@ -22,19 +24,11 @@ const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
   }, [path]);
   return (
     <>
+    {/* {children} */}
     {
-      (mainHome)?
-      <>
-      {(path === "/")?
-        <><MainHeader></MainHeader><MainContent>{children}</MainContent></>
-        :<>
-        {
-          (path === "/blog" || path === "/home")?
-          <><PriHeader></PriHeader><PriMainContent>{children}</PriMainContent></>:''
-        }
-        </>
-      }
-      </>:<>{children}</>
+      (path === "/")?<><MainHeader></MainHeader><MainContent>{children}</MainContent></>
+      :(path2 === "/blog")?<><PriHeader></PriHeader><PriMainContent>{children}</PriMainContent></>
+      :''
     }     
     </>)
 };

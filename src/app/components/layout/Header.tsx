@@ -72,15 +72,15 @@ const MainHeader = (props: any) => {
               <div>
                 <button className="bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
                   onClick={()=>loginOnclickHandler()}
-                >Login
+                >Sign In
                 </button>
                 <button className="bg-cyan-200 hover:bg-cyan-800 text-black-700 font-semibold hover:text-white py-1 px-4 border border-black-500 hover:border-transparent rounded"
                   onClick={()=>loginOnclickHandler()}
-                >SignIn
+                >Sign Up
                 </button>
               </div>
               
-              {showModal && <Modal clickModal={loginOnclickHandler} children={<Login></Login>} />}
+              {showModal && <Modal children={<Login clickModal={loginOnclickHandler}></Login>} />}
               
             
               

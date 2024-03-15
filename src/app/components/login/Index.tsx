@@ -1,42 +1,95 @@
 'use client';
-const Login = (props: any) => {
+import { signIn } from "next-auth/react";
+import { useRouter, usePathname } from "next/navigation";
 
-    return(
-      <>
-        <div className="relative p-4 w-full max-w-2xl max-h-full">
-        {/* <!-- Modal content --> */}
-          <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-              {/* <!-- Modal header --> */}
-            <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    Terms of Service
-                </h3>
-                <button type="button" className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="default-modal">
-                    <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                    </svg>
-                    <span className="sr-only">Close modal</span>
-                </button>
-            </div>
-              {/* <!-- Modal body --> */}
-            <div className="p-4 md:p-5 space-y-4">
-                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                    With less than a month to go before the European Union enacts new consumer privacy laws for its citizens, companies around the world are updating their terms of service agreements to comply.
-                </p>
-                <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                    The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on May 25 and is meant to ensure a common set of data rights in the European Union. It requires organizations to notify users as soon as possible of high-risk data breaches that could personally affect them.
-                </p>
-            </div>
-            {/* <!-- Modal footer --> */}
-            <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                <button data-modal-hide="default-modal" type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">I accept</button>
-                <button data-modal-hide="default-modal" type="button" className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Decline</button>
-            </div>
+
+
+
+const Login = (props: any) => {
+  const { clickModal } = props;
+  const router = useRouter()
+
+  function test(test:string){
+    signIn('google');
+  }
+
+  async function onSubmit(event: any) {
+    event.preventDefault();
+    const email = event.target.email.value;
+    const password = event.target.password.value;
+    console.log('여기');
+    
+    const result:any = await signIn('credentials', {
+      email,
+      password,
+      redirect:false,
+      callbackUrl:"/"
+      // 필요한 경우 다른 필드도 추가할 수 있습니다.
+    });
+
+    // console.log(result);
+    if (result?.error) {
+      console.log('오류??');
+      // 로그인 실패 시 오류 메시지를 처리할 수 있습니다.
+      // console.error(result.error);
+    }else{
+      console.log(result.url);
+      console.log('성공');
+      // router.push(result.url); 
+      router.push("/home");
+    }
+  }
+
+  return(
+    <>
+      <div className= "border border-black w-[400px] h-[600px] rounded bg-white font-sans"
+      // onClick={clickModal}
+      >
+      {/* <!-- Modal content --> */}
+        <form onSubmit={onSubmit} className="flex flex-col w-full h-full p-6 text-center bg-white rounded-3xl">
+          <h3 className="mb-3 text-3xl text-dark-grey-900">Sign In</h3>
+          
+          <label htmlFor="email" className="mb-2 mt-10 text-m text-start text-grey-900">Email*</label>
+          <input id="email" type="email" placeholder="Email" className="flex items-center w-full px-5 py-3 mr-2 text-m outline-none focus:bg-grey-400 mb-7 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded"/>
+          
+          <label htmlFor="password" className="mb-2 text-m text-start text-grey-900">Password*</label>
+          <input id="password" type="password" placeholder="Password" className="flex items-center w-full px-5 py-3 mb-3 mr-2 text-m  outline-none focus:bg-grey-400 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded"/>
+          
+          <div className="flex justify-end mb-8">
+            <a className="font-bold text-grey-700">Forget password?</a>
           </div>
-        </div>
-        
-    </>
-    )
+
+          <button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-3 px-4 rounded mb-5">
+            Sign In
+          </button>
+
+          <div className="flex flex-row justify-center">
+            <p className="mb-3 text-sm leading-relaxed text-grey-900">Not registered yet? </p>
+            <a  className="font-bold text-grey-700">Create an Account</a>
+          </div>
+          
+          <div className="flex items-center">
+            <hr className="h-0 border-b border-solid border-grey-500 grow"/>
+            <p className="mx-4 text-grey-600">or</p>
+            <hr className="h-0 border-b border-solid border-grey-500 grow"/>
+          </div>
+          <div className="flex items-center justify-center w-full py-3 mt-4
+          text-black font-bold border
+          duration-300 rounded text-grey-900 bg-gray-200 hover:bg-gray-400 focus:ring-4 focus:ring-grey-300"
+          onClick={
+            ()=>test('google')
+          }>
+            {/* <a className="  > */}
+              <img className="h-5 mr-2" src="https://raw.githubusercontent.com/Loopple/loopple-public-assets/main/motion-tailwind/img/logos/logo-google.png" alt=""/>
+              Sign in with Google
+            {/* </a> */}
+          </div>
+        </form>
+
+      </div>
+      
+  </>
+  )
 
 
     
