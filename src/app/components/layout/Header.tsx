@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Modal from "../modal/Indes";
 import Login from "../login/Index";
+import SignUp from "../signup/Index";
+import Password from "../password/Index";
 
 const MainHeader = (props: any) => {
 
@@ -37,11 +39,21 @@ const MainHeader = (props: any) => {
 
   // 모달 버튼 클릭 유무를 저장할 state
   const [showModal, setShowModal] = useState(false)
+  const [showModal2, setShowModal2] = useState(false)
+  const [showModal3, setShowModal3] = useState(false)
     
 	// 버튼 클릭시 모달 버튼 클릭 유무를 설정하는 state 함수
   // const loginOnclickHandler = () => setShowModal(!showModal)
   function loginOnclickHandler(){
     setShowModal(!showModal);
+  }
+
+  function siginUpOnclickHandler(){
+    setShowModal2(!showModal2);
+  }
+
+  function passwordOnclickHandler(){
+    setShowModal3(!showModal3);
   }
 
   // function setShowModel(){
@@ -75,43 +87,16 @@ const MainHeader = (props: any) => {
                 >Sign In
                 </button>
                 <button className="bg-cyan-200 hover:bg-cyan-800 text-black-700 font-semibold hover:text-white py-1 px-4 border border-black-500 hover:border-transparent rounded"
-                  onClick={()=>loginOnclickHandler()}
+                  onClick={()=>siginUpOnclickHandler()}
                 >Sign Up
                 </button>
               </div>
               
-              {showModal && <Modal children={<Login clickModal={loginOnclickHandler}></Login>} />}
-              
-            
-              
+              {showModal && <Modal children={<Login clickModal={loginOnclickHandler} clickSignUpModal={siginUpOnclickHandler} clickPasswordModal={passwordOnclickHandler}></Login>} />}
+              {showModal2 && <Modal children={<SignUp clickModal={siginUpOnclickHandler} clickSignInModal={loginOnclickHandler}></SignUp>} />}
+              {showModal3 && <Modal children={<Password clickModal={passwordOnclickHandler} clickSignInModal={loginOnclickHandler}></Password>} />}
 
 
-
-              {/* </div> */}
-              {/* <div className="block lg:hidden">
-                <button className="flex items-center px-3 py-2 border rounded text-black-200 border-black-400 hover:text-black hover:border-black"
-                  id="menuButton"
-                  onClick={e=>onclickMenuButton(e)}
-                >
-                  <svg className="fill-current h-3 w-3" viewBox="0 0 20 20">
-                    <title>Menu</title>
-                    <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/>
-                  </svg>
-                </button>
-              </div>
-              <div className={"w-full block rflex-gow lg:flex lg:items-center lg:w-auto lg:visible "  + menu }>
-                <div className="text-sm lg:flex-grow ">
-                  <a href="#responsive-header" className="block mt-4 lg:inline-block lg:mt-0 text-black-200 hover:text-white mr-4">
-                    Home
-                  </a>
-                  <a href="#responsive-header" className="block mt-4 lg:inline-block lg:mt-0 text-black-200 hover:text-white">
-                    Blog
-                  </a>
-                </div>
-                <div>
-                  <a href="#" className="inline-block text-sm px-4 py-2 leading-none border rounded text-white border-white hover:border-transparent hover:text-teal-500 hover:bg-white mt-4 lg:mt-0">Download</a>
-                </div>
-              </div> */}
             </nav>
           </header>
       </>

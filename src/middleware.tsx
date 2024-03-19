@@ -8,6 +8,10 @@ export function middleware(request: NextRequest) {
   // if (request.nextUrl.pathname.startsWith('/home')) {
   //   return NextResponse.redirect(new URL('/', request.url))
   // }
+  if (request.nextUrl.pathname === '/blog') {
+    return NextResponse.redirect(new URL('/blog/main', request.url))
+  }
+  // console.log("요청URL", request.nextUrl.pathname);
 
 }
  
