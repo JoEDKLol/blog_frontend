@@ -49,7 +49,7 @@ const Password = (props: any) => {
       {/* <!-- Modal content --> */}
         <form onSubmit={onSubmit} className="flex flex-col w-full h-full p-6 text-center bg-white rounded-3xl" autoComplete="none" >
           <div className=" flex w-full h-[50px] columns-2">
-            <div className=" mb-3 text-3xl text-dark-grey-900 w-full ps-10" >Find password</div>
+            <div className=" mb-3 text-3xl text-dark-grey-900 w-full ps-10" >Change password</div>
             {/* <div className=" mb-3 text-3xl text-dark-grey-900" >Sign In</div> */}
             {/* <div className=" flex justify-center mb-3 text-3xl text-dark-grey-900" >Sign In</div> */}
             <div className="flex justify-center h-[20px]">
