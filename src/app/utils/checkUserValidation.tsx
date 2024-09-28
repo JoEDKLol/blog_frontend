@@ -1,3 +1,4 @@
+'use client';0
 const checkInputData = (userObj:any) => {
     //userName:'', email:'', password:'', repassword:''
     
@@ -41,8 +42,6 @@ const checkInputData = (userObj:any) => {
         retObj.str = "Please check your repassword";
         return retObj;
     }
-
-    console.log("regExp.test(userObj.email)::", pw_regex.test(userObj.password));
 
     if(!e_regExp.test(userObj.email)){
         retObj.yn = false;

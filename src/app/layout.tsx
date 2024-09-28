@@ -25,12 +25,14 @@ export default function RootLayout({
       <body className={inter.className}>
           <RecoilRootProvider>
             <AuthProvider>
-              <PrimeReactProvider>
+              {/* <PrimeReactProvider> */}
               {/* <PrimeReactProvider value={{ unstyled: true }}> */}
-                {/* <CommonTransaction> */}
-                  <LayoutIndex>{children}</LayoutIndex>
-                {/* </CommonTransaction> */}
-              </PrimeReactProvider>
+                <CommonTransaction> 
+                  <LayoutIndex>        
+                    {children}
+                  </LayoutIndex>
+                </CommonTransaction> 
+              {/* </PrimeReactProvider> */}
             </AuthProvider>
           </RecoilRootProvider>
         </body>

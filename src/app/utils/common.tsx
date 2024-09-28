@@ -1,3 +1,5 @@
+
+'use client';
 const getRandomNumber = (n:number) => {
 
     let retNum = "";
@@ -9,8 +11,20 @@ const getRandomNumber = (n:number) => {
 }
 
 const addComma = (price:number) => {
-            let returnString = price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            return returnString;
-        }
+    let returnString = price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return returnString;
+}
 
-export  {getRandomNumber, addComma}
+const storeAccessToken = (accesstoken:string) => {
+    return sessionStorage.setItem('myblog-accesstoken', accesstoken);
+}
+
+const getAccessToken = () => {
+    return sessionStorage.getItem('myblog-accesstoken');
+}
+
+const clearAccessToken = () => {
+    return sessionStorage.removeItem("myblog-accesstoken");
+}
+
+export  {getRandomNumber, addComma, storeAccessToken, getAccessToken}

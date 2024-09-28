@@ -1,13 +1,27 @@
 'use client';
-import { signIn } from "next-auth/react";
-import { useRouter, usePathname } from "next/navigation";
-
+import { accesstokenState } from "@/app/store/token";
+import { userState } from "@/app/store/user";
+import { transaction } from "@/app/utils/axios";
+import { storeAccessToken } from "@/app/utils/common";
+import { signIn, useSession } from "next-auth/react";
+// import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 
 
 
 const Login = (props: any) => {
-  const { clickModal } = props;
-  const router = useRouter()
+
+  const [accesstokenRecoil, setAccesstokenRecoil] = useRecoilState<string>(accesstokenState);
+  const [user, setUser] = useRecoilState(userState);
+  const [resLoginStr, setResLoginStr] = useState<any>("");
+  // const sessionTest = useSession();
+
+  useEffect(()=>{
+    // console.log("여기");
+    // console.log(sessionTest);
+    // console.log("리코일:", accesstokenRecoil); 
+  }, [])
 
   //signupmodal 
   function clickSignUpModal(){
@@ -21,15 +35,11 @@ const Login = (props: any) => {
     props.clickPasswordModal();
   }
 
-
-
-  
-
   async function onSubmit(event: any) {
     event.preventDefault();
+    setResLoginStr("");
     const email = event.target.email.value;
     const password = event.target.password.value;
-
     const result:any = await signIn('credentials', {
       email,
       password,
@@ -38,17 +48,37 @@ const Login = (props: any) => {
       // 필요한 경우 다른 필드도 추가할 수 있습니다.
     });
 
-    // console.log(result);
+    // console.log(data);
     if (result.error) {
-      console.log('오류??');
       // 로그인 실패 시 오류 메시지를 처리할 수 있습니다.
-      // console.error(result.error);
+      console.error(result);
+      setResLoginStr("login failed")
+      console.log("여기로 온다");
+
     }else{
-      console.log(result.url);
-      console.log('성공');
-      // router.push(result.url); 
-      router.push("/blog");
+      //resp.headers.accesstoken;
+      const retObj = await transaction("get", "getAccessToken", {}, "", false);
+      // console.log(retObj);
+      if(retObj.sendObj.code === "2000"){
+        //유저정보는 리코일에
+        //access토큰 정보는 session storege클래스에 담아준다.
+        setUser(retObj.sendObj.resObj);
+        // sessionStorage.setItem('myblog-accesstoken', retObj.accessToken);
+        storeAccessToken(retObj.accessToken);
+        // setAccesstokenRecoil(retObj.accessToken);
+        props.clickModal();
+      }else{
+        //access token get 실패
+        //로그인 필요함.
+      }
+      
+      
     }
+  }
+
+  async function socialLogin(event:any) {
+    signIn('google');
+    
   }
 
   return(
@@ -68,7 +98,7 @@ const Login = (props: any) => {
                   onClick={()=>{props.clickModal()}}
                   className="bg-white  rounded-md inline-flex items-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                   <svg className="h-[20px] w-[20px]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
@@ -79,7 +109,8 @@ const Login = (props: any) => {
           <label htmlFor="password" className="mb-2 text-m text-start text-grey-900">Password*</label>
           <input id="password" type="password" placeholder="Password" className="border flex items-center w-full px-5 py-3 mb-3 mr-2 text-m  outline-none focus:bg-grey-400 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded"/>
           
-          <div className="flex justify-end mb-8">
+          <div className="flex justify-between mb-8">
+            <span className="text-red-500" >{resLoginStr}</span >
             <button onClick={()=>{clickPasswordModal()}} className="font-bold text-grey-700">Forget password?</button>
           </div>
 
@@ -102,7 +133,8 @@ const Login = (props: any) => {
           text-black font-bold border
           duration-300 rounded text-grey-900 bg-gray-200 hover:bg-gray-400 focus:ring-4 focus:ring-grey-300"
           onClick={
-            ()=>signIn('google')
+            // ()=>signIn('google')
+            (e)=>socialLogin(e)
           }>
             {/* <a className="  > */}
               <img className="h-5 mr-2" src="https://raw.githubusercontent.com/Loopple/loopple-public-assets/main/motion-tailwind/img/logos/logo-google.png" alt=""/>
