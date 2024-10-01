@@ -80,7 +80,7 @@ const MainHeader = (props: any) => {
   function siginUpOnclickHandlerhome(){
     // console.log("/blog/123");
     router.push("/");
-    // setShowModal2(!showModal2);
+    // setShowModal2(!showModal2); 
   }
 
   async function logoutOnclickHandler(){
@@ -100,7 +100,7 @@ const MainHeader = (props: any) => {
               <div className="flex items-center flex-shrink-0 text-dark mr-6">
                 <span className="font-semibold text-xl tracking-tight hidden
                 2xl:block xl:block lg:block md:block sm:block
-                ">Lola's Home</span>
+                ">Lola's Blog</span>
                 
                 <div className="relative pl-3  text-gray-600">
                   <input type="search" name="serch" placeholder="Search" className="w-[180px] 
