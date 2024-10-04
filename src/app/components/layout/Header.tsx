@@ -94,7 +94,7 @@ const MainHeader = (props: any) => {
           {/* <head><title>Lola's Home</title></head> */}
           <header
             ref={headerRef}
-            className="sticky top-0 left-0 w-full z-990 h-30 font-mono transition duration-500 bg-white dark:bg-[#111111]"
+            className="sticky top-0 left-0 w-full z-50 h-30 font-mono transition duration-500 bg-white dark:bg-[#111111]"
           >
             <nav className="flex items-center justify-between flex-wrap p-3">
               <div className="flex items-center flex-shrink-0 text-dark mr-6">

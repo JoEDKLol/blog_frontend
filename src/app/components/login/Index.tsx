@@ -129,7 +129,7 @@ const Login = (props: any) => {
             <p className="mx-4 text-grey-600">or</p>
             <hr className="h-0 border-b border-solid border-grey-500 grow"/>
           </div>
-          <div className="flex items-center justify-center w-full py-3 mt-4
+          <div className="flex items-center justify-center w-full py-3 mt-4 cursor-pointer
           text-black font-bold border
           duration-300 rounded text-grey-900 bg-gray-200 hover:bg-gray-400 focus:ring-4 focus:ring-grey-300"
           onClick={
