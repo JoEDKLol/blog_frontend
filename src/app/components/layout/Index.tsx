@@ -9,6 +9,7 @@ import MainContent from "./Main";
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react';
 import SocialLoginFail from "@/app/(route)/(sociallogin)/socialloginfail/page";
+import PriLayoutIndex from "../priLayout/Index";
 
 const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
   type typeMainHome = boolean;
@@ -29,7 +30,8 @@ const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
     {/* {children} */}
     {
       (path === "/")?<><MainHeader></MainHeader><MainContent>{children}</MainContent></>
-      :(path2 === "/blog")?<><PriHeader></PriHeader><PriMainContent>{children}</PriMainContent></>
+      // :(path2 === "/blog")?<><PriHeader></PriHeader><PriMainContent>{children}</PriMainContent></>
+      :(path2 === "/blog")?<>{children}</>
       :(path === "/sociallogin")?<>{children}</>
       :(path === "/socialloginfail")?<>{children}</>
       :''

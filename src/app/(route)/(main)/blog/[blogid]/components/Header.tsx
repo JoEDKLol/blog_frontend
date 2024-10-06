@@ -1,27 +1,27 @@
 'use client';
 
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import Modal from "../modal/Indes";
-import Login from "../login/Index";
-import SignUp from "../signup/Index";
-import Password from "../password/Index";
-
-import { useRouter } from "next/navigation";
-import { useRecoilState } from "recoil";
-import { userState } from "@/app/store/user";
-import { signOut } from "next-auth/react";
 import { transaction } from "@/app/utils/axios";
+import { signOut } from "next-auth/react";
+import { useEffect, useRef, useState } from "react";
+import Modal from "../../../../../components/modal/Indes";
+import Login from "../../../../../components/login/Index";
+import SignUp from "../../../../../components/signup/Index";
+import Password from "../../../../../components/password/Index";
+import { userState } from "@/app/store/user";
+import { useRecoilState } from "recoil";
+import { usePathname } from "next/navigation";
 
+const PriHeader = (props: any) => {
 
-const MainHeader = (props: any) => {
-  const router = useRouter();
-  let [menu, setMenu] = useState("hidden")
   const headerRef = useRef<HTMLElement>(null);
-  
+  // 모달 버튼 클릭 유무를 저장할 state
+  const [showModal, setShowModal] = useState(false);
+  const [showModal2, setShowModal2] = useState(false);
+  const [showModal3, setShowModal3] = useState(false);
   const [user, setUser] = useRecoilState(userState);
+  const [blogInfo, setBlogInfo] = useState<any>({});
 
-  // console.log(user);
+  const path:any = usePathname();
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -31,15 +31,11 @@ const MainHeader = (props: any) => {
     };
   }, []);
 
-  function onclickMenuButton(e:any){
-    if(menu === "hidden"){
-      setMenu("");
-    }else{
-      setMenu("hidden");
-    }
-    
-  }
+  useEffect(() => {
+    getBlogInfo();
+  }, []);
 
+  
   const handleScroll = () => {
     if (window.scrollY > 0) {
       headerRef.current?.classList.add('shadow-[0_5px_7px_0px_#ececec]');
@@ -48,13 +44,6 @@ const MainHeader = (props: any) => {
     headerRef.current?.classList.remove('shadow-[0_5px_7px_0px_#ececec]');
   };
 
-  // 모달 버튼 클릭 유무를 저장할 state
-  const [showModal, setShowModal] = useState(false)
-  const [showModal2, setShowModal2] = useState(false)
-  const [showModal3, setShowModal3] = useState(false)
-    
-	// 버튼 클릭시 모달 버튼 클릭 유무를 설정하는 state 함수
-  // const loginOnclickHandler = () => setShowModal(!showModal)
   function loginOnclickHandler(){
     setShowModal(!showModal);
   }
@@ -68,39 +57,37 @@ const MainHeader = (props: any) => {
     setShowModal3(!showModal3);
   }
 
-  // function setShowModel(){
-  //   setShowModal(!showModal);
-  // }
-  // function siginUpOnclickHandlertest(){
-  //   // console.log("/blog/123");
-  //   router.push("/blog/123/123");
-  //   // setShowModal2(!showModal2);
-  // }
-
-  // function siginUpOnclickHandlerhome(){
-  //   // console.log("/blog/123");
-  //   router.push("/");
-  //   // setShowModal2(!showModal2); 
-  // }
-
   async function logoutOnclickHandler(){
     signOut();
     sessionStorage.removeItem("myblog-accesstoken");
     const retObj = await transaction("get", "logout", {}, "", false);
   }
 
+  //blog_seq로 블로그 정보를 조회한다.
+  async function getBlogInfo(){
+    
+    let obj = {
+      blog_seq:12 
+    }
+    const blogInfoObj = await transaction("get", "blog/blogInfo", obj, "", false);
+    setBlogInfo(blogInfoObj.sendObj.resObj);
+  }
+
+
+
   return (
       <>
-          {/* <head><title>Lola's Home</title></head> */}
           <header
             ref={headerRef}
             className="sticky top-0 left-0 w-full z-50 h-30 font-mono transition duration-500 bg-white dark:bg-[#111111]"
           >
-            <nav className="flex items-center justify-between flex-wrap p-3">
+          <nav className="flex items-center justify-between flex-wrap p-3">
               <div className="flex items-center flex-shrink-0 text-dark mr-6">
                 <span className="font-semibold text-xl tracking-tight hidden
                 2xl:block xl:block lg:block md:block sm:block
-                ">Lola's Blog</span>
+                ">
+                    {blogInfo.name} 
+                </span>
                 
                 <div className="relative pl-3  text-gray-600">
                   <input type="search" name="serch" placeholder="Search" className="w-[180px] 
@@ -168,10 +155,13 @@ const MainHeader = (props: any) => {
 
 
             </nav>
+          
+          
+          
           </header>
       </>
             
             
     );
 };
-export default MainHeader;
+export default PriHeader;

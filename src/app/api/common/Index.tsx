@@ -15,7 +15,7 @@ const CommonTransaction = ({ children }: any) => {
 
     const [initializing, setInitializing] = useState(false);    
     
-    const [user, setUser] = useRecoilState(userState);
+    const [user, setUser] = useRecoilState<any>(userState);
     const path:any = usePathname();
     const router = useRouter();
     

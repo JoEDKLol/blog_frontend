@@ -6,9 +6,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 
-
-
-const MainContent = ({ children }: { children: React.ReactNode }) => {
+const PriMain = () => {
   const [blogList,setblogList] = useState<any>([]);
   // const [currentPage,setCurrentPage] = useState<any>(0);
   
@@ -71,9 +69,6 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
       };
   }, [handleObserver]);
 
-  function test(obj:any){
-    console.log(obj);
-  }
 
   return(
     <>
@@ -85,7 +80,7 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
           return (
             
               <Link key={index} href={"blog/"+item.blog_seq + "/" + item.seq}>
-              <div className="">
+              <div  className="">
                 <div  className="rounded-lg overflow-hidden shadow-lg hover:bg-[#eaedee] p-2 mt-5 h-[400px] w-[300px]">
                   <div className="">
                       <div className='ring-1 ring-gray-300 rounded-xl h-32 relative' >
@@ -109,37 +104,11 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
                 </div>
               </div>  
               </Link>  
-             
+            
           )
         })
         }
-        
-
-        {/* <div className="2xl:columns-3 xl:columns-3 lg:columns-2 md:columns-2 sm:columns-1 columns-1 w-3/4 " >
-          
-          {
-            blogList.map((item:any, index:any)=>{
-              return (
-                <Link key={index} href={"blog/"+item.title}>
-                <div className="group flex justify-center pt-3 h-[500px] ">
-                  <div className="max-w-sm rounded overflow-hidden shadow-lg hover:bg-[#eaedee]">
-                    <div className="px-6 pt-4 pb-2">
-                      <div className="font-bold text-xl mb-2 truncate w-96">{item.title}</div>
-                      <p className="text-gray-700 text-base h-72 text-ellipsis overflow-hidden">
-                        {item.content}
-                      </p>
-                    </div>
-                    <div className="px-6 h-8 pb-2">
-                      <div>{item.regdate}</div>
-                    </div>
-                  </div>
-                </div>
-                </Link>
-              )
-            })
-          }
-          
-        </div> */}
+       
       
       </div>
       <div ref={observerEl} className="h-1"/>
@@ -147,4 +116,4 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
     </>
   )
 };
-export default MainContent;
+export default PriMain;

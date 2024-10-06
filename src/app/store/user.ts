@@ -3,10 +3,11 @@ import { atom } from "recoil";
 
 interface user {
     id:string,
-    email:string
+    email:string,
+    name:string
 }
 
 export const userState = atom<user>({
     key: "user",
-    default: {id:"", email:""},
+    default: {id:"", email:"", name:""},
 });

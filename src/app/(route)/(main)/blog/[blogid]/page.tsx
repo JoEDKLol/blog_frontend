@@ -1,6 +1,9 @@
+import Layout from "./components/Layout";
+
+
 const BlogBoards = () => {
     return(<>  
-      <div>블로그게시판 전체</div>
+      <Layout />
     </>
     );
 };
