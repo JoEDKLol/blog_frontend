@@ -3,10 +3,10 @@
 import { transaction } from "@/app/utils/axios";
 import { signOut } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
-import Modal from "../../../../../components/modal/Indes";
-import Login from "../../../../../components/login/Index";
-import SignUp from "../../../../../components/signup/Index";
-import Password from "../../../../../components/password/Index";
+import Modal from "../modal/Indes";
+import Login from "../login/Index";
+import SignUp from "../signup/Index";
+import Password from "../password/Index";
 import { userState } from "@/app/store/user";
 import { useRecoilState } from "recoil";
 import { usePathname } from "next/navigation";
@@ -20,9 +20,7 @@ const PriHeader = (props: any) => {
   const [showModal3, setShowModal3] = useState(false);
   const [user, setUser] = useRecoilState(userState);
   const [blogInfo, setBlogInfo] = useState<any>({});
-
-  const path:any = usePathname();
-
+  
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     // setTheme(document.body.className as Theme);
@@ -67,7 +65,7 @@ const PriHeader = (props: any) => {
   async function getBlogInfo(){
     
     let obj = {
-      blog_seq:12 
+      blog_seq:props.blog_seq
     }
     const blogInfoObj = await transaction("get", "blog/blogInfo", obj, "", false);
     setBlogInfo(blogInfoObj.sendObj.resObj);

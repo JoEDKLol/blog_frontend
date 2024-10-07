@@ -1,10 +1,11 @@
-import Layout from "./components/Layout";
+import Layout from "../write/components/Layout";
+
 
 
 const BlogBoards = () => {
     return(
     <>  
-      <Layout />
+      <Layout/>
     </>
     );
 };

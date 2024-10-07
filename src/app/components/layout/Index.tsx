@@ -1,15 +1,13 @@
 'use client';
 
 import SocialLogin from "@/app/(route)/(sociallogin)/sociallogin/page";
-import PriHeader from "../priLayout/Header";
-import PriMainContent from "../priLayout/Main";
 import MainHeader from "./Header";
 import MainContent from "./Main";
 
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react';
 import SocialLoginFail from "@/app/(route)/(sociallogin)/socialloginfail/page";
-import PriLayoutIndex from "../priLayout/Index";
+import PriHeader from "../priLayout/Header";
 
 const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
   type typeMainHome = boolean;
@@ -30,8 +28,8 @@ const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
     {/* {children} */}
     {
       (path === "/")?<><MainHeader></MainHeader><MainContent>{children}</MainContent></>
-      // :(path2 === "/blog")?<><PriHeader></PriHeader><PriMainContent>{children}</PriMainContent></>
-      :(path2 === "/blog")?<>{children}</>
+      :(path2 === "/blog")?<><PriHeader></PriHeader>{children}</>
+      // :(path2 === "/blog")?<>{children}</>
       :(path === "/sociallogin")?<>{children}</>
       :(path === "/socialloginfail")?<>{children}</>
       :''

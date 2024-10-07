@@ -71,9 +71,6 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
       };
   }, [handleObserver]);
 
-  function test(obj:any){
-    console.log(obj);
-  }
 
   return(
     <>
@@ -84,7 +81,7 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
         blogList.map((item:any, index:any)=>{
           return (
             
-              <Link key={index} href={"blog/"+item.blog_seq + "/" + item.seq}>
+              <Link key={index} href={"/blog/"+item.blog_seq + "/" + item.seq}>
               <div className="">
                 <div  className="rounded-lg overflow-hidden shadow-lg hover:bg-[#eaedee] p-2 mt-5 h-[400px] w-[300px]">
                   <div className="">

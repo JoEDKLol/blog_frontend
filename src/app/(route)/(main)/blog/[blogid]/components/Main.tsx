@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 
-const PriMain = () => {
+const PriMain = (props: any) => {
   const [blogList,setblogList] = useState<any>([]);
   // const [currentPage,setCurrentPage] = useState<any>(0);
   
@@ -20,10 +20,12 @@ const PriMain = () => {
   async function getBlogLists(cPage:any){
     // console.log("page:",cPage);
     let obj = {
-      currentPage:cPage
+      currentPage:cPage,
+      blog_seq:props.blog_seq
 
     }
-    const bloglistObj = await transaction("get", "blog/bloglist", obj, "", false);
+
+    const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
 
     if(bloglistObj.sendObj.resObj.list.length > 0){
       blogListDB = blogListDB.concat(bloglistObj.sendObj.resObj.list)
@@ -79,7 +81,7 @@ const PriMain = () => {
         blogList.map((item:any, index:any)=>{
           return (
             
-              <Link key={index} href={"blog/"+item.blog_seq + "/" + item.seq}>
+              <Link key={index} href={"/blog/"+item.blog_seq + "/" + item.seq}>
               <div  className="">
                 <div  className="rounded-lg overflow-hidden shadow-lg hover:bg-[#eaedee] p-2 mt-5 h-[400px] w-[300px]">
                   <div className="">

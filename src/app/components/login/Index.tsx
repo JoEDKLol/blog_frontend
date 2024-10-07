@@ -53,7 +53,6 @@ const Login = (props: any) => {
       // 로그인 실패 시 오류 메시지를 처리할 수 있습니다.
       console.error(result);
       setResLoginStr("login failed")
-      console.log("여기로 온다");
 
     }else{
       //resp.headers.accesstoken;

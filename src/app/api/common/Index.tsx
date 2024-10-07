@@ -45,7 +45,7 @@ const CommonTransaction = ({ children }: any) => {
         }else{
             //access token get 실패
             //로그인 필요함.
-            setUser({id:"",  email:""});
+            setUser({id:"",  email:"", blog_seq:""});
         }
     }
 

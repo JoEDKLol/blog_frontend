@@ -1,9 +1,10 @@
+import Layout from "../[boardid]/components/Layout";
+
 const BlogBoard = () => {
-    return(<>  
-      <div>블로그게시글입니다.</div>
-      
-    </>
-    );
+  return(<>  
+    <Layout />
+  </>
+  );
 };
 
 export default BlogBoard

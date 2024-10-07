@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from "next/navigation";
-import PriMain from "./Main";
+import PriBlogListDetail from "./Main";
 
 const Layout = (props: any) => {
 
@@ -10,7 +10,7 @@ const Layout = (props: any) => {
 
   return(
     <>  
-      <PriMain blog_seq={blog_seq}/>
+      <PriBlogListDetail blog_seq={blog_seq}/>
     </>
   );
 };
