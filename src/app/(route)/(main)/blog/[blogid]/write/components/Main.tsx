@@ -26,9 +26,9 @@ const PriBlogWrite = (props: any) => {
 			{
 				(writeYn)?
 				<><WriteForm></WriteForm></>:
-				<><WriteForm></WriteForm></>
+				// <><WriteForm></WriteForm></>
 				
-				// <>로그인이 필요합니다.</>
+				<>로그인이 필요합니다.</>
 			}
 		</>
 	)

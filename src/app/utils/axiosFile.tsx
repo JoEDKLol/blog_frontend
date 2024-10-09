@@ -14,16 +14,19 @@ axiosFile.interceptors.request.use((config)=>{
 	return config;
 })
 
-const transactionFile = async (url:string, obj:any, callback:any, callbackYn:boolean) => {
+const transactionFile = async (url:string, fileObj:any, obj:any, callback:any, callbackYn:boolean) => {
 	
 	try{
-		
+		console.log(obj);
 		const formData = new FormData();
-		formData.append('file', obj);
+		formData.append('file', fileObj);
+		formData.append('user_id', obj.user_id);
+		formData.append('temp_num', obj.randomNum);
+		
 		
         let resp:any, data:any;
 		
-		resp = await axiosFile.post(url ,formData);
+		resp = await axiosFile.post(url ,formData, obj);
 		data = await resp.data;
 		
 		if(url===""){

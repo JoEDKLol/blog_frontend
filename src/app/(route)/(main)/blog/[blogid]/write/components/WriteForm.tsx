@@ -7,7 +7,8 @@ import dynamic from "next/dynamic";
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
 import { transactionFile } from "@/app/utils/axiosFile";
-
+import { getRandomNumber } from "@/app/utils/common";
+	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
 	}
@@ -29,17 +30,27 @@ import { transactionFile } from "@/app/utils/axiosFile";
 		const focusTitle = useRef<HTMLInputElement>(null);
 		const quillRef = useRef<any>(ReactQuill);
 		const [content, setContent] = useState("")
-		
-		// useEffect(()=>{
-		// 	focusTitle.current?.focus();
-		// },[])
+		const [user, setUser] = useRecoilState(userState);
+		// const [randomNum, setRanDomNum] = useState<any>(null);
+
+		const randomNum = getRandomNumber(10);
+
+		useEffect(()=>{
+			// console.log(user);
+			//랜덤숫자 생성 1000
+			focusTitle.current?.focus();
+		},[])
 		
 		const imageHandler = async (imageBase64URL:any, imageBlob:any, editor:any) => {
-			
-			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, "", false);
+			console.log(randomNum); 
+			const obj = {
+				user_id : user.id,
+				randomNum : randomNum
+			}
+			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false);
 		}
 
-		const modules = useMemo(
+		const modules = useMemo( 
 			() => ({
 				toolbar: {
 					container: [
@@ -58,6 +69,7 @@ import { transactionFile } from "@/app/utils/axiosFile";
 					maxHeight: 222, 
 					debug: false, // default
 					suppressErrorLogging: false, 
+					// insertIntoEditor : undefined
 					insertIntoEditor: (imageBase64URL:any, imageBlob:any, editor:any) => {
 						imageHandler(imageBase64URL, imageBlob, editor)
 						// console.log(imageBase64URL);
@@ -113,7 +125,7 @@ import { transactionFile } from "@/app/utils/axiosFile";
 		// }, []);
 
 		function writeButtenHandler(){
-			console.log(content);
+			console.log(randomNum);
 		}
 
 		return (
