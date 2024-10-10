@@ -17,11 +17,11 @@ axiosFile.interceptors.request.use((config)=>{
 const transactionFile = async (url:string, fileObj:any, obj:any, callback:any, callbackYn:boolean) => {
 	
 	try{
-		console.log(obj);
 		const formData = new FormData();
 		formData.append('file', fileObj);
 		formData.append('user_id', obj.user_id);
 		formData.append('temp_num', obj.randomNum);
+		formData.append('email', obj.email);
 		
 		
         let resp:any, data:any;

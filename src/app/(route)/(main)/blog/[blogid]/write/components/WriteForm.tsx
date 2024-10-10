@@ -8,10 +8,12 @@ import 'react-quill/dist/quill.snow.css';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
 import { transactionFile } from "@/app/utils/axiosFile";
 import { getRandomNumber } from "@/app/utils/common";
+import { transactionAuth } from "@/app/utils/axiosAuth";
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
 	}
+	const randomNum = getRandomNumber(10);
 	const QuillNoSSRWrapper = dynamic(
 		async () => {
 			const { default: QuillComponent } = await import('react-quill')
@@ -33,7 +35,7 @@ import { getRandomNumber } from "@/app/utils/common";
 		const [user, setUser] = useRecoilState(userState);
 		// const [randomNum, setRanDomNum] = useState<any>(null);
 
-		const randomNum = getRandomNumber(10);
+		
 
 		useEffect(()=>{
 			// console.log(user);
@@ -45,9 +47,13 @@ import { getRandomNumber } from "@/app/utils/common";
 			console.log(randomNum); 
 			const obj = {
 				user_id : user.id,
+				email : user.email,
 				randomNum : randomNum
 			}
 			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false);
+			console.log(imgUploadRes.sendObj.resObj.img_url			);
+			const range = editor.getSelection();
+      		editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
 		}
 
 		const modules = useMemo( 
@@ -72,21 +78,6 @@ import { getRandomNumber } from "@/app/utils/common";
 					// insertIntoEditor : undefined
 					insertIntoEditor: (imageBase64URL:any, imageBlob:any, editor:any) => {
 						imageHandler(imageBase64URL, imageBlob, editor)
-						// console.log(imageBase64URL);
-						// console.log(imageBlob);
-						// console.log(editor);
-						// const formData = new FormData();
-						// formData.append("file", imageBlob);
-					
-						// fetch("/upload", {method: "POST", body: formData})
-						// 	.then(response => response.text())
-						// 	.then(result => {
-						// 		const range = editor.getSelection();
-						// 		editor.insertEmbed(range.index, "image", `${result}`, "user");
-						// 	})
-						// 	.catch(error => {
-						// 		console.error(error);
-						// 	});
 					}
 				},
 			}),
@@ -124,8 +115,17 @@ import { getRandomNumber } from "@/app/utils/common";
 		// 	};
 		// }, []);
 
-		function writeButtenHandler(){
+		async function writeButtenHandler(){
 			console.log(randomNum);
+			const obj = {
+				user_id : user.id,
+				email : user.email,
+				content:content,
+				randomNum : randomNum
+			}
+			
+			const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false);
+
 		}
 
 		return (
