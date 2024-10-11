@@ -31,10 +31,11 @@ import { transactionAuth } from "@/app/utils/axiosAuth";
 	const QuillEditor = (props: any) => {
 		const focusTitle = useRef<HTMLInputElement>(null);
 		const quillRef = useRef<any>(ReactQuill);
-		const [content, setContent] = useState("")
+		const [content, setContent] = useState("");
 		const [user, setUser] = useRecoilState(userState);
+		const [title, setTitle] = useState("");
 		// const [randomNum, setRanDomNum] = useState<any>(null);
-
+		// console.log(user);
 		
 
 		useEffect(()=>{
@@ -51,7 +52,6 @@ import { transactionAuth } from "@/app/utils/axiosAuth";
 				randomNum : randomNum
 			}
 			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false);
-			console.log(imgUploadRes.sendObj.resObj.img_url			);
 			const range = editor.getSelection();
       		editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
 		}
@@ -71,8 +71,8 @@ import { transactionAuth } from "@/app/utils/axiosAuth";
 				},
 				imageCompress: {
 					quality: 0.7,
-					maxWidth: 222, 
-					maxHeight: 222, 
+					maxWidth: 1000, 
+					maxHeight: 1000, 
 					debug: false, // default
 					suppressErrorLogging: false, 
 					// insertIntoEditor : undefined
@@ -115,16 +115,29 @@ import { transactionAuth } from "@/app/utils/axiosAuth";
 		// 	};
 		// }, []);
 
+		function title_onchangeHandler(e:any){
+			setTitle(e.target.value);
+		}
+
 		async function writeButtenHandler(){
-			console.log(randomNum);
+			// const title = event.target.title.value;
 			const obj = {
 				user_id : user.id,
 				email : user.email,
+				title:title,
 				content:content,
+				blog_seq:user.blog_seq,
 				randomNum : randomNum
 			}
 			
 			const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false);
+			console.log(imgUploadRes.sendObj.success );
+
+			if(imgUploadRes.sendObj.success === 'y'){
+
+			}else{
+				
+			}
 
 		}
 
@@ -143,7 +156,9 @@ import { transactionAuth } from "@/app/utils/axiosAuth";
 						">Title
 						</div>
 						<div className="w-[470px] ">
-						<input ref={focusTitle} autoComplete="off" id="title" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+						<input ref={focusTitle} 
+						onChange={(e)=>title_onchangeHandler(e)}
+						autoComplete="off" id="title" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 						</div>
 					</div>
 

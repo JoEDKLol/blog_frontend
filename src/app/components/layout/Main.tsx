@@ -71,7 +71,6 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
       };
   }, [handleObserver]);
 
-
   return(
     <>
       <div className="px-60 grid place-items-center grid-cols-1 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1
@@ -90,16 +89,16 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
                           src={item.pic}
                           quality={30}
                           layout="fill"
-                          style={{ objectFit: "cover" }}
+                          style={{ objectFit: "cover" , borderRadius: '8px' }}
                           alt='' />
                       </div>
                   </div> 
                   <div className=""><p className=" text-xs my-4 ">{item.regdate}</p></div>
                   <div className="">
-                    <div className="font-bold text-xl mb-2 truncate">{item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title}</div>
+                    <div className="font-bold text-xl mb-2 truncate">{item.title}</div>
                     
                     <div className=" m-1 h-[120px] my-4 break-all line-clamp-5">
-                    esttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttestesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
+                      {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
                     </div>
                   </div>
                   <div className="">태그</div>
