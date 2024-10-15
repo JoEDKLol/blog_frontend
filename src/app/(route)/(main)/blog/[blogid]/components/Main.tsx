@@ -81,31 +81,44 @@ const PriMain = (props: any) => {
         blogList.map((item:any, index:any)=>{
           return (
             
-              <Link key={index} href={"/blog/"+item.blog_seq + "/" + item.seq}>
-              <div  className="">
-                <div  className="rounded-lg overflow-hidden shadow-lg hover:bg-[#eaedee] p-2 mt-5 h-[400px] w-[300px]">
-                  <div className="">
-                      <div className='ring-1 ring-gray-300 rounded-xl h-32 relative' >
-                          <Image 
-                          src={item.pic}
-                          quality={30}
-                          layout="fill"
-                          style={{ objectFit: "cover" }}
-                          alt='' />
-                      </div>
-                  </div> 
-                  <div className=""><p className=" text-xs my-4 ">{item.regdate}</p></div>
-                  <div className="">
-                    <div className="font-bold text-xl mb-2 truncate">{item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title+item.title}</div>
+            <Link key={index} href={"/blog/"+item.blog_seq + "/" + item.seq}>
+            <div className="">
+              <div  className="rounded-lg overflow-hidden shadow-lg hover:bg-[#eaedee] p-2 mt-5 h-[400px] w-[300px]">
+                <div className="">
+                  {item.pic ? (
+                    <div className='ring-1 ring-gray-300 rounded-xl h-32 relative' >
+                        <Image 
+                        src={item.pic}
+                        quality={30}
+                        layout="fill"
+                        style={{ objectFit: "cover" , borderRadius: '8px' }}
+                        alt='' />
+                    </div>) : ""
+                  }
                     
+                </div> 
+                <div className=""><p className=" text-xs my-4 ">{item.regdate}</p></div>
+                <div className="">
+                  <div className="font-bold text-xl mb-2 truncate">{item.title}</div>
+                  
+                  {item.pic ? (
                     <div className=" m-1 h-[120px] my-4 break-all line-clamp-5">
-                    esttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttesesttesttesttestesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest
+                      {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
+                    </div>  
+                  ):(
+                    <div className=" m-1 h-[248px] my-4 break-all line-clamp-5">
+                      {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
                     </div>
-                  </div>
-                  <div className="">태그</div>
+
+                  )
+                  
+                
+                  }
                 </div>
-              </div>  
-              </Link>  
+                <div className="">태그</div>
+              </div>
+            </div>  
+            </Link>
             
           )
         })

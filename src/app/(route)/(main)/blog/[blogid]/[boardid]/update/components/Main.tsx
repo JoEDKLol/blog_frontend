@@ -3,20 +3,19 @@
 import { userState } from "@/app/store/user";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import WriteForm from "./WriteForm";
+import UpdateForm from "./UpdateForm";
 
 
-
-const PriBlogWrite = (props: any) => {
+const PriBlogUpdate = (props: any) => {
 	const [user, setUser] = useRecoilState(userState);
-	const [writeYn, setWriteYn] = useState(false);
+	const [updateYn, setUpdateYn] = useState(false);
 	
-
 	useEffect(()=>{
+		
 		if(user.id.length > 0 && user.blog_seq+"" === props.blog_seq){
-			setWriteYn(true);
+			setUpdateYn(true);
 		}else{
-			setWriteYn(false);
+			setUpdateYn(false);
 		}
 	}, [user])
 	
@@ -24,11 +23,11 @@ const PriBlogWrite = (props: any) => {
 	return(
 		<>
 			{
-				(writeYn)?
-				<><WriteForm></WriteForm></>:
+				(updateYn)?
+				<><UpdateForm blog_seq={props.blog_seq} seq={props.seq}></UpdateForm></>:
 				<>You need to Login.</>
 			}
 		</>
 	)
 };
-export default PriBlogWrite;
+export default PriBlogUpdate;

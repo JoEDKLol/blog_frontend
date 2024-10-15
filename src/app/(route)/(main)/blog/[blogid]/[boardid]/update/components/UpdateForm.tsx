@@ -9,12 +9,13 @@ import ReactQuill, { ReactQuillProps } from 'react-quill';
 import { transactionFile } from "@/app/utils/axiosFile";
 import { getRandomNumber } from "@/app/utils/common";
 import { transactionAuth } from "@/app/utils/axiosAuth";
-import { useRouter,usePathname } from "next/navigation";
+import { transaction } from "@/app/utils/axios";
+import { useRouter } from "next/navigation";
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
 	}
-	const randomNum = getRandomNumber(10);
+	let tempNum:any;
 	const QuillNoSSRWrapper = dynamic(
 		async () => {
 			const { default: QuillComponent } = await import('react-quill')
@@ -30,25 +31,40 @@ import { useRouter,usePathname } from "next/navigation";
 
 	// export default function QuillEditor(){
 	const QuillEditor = (props: any) => {
+        
 		const focusTitle = useRef<HTMLInputElement>(null);
 		const quillRef = useRef<any>(ReactQuill);
-		const [content, setContent] = useState("");
+		const [content, setContent] = useState<any>("");
 		const [user, setUser] = useRecoilState(userState);
 		
-		const [title, setTitle] = useState("");
+		const [title, setTitle] = useState<any>("");
 		const [writeSuc, setWriteSuc] = useState(false);
 		
-		useEffect(()=>{
-			focusTitle.current?.focus();
+        useEffect(()=>{
+            getBlogDetail();
 		},[])
 
+		async function getBlogDetail(){
+			const obj = {
+				blog_seq:props.blog_seq,
+				seq:props.seq
+			}
+	
+			const bloglistObj = await transaction("get", "blog/blogDetail", obj, "", false);
+			console.log(bloglistObj.sendObj.resObj.blogDetail);
+			setContent(bloglistObj.sendObj.resObj.blogDetail.content);
+			setTitle(bloglistObj.sendObj.resObj.blogDetail.title);
+			tempNum = bloglistObj.sendObj.resObj.blogDetail.temp_num;
+			console.log(tempNum); 
+		}
 		
 		const imageHandler = async (imageBase64URL:any, imageBlob:any, editor:any) => {
-			console.log(randomNum); 
+			
+			// return;
 			const obj = {
 				user_id : user.id,
 				email : user.email,
-				randomNum : randomNum
+				randomNum : tempNum
 			}
 			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false);
 			const range = editor.getSelection();
@@ -82,44 +98,11 @@ import { useRouter,usePathname } from "next/navigation";
 			}),
 			[],
 		);
-
-		// const modules2 = useMemo(() => {
-		// 	return {
-		// 		toolbar: {
-		// 			container: [
-		// 				[{ size: ['small', false, 'large', 'huge'] }],
-		// 				[{ align: [] }],
-		// 				['bold', 'italic', 'underline', 'strike'],
-		// 				[{ list: 'ordered' }, { list: 'bullet' }],
-		// 				[{color: [],},{ background: [] },],
-		// 				[{ align: [] }],
-		// 			],
-		// 		},
-		// 	};
-		// }, []);
-
-		// const modules3 = useMemo(() => {
-		// 	return {
-		// 		toolbar: {
-		// 			container: [
-		// 				[{ header: [1, 2, false] }],
-		// 				['bold', 'italic', 'underline', 'strike', 'blockquote'],
-		// 				[{ list: 'ordered' }, { list: 'bullet' }],
-		// 				["link", "image", "video"],
-		// 				['clean'],
-		// 				[{ color: [] }, { background: [] }],
-		// 				[{ align: [] }],
-		// 			],
-		// 		},
-		// 	};
-		// }, []);
-
 		function title_onchangeHandler(e:any){
 			setTitle(e.target.value);
 		}
 
 		async function writeButtenHandler(){
-
 			// const title = event.target.title.value;
 			const obj = {
 				user_id : user.id,
@@ -127,11 +110,14 @@ import { useRouter,usePathname } from "next/navigation";
 				title:title,
 				content:content,
 				blog_seq:user.blog_seq,
-				randomNum : randomNum
+				randomNum : tempNum,
+				seq:props.seq
 			}
 			
-			const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false);
-			console.log(imgUploadRes.sendObj.success );
+			console.log(obj);
+
+			const imgUploadRes = await transactionAuth("post", "blog/update", obj, "", false);
+			// console.log(imgUploadRes.sendObj.success );
 
 			if(imgUploadRes.sendObj.success === 'y'){
 				setWriteSuc(true);
@@ -139,9 +125,10 @@ import { useRouter,usePathname } from "next/navigation";
 				
 			}
 		}
+
 		const router = useRouter();
 		function movetoboard(){
-			router.push('/blog/' + user.blog_seq)
+			router.push('/blog/' + user.blog_seq + "/" + props.seq);
 		}
 
 		return (
@@ -161,7 +148,7 @@ import { useRouter,usePathname } from "next/navigation";
 						<button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded"
 						onClick={()=>movetoboard()}
 						>
-							Board Lists
+							Board Detail
 						</button>
 					</div>
 					
@@ -182,6 +169,7 @@ import { useRouter,usePathname } from "next/navigation";
 						<div className="w-[470px] ">
 						<input ref={focusTitle} 
 						onChange={(e)=>title_onchangeHandler(e)}
+						value={title}
 						autoComplete="off" id="title" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 						</div>
 					</div>
@@ -228,10 +216,12 @@ import { useRouter,usePathname } from "next/navigation";
 							theme="snow" 
 							style={{height: "300px", width: "470px"}}
 							forwardedRef={quillRef}
+							value={content}
 							onChange={setContent}
 							modules={
 								modules
-							}/>
+							}
+							/>
 						</div>
 					</div>
 					<div className="flex justify-end  w-[470px]
