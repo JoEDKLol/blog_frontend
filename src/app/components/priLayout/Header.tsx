@@ -1,5 +1,5 @@
 'use client';
-
+import { FaHome } from "react-icons/fa";
 import { transaction } from "@/app/utils/axios";
 import { signOut } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
@@ -9,7 +9,8 @@ import SignUp from "../signup/Index";
 import Password from "../password/Index";
 import { userState } from "@/app/store/user";
 import { useRecoilState } from "recoil";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 const PriHeader = (props: any) => {
 
@@ -68,10 +69,13 @@ const PriHeader = (props: any) => {
       blog_seq:props.blog_seq
     }
     const blogInfoObj = await transaction("get", "blog/blogInfo", obj, "", false);
+    console.log(blogInfoObj.sendObj.resObj);
     setBlogInfo(blogInfoObj.sendObj.resObj);
   }
-
-
+  const router = useRouter();
+  function mainPage(){
+    router.push('/');
+  }
 
   return (
       <>
@@ -80,13 +84,23 @@ const PriHeader = (props: any) => {
             className="sticky top-0 left-0 w-full z-50 h-30 font-mono transition duration-500 bg-white dark:bg-[#111111]"
           >
           <nav className="flex items-center justify-between flex-wrap p-3">
+
               <div className="flex items-center flex-shrink-0 text-dark mr-6">
+                <Link href={"/blog/"+blogInfo.seq}>
                 <span className="font-semibold text-xl tracking-tight hidden
                 2xl:block xl:block lg:block md:block sm:block
                 ">
                     {blogInfo.name} 
                 </span>
-                
+                </Link>
+
+                <Link href={"/blog/"+blogInfo.seq}>
+                <span className="text-xl block 2xl:hidden xl:hidden lg:hidden md:hidden sm:hidden">
+                    <FaHome /> 
+                </span>
+                </Link>
+
+                 
                 <div className="relative pl-3  text-gray-600">
                   <input type="search" name="serch" placeholder="Search" className="w-[180px] 
                   2xl:w-[300px] xl:w-[300px] lg:w-[300px] md:w-[300px] sm:w-[260px]
@@ -99,6 +113,11 @@ const PriHeader = (props: any) => {
                 </div>
               </div>
               <div>
+                <button className="
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
+                onClick={()=>mainPage()}
+                >main
+                </button>
                 {
                 (user.id)?
                 <>

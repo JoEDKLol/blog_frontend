@@ -55,7 +55,7 @@ import { useRouter } from "next/navigation";
 			setContent(bloglistObj.sendObj.resObj.blogDetail.content);
 			setTitle(bloglistObj.sendObj.resObj.blogDetail.title);
 			tempNum = bloglistObj.sendObj.resObj.blogDetail.temp_num;
-			console.log(tempNum); 
+			// console.log(tempNum); 
 		}
 		
 		const imageHandler = async (imageBase64URL:any, imageBlob:any, editor:any) => {
