@@ -3,6 +3,7 @@
 import { transaction } from "@/app/utils/axios";
 import DOMPurify from "dompurify";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactQuill, { ReactQuillProps } from "react-quill";
 import 'react-quill/dist/quill.snow.css';
@@ -54,6 +55,12 @@ const PriBlogListDetail = (props: any) => {
 		[],
 	);
 
+	const router = useRouter();
+	function updatePageMove(){
+		router.push('/blog/' + props.blog_seq + '/' + props.seq + '/update');
+	}
+
+
 	return(
 		<>
 
@@ -67,11 +74,11 @@ const PriBlogListDetail = (props: any) => {
 					<p className="w-[50%] truncate ms-2">소분류</p>
 				</div>
 				<div className="flex justify-center pb-2  mb-2">	
-					<div className="h-[370px]">  
+					<div className="">  
 						<QuillNoSSRWrapper 
 						theme="snow" 
 						style={{
-							height: "70vh"
+							height: "60vh"
 							, width: "90vw"
 						}}
 						forwardedRef={quillRef}
@@ -82,9 +89,12 @@ const PriBlogListDetail = (props: any) => {
 						}/>
 					</div>
 				</div>
-				<div className="flex justify-end  w-[470px]
-				2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px]
-				">
+				<div className="flex justify-end  w-[90vw]">
+					<button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
+					onClick={()=>updatePageMove()}
+					>
+						Update
+					</button>
 				</div>
 			</div>
 		</>

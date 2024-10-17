@@ -1,5 +1,5 @@
 'use client';
-import { FaHome } from "react-icons/fa";
+import { GiHamburgerMenu } from "react-icons/gi";
 import { transaction } from "@/app/utils/axios";
 import { signOut } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
@@ -88,15 +88,15 @@ const PriHeader = (props: any) => {
               <div className="flex items-center flex-shrink-0 text-dark mr-6">
                 <Link href={"/blog/"+blogInfo.seq}>
                 <span className="font-semibold text-xl tracking-tight hidden
-                2xl:block xl:block lg:block md:block sm:block
+                2xl:block xl:block lg:block md:hidden sm:hidden
                 ">
                     {blogInfo.name} 
                 </span>
                 </Link>
 
                 <Link href={"/blog/"+blogInfo.seq}>
-                <span className="text-xl block 2xl:hidden xl:hidden lg:hidden md:hidden sm:hidden">
-                    <FaHome /> 
+                <span className="text-xl block 2xl:hidden xl:hidden lg:hidden md:block sm:block">
+                  <GiHamburgerMenu />
                 </span>
                 </Link>
 
