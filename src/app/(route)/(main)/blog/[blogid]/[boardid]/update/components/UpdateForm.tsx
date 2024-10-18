@@ -162,8 +162,9 @@ import { useRouter } from "next/navigation";
 						">
 					Title</div>
 					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
-						<div className="font-bold w-[0px]
+						<div className="font-bold w-[0px] invisible
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Title
 						</div>
 						<div className="w-[470px] ">
@@ -183,7 +184,8 @@ import { useRouter } from "next/navigation";
 					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
 						<div className="font-bold w-[0px]
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
-						">Category</div>
+						2xl:visible xl:visible lg:visible md:visible sm:invisible
+						">Category</div> 
 						<div className="w-[470px]">
 							<select id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[230px] px-3 py-2 outline-none">
 								{/* <option selected>Choose a MajorCategory</option>
