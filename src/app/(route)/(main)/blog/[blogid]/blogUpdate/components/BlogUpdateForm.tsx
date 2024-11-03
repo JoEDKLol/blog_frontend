@@ -5,24 +5,29 @@ import imageCompression from "browser-image-compression";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import sharp from "sharp";
-
+import { CiSquarePlus } from "react-icons/ci";
+import { RxUpdate } from "react-icons/rx";
+import { CiSquareMinus } from "react-icons/ci";
 
 
 const randomNum = getRandomNumber(10);
+let majorUpFlag = false;
+let majorIndex = 0;
+let subUpFlag = false;
+let subIndex = 0;
 const BlogUpdateForm = (props: any) => {
 	const [user, setUser] = useRecoilState(userState);
 	const [img, setImg] = useState<any>();
 	const [majorCategories, setMajorCategories] = useState<any>([]);
 	const [subCategories, setSubCategories] = useState<any>([]);
+	const [majorCategoryText, setMajorCategoryText] = useState<any>("");
+	const [subCategoryText, setSubCategoryText] = useState<any>("");
+	const [subMajorCategoryText, setSubMajorCategoryText] = useState<any>("");
+	
+	// const [majo, setSubCategories] = useState<any>([]);
 
 	useEffect(()=>{
-		let arrTest=[];
-		arrTest.push({name:"name1"});
-		arrTest.push({name:"name2"});
-		arrTest.push({name:"name3"});
-		console.log(arrTest);
-		setMajorCategories(arrTest);
+		
 	},[])
 
 	async function fileUploadHandler(e:any){
@@ -71,7 +76,81 @@ const BlogUpdateForm = (props: any) => {
 		// 
 
 	}
+
+	function addMajorItem(){
+		
+		if(majorCategoryText == null || majorCategoryText == undefined || majorCategoryText == ""){
+			return;
+		}
+		// arrTest.push({name:"name1"});
+		if(!majorUpFlag){
+			setMajorCategories([...majorCategories, {categoryNm:majorCategoryText}]);
+		}
+		setMajorCategoryText("");
+		setSubCategoryText("");
+		setSubMajorCategoryText("");
+		majorUpFlag = false;
+	}
+
+	function deleteMajorItem(){
 	
+		if(majorUpFlag){
+			const modifieMajorCategories = majorCategories.filter((val:any, index:any) => {
+				return index !== majorIndex;
+			});
+			setMajorCategories(modifieMajorCategories);
+		}
+
+		setMajorCategoryText("");
+		setSubCategoryText("");
+		setSubMajorCategoryText("");
+		majorUpFlag = false;
+	}
+
+	function majorCategoryTextOnChange(e:any){
+		if(!majorUpFlag){
+			setMajorCategoryText(e.target.value);
+		}else{
+			setMajorCategoryText(e.target.value);
+			setSubMajorCategoryText(e.target.value);
+			majorCategories[majorIndex].categoryNm = e.target.value;
+			setMajorCategories(majorCategories);
+		}
+	}
+
+	function addMajorItemTextUpdate(index:any){
+		// console.log(majorCategories[index]);
+		majorUpFlag = true;
+		majorIndex = index;
+		setMajorCategoryText(majorCategories[index].categoryNm);
+		setSubMajorCategoryText(majorCategories[index].categoryNm);
+	}
+	
+	function subCategoryTextOnChange(e:any){
+		if(!subUpFlag){
+			setSubCategoryText(e.target.value);
+		}else{
+			// setMajorCategoryText(e.target.value);
+			// majorCategories[majorIndex].name = e.target.value;
+			// setMajorCategories(majorCategories);
+		}
+	}
+
+	function addSubItem(){
+		
+		if(subCategoryText == null || subCategoryText == undefined || subCategoryText == ""){
+			return;
+		}
+		// arrTest.push({name:"name1"});
+		if(!subUpFlag){
+			setMajorCategories([...subCategories, {categoryNm:subCategoryText}]);
+		}
+		setMajorCategoryText("");
+		setSubCategoryText("");
+		setSubMajorCategoryText("");
+		majorUpFlag = false;
+	}
+
 	return(
 		<>
 			 <div className="grid place-items-center grid-cols-1">
@@ -159,6 +238,7 @@ const BlogUpdateForm = (props: any) => {
 					" id="file_input" type="file"
 					accept="image/*" 
 					onChange={(e)=>fileUploadHandler(e)}
+					
 					>
 					</input>
 					
@@ -176,51 +256,93 @@ const BlogUpdateForm = (props: any) => {
 					</div>
 					<div className="flex justify-center w-[470px]">
 						<div className="w-[235px] border-e border-gray-200 text-bold">Major
-						
-							<div className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200">
-								<nav className="flex flex-col p-1">
-									
-									{
-										// blogList.map((item:any, index:any)=>{
-										majorCategories.map((item:any, index:any)=>{
-											return (
-											<div key={index}
-											role="button"
-											className="text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-											>
-											{item.name}
-											</div>
-											)
-									})
-										
-									}
-									
-									
-									{/* <div
-										role="button"
-										className="text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-									>
-										Inbox
-									</div> */}
-									
-									{/* <div
-									role="button"
-									className="text-slate-800  flex w-full items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-									>
-										Trash
-									</div> */}
-									{/* <div
-										role="button"
-										className="text-slate-800 flex w-full items-center rounded-md p-3 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-									>
-										Settings
-									</div> */}
-								</nav>
+							<div className="flex justify-center">	
+							<input 
+							className="relative flex flex-col w-[155px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
+							px-2"
+							onChange={(e)=>majorCategoryTextOnChange(e)}
+							value={majorCategoryText}
+							autoComplete="off" id="majorCategoryText" type="text"
+							></input>
+							<span className="inline-block text-[23px] pt-1 ms-1
+							hover:bg-slate-100
+							"
+							onClick={()=>addMajorItem()}>
+							<CiSquarePlus />
+							</span>
+							<span className="inline-block text-[23px] pt-1 
+							hover:bg-slate-100
+							"
+							onClick={()=>deleteMajorItem()}>
+							<CiSquareMinus />
+							</span>
+							<span className="inline-block text-[17px] ps-1 pt-2
+							hover:bg-slate-100
+							"
+							onClick={()=>addMajorItem()}>
+							<RxUpdate />
+							</span>
 							</div>
-							
+							{
+
+								(majorCategories.length > 0) ? 
+								
+								<div className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200">
+									<nav className="flex flex-col p-1">
+										{
+											majorCategories.map((item:any, index:any)=>{
+												return (
+												<div key={index} className="flex justify-between">	
+													<div 
+													role="button" 
+													className="w-[200px] text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+													onClick={()=>addMajorItemTextUpdate(index)}
+													>
+													{item.categoryNm}
+													</div>
+													{/* <span className="inline-block text-[15px] pt-2 ms-1
+													hover:bg-slate-100
+													"
+													onClick={()=>addMajorItemTextUpdate(index)}>
+													<RxUpdate />
+													</span>		 */}
+												</div>
+												)
+											})
+											
+										}
+										
+									</nav>
+								</div>
+								:""
+							}
 						</div>
 						<div className="w-[235px] ms-2 text-bold">Sub
-
+							<div className="flex justify-center">	
+								<input 
+								className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
+								px-2"
+								value={subMajorCategoryText}
+								autoComplete="off" id="subCategoryText" type="text"
+								readOnly
+								></input>
+								
+							</div>
+							<div className="flex justify-center">	
+								<input 
+								className="relative flex flex-col w-[200px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
+								px-2"
+								onChange={(e)=>subCategoryTextOnChange(e)}
+								value={subCategoryText}
+								autoComplete="off" id="subCategoryText" type="text"
+								></input>
+								<span className="inline-block text-[25px] pt-1 ms-1
+								hover:bg-slate-100
+								"
+								onClick={()=>addSubItem()}>
+								<CiSquarePlus />
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>
