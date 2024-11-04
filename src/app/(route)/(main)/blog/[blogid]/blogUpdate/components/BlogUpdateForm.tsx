@@ -20,6 +20,7 @@ const BlogUpdateForm = (props: any) => {
 	const [img, setImg] = useState<any>();
 	const [majorCategories, setMajorCategories] = useState<any>([]);
 	const [subCategories, setSubCategories] = useState<any>([]);
+	const [viewSubCategories, setViewSubCategories] = useState<any>([]);
 	const [majorCategoryText, setMajorCategoryText] = useState<any>("");
 	const [subCategoryText, setSubCategoryText] = useState<any>("");
 	const [subMajorCategoryText, setSubMajorCategoryText] = useState<any>("");
@@ -84,7 +85,13 @@ const BlogUpdateForm = (props: any) => {
 		}
 		// arrTest.push({name:"name1"});
 		if(!majorUpFlag){
-			setMajorCategories([...majorCategories, {categoryNm:majorCategoryText}]);
+			const majorCategory = {
+				id:"",
+				blog_id:"",
+				categoryNm:majorCategoryText,
+				order:"",
+			}
+			setMajorCategories([...majorCategories, majorCategory]);
 		}
 		setMajorCategoryText("");
 		setSubCategoryText("");
@@ -124,15 +131,23 @@ const BlogUpdateForm = (props: any) => {
 		majorIndex = index;
 		setMajorCategoryText(majorCategories[index].categoryNm);
 		setSubMajorCategoryText(majorCategories[index].categoryNm);
+		setSubCategoryText("");
+
+		
+		// const chooseSubCategories = subCategories.filter((val:any, index:any) => {
+		// 	return val.majorIndex === majorIndex;
+		// });
+		// setViewSubCategories(chooseSubCategories);
+
 	}
 	
 	function subCategoryTextOnChange(e:any){
 		if(!subUpFlag){
 			setSubCategoryText(e.target.value);
 		}else{
-			// setMajorCategoryText(e.target.value);
-			// majorCategories[majorIndex].name = e.target.value;
-			// setMajorCategories(majorCategories);
+			setSubCategoryText(e.target.value);
+			subCategories[subIndex].categoryNm = e.target.value;
+			setSubCategories(subCategories);
 		}
 	}
 
@@ -143,13 +158,27 @@ const BlogUpdateForm = (props: any) => {
 		}
 		// arrTest.push({name:"name1"});
 		if(!subUpFlag){
-			setMajorCategories([...subCategories, {categoryNm:subCategoryText}]);
+			const subCategory = {
+				id:"",
+				blog_id:"",
+				m_category_id:"",
+				categoryNm:subCategoryText,
+				order:"",
+				majorIndex:majorIndex,
+			}
+			console.log(subCategory);
+			setSubCategories([...subCategories, subCategory]);
 		}
-		setMajorCategoryText("");
 		setSubCategoryText("");
-		setSubMajorCategoryText("");
-		majorUpFlag = false;
+		subUpFlag = false;
 	}
+
+	function addSubItemTextUpdate(index:any){
+		subUpFlag = true;
+		subIndex = index;
+		setSubCategoryText(subCategories[index].categoryNm);
+	}
+
 
 	return(
 		<>
@@ -343,6 +372,42 @@ const BlogUpdateForm = (props: any) => {
 								<CiSquarePlus />
 								</span>
 							</div>
+							{
+
+								(subCategories.filter( (val:any, index:any) => val.majorIndex === majorIndex).length > 0) ? 
+
+								<div className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200">
+									<nav className="flex flex-col p-1">
+										{
+											subCategories.map((item:any, index:any)=>{
+												return (item.majorIndex===majorIndex)?												
+												
+												(
+												
+													<div key={index} className="flex justify-between">	
+														<div 
+														role="button" 
+														className="w-[200px] text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+														onClick={()=>addSubItemTextUpdate(index)}
+														>
+														{item.categoryNm}
+														</div>
+														{/* <span className="inline-block text-[15px] pt-2 ms-1
+														hover:bg-slate-100
+														"
+														onClick={()=>addMajorItemTextUpdate(index)}>
+														<RxUpdate />
+														</span>		 */}
+													</div>
+												):""
+											})
+											
+										}
+										
+									</nav>
+								</div>
+								:""
+								}
 						</div>
 					</div>
 				</div>
