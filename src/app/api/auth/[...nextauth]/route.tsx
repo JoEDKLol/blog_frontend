@@ -81,7 +81,7 @@ const handler = NextAuth({
 							cookiesList.set({
 								name: 'refreshtoken',
 								value: obj.refreshToken,
-								expires:expiryDate, 
+								expires:expiryDate,
 								httpOnly: true,
 								sameSite : true,
 								path: '/',

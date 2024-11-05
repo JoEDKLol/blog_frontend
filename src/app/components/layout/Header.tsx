@@ -20,7 +20,7 @@ const MainHeader = (props: any) => {
   const headerRef = useRef<HTMLElement>(null);
   
   const [user, setUser] = useRecoilState(userState);
-
+  console.log(user);
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     // setTheme(document.body.className as Theme);

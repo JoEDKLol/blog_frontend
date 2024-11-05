@@ -83,13 +83,16 @@ const BlogUpdateForm = (props: any) => {
 		if(majorCategoryText == null || majorCategoryText == undefined || majorCategoryText == ""){
 			return;
 		}
+
 		// arrTest.push({name:"name1"});
+		const majorIndexR = getRandomNumber(10);
 		if(!majorUpFlag){
 			const majorCategory = {
 				id:"",
 				blog_id:"",
 				categoryNm:majorCategoryText,
 				order:"",
+				majorIndex:majorIndexR
 			}
 			setMajorCategories([...majorCategories, majorCategory]);
 		}
@@ -103,9 +106,18 @@ const BlogUpdateForm = (props: any) => {
 	
 		if(majorUpFlag){
 			const modifieMajorCategories = majorCategories.filter((val:any, index:any) => {
-				return index !== majorIndex;
+				return val.majorIndex !== majorIndex;
 			});
 			setMajorCategories(modifieMajorCategories);
+			
+			
+			const modifieSubCategories = subCategories.filter((val:any, index:any) => {
+				return val.majorIndex !== majorIndex
+			});
+			
+			setSubCategories(modifieSubCategories);
+
+
 		}
 
 		setMajorCategoryText("");
@@ -120,7 +132,10 @@ const BlogUpdateForm = (props: any) => {
 		}else{
 			setMajorCategoryText(e.target.value);
 			setSubMajorCategoryText(e.target.value);
-			majorCategories[majorIndex].categoryNm = e.target.value;
+			
+			const indext = majorCategories.findIndex((val:any) => val.majorIndex === majorIndex);
+			
+			majorCategories[indext].categoryNm = e.target.value;
 			setMajorCategories(majorCategories);
 		}
 	}
@@ -129,15 +144,12 @@ const BlogUpdateForm = (props: any) => {
 		// console.log(majorCategories[index]);
 		majorUpFlag = true;
 		majorIndex = index;
-		setMajorCategoryText(majorCategories[index].categoryNm);
-		setSubMajorCategoryText(majorCategories[index].categoryNm);
-		setSubCategoryText("");
 
+		const maJorCNm = majorCategories.filter((val:any, index:any) => val.majorIndex === majorIndex)[0].categoryNm;
 		
-		// const chooseSubCategories = subCategories.filter((val:any, index:any) => {
-		// 	return val.majorIndex === majorIndex;
-		// });
-		// setViewSubCategories(chooseSubCategories);
+		setMajorCategoryText(maJorCNm);
+		setSubMajorCategoryText(maJorCNm);
+		setSubCategoryText("");
 
 	}
 	
@@ -146,7 +158,10 @@ const BlogUpdateForm = (props: any) => {
 			setSubCategoryText(e.target.value);
 		}else{
 			setSubCategoryText(e.target.value);
-			subCategories[subIndex].categoryNm = e.target.value;
+			
+			const indext = subCategories.findIndex((val:any) => val.subIndex === subIndex);
+			// console.log(indext);
+			subCategories[indext].categoryNm = e.target.value;
 			setSubCategories(subCategories);
 		}
 	}
@@ -156,7 +171,9 @@ const BlogUpdateForm = (props: any) => {
 		if(subCategoryText == null || subCategoryText == undefined || subCategoryText == ""){
 			return;
 		}
-		// arrTest.push({name:"name1"});
+		
+
+		const subIndexR = getRandomNumber(10);
 		if(!subUpFlag){
 			const subCategory = {
 				id:"",
@@ -165,8 +182,9 @@ const BlogUpdateForm = (props: any) => {
 				categoryNm:subCategoryText,
 				order:"",
 				majorIndex:majorIndex,
+				subIndex:subIndexR
 			}
-			console.log(subCategory);
+			// console.log(subCategory);
 			setSubCategories([...subCategories, subCategory]);
 		}
 		setSubCategoryText("");
@@ -176,7 +194,23 @@ const BlogUpdateForm = (props: any) => {
 	function addSubItemTextUpdate(index:any){
 		subUpFlag = true;
 		subIndex = index;
-		setSubCategoryText(subCategories[index].categoryNm);
+		console.log(subIndex);
+		const subCName = subCategories.filter((val:any, index:any)=>val.subIndex === subIndex)[0].categoryNm;
+		setSubCategoryText(subCName);
+	}
+
+	function deleteSubItem(){
+		
+		if(subUpFlag){
+			const modifieSubCategories = subCategories.filter((val:any, index:any) => {
+				return val.subIndex !== subIndex;
+			});
+			setSubCategories(modifieSubCategories);
+		}
+
+		setMajorCategoryText("");
+		setSubCategoryText("");
+		subUpFlag = false;
 	}
 
 
@@ -276,7 +310,10 @@ const BlogUpdateForm = (props: any) => {
 							2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 							2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
 							">
-				Categories</div>
+				Categories
+				
+				
+				</div>
 				<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
 					<div className="font-bold w-[0px] invisible
 					2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
@@ -294,21 +331,21 @@ const BlogUpdateForm = (props: any) => {
 							autoComplete="off" id="majorCategoryText" type="text"
 							></input>
 							<span className="inline-block text-[23px] pt-1 ms-1
-							hover:bg-slate-100
+							cursor-pointer
 							"
 							onClick={()=>addMajorItem()}>
 							<CiSquarePlus />
 							</span>
 							<span className="inline-block text-[23px] pt-1 
-							hover:bg-slate-100
+							cursor-pointer
 							"
 							onClick={()=>deleteMajorItem()}>
 							<CiSquareMinus />
 							</span>
 							<span className="inline-block text-[17px] ps-1 pt-2
-							hover:bg-slate-100
+							cursor-pointer
 							"
-							onClick={()=>addMajorItem()}>
+							>
 							<RxUpdate />
 							</span>
 							</div>
@@ -324,8 +361,8 @@ const BlogUpdateForm = (props: any) => {
 												<div key={index} className="flex justify-between">	
 													<div 
 													role="button" 
-													className="w-[200px] text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-													onClick={()=>addMajorItemTextUpdate(index)}
+													className="w-[225px] text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+													onClick={()=>addMajorItemTextUpdate(item.majorIndex)}
 													>
 													{item.categoryNm}
 													</div>
@@ -353,23 +390,35 @@ const BlogUpdateForm = (props: any) => {
 								px-2"
 								value={subMajorCategoryText}
 								autoComplete="off" id="subCategoryText" type="text"
-								readOnly
+								disabled
 								></input>
 								
 							</div>
 							<div className="flex justify-center">	
 								<input 
-								className="relative flex flex-col w-[200px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
+								className="relative flex flex-col w-[155px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
 								px-2"
 								onChange={(e)=>subCategoryTextOnChange(e)}
 								value={subCategoryText}
 								autoComplete="off" id="subCategoryText" type="text"
 								></input>
 								<span className="inline-block text-[25px] pt-1 ms-1
-								hover:bg-slate-100
+								cursor-pointer
 								"
 								onClick={()=>addSubItem()}>
 								<CiSquarePlus />
+								</span>
+								<span className="inline-block text-[23px] pt-1 
+								cursor-pointer
+								"
+								onClick={()=>deleteSubItem()}>
+								<CiSquareMinus />
+								</span>
+								<span className="inline-block text-[17px] ps-1 pt-2
+								cursor-pointer
+								"
+								>
+								<RxUpdate />
 								</span>
 							</div>
 							{
@@ -387,8 +436,8 @@ const BlogUpdateForm = (props: any) => {
 													<div key={index} className="flex justify-between">	
 														<div 
 														role="button" 
-														className="w-[200px] text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-														onClick={()=>addSubItemTextUpdate(index)}
+														className="w-[225px] text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+														onClick={()=>addSubItemTextUpdate(item.subIndex)}
 														>
 														{item.categoryNm}
 														</div>
@@ -408,8 +457,20 @@ const BlogUpdateForm = (props: any) => {
 								</div>
 								:""
 								}
+								
+								<div className="w-[225px]">
+								<button className="
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
+                // onClick={()=>mainPage()}
+                >save
+                </button>
+								</div>
+								
 						</div>
+
+						
 					</div>
+							
 				</div>
 
 			 </div>

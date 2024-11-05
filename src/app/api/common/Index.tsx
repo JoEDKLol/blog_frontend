@@ -21,14 +21,16 @@ const CommonTransaction = ({ children }: any) => {
     
 
     //페이지이동감지
+    // console.log("토큰검증");
     useEffect(() => {
+        console.log("getAccessToken()::", getAccessToken());
         if(!getAccessToken()){
             // console.log("getAccessToken:");
             getAccessTokenApi();
             // console.log(retObj);
         }else{
             //토큰검증
-            console.log("토큰검증");
+            // console.log("토큰검증");
             getAccessTokenCheck();
             // transactionAuth("get", "checkaccessToken", {}, "");
 
@@ -38,6 +40,7 @@ const CommonTransaction = ({ children }: any) => {
     async function getAccessTokenApi(){
         const retObj = await transaction("get", "getAccessToken", {}, "", false);
         if(retObj.sendObj.code === "2000"){
+            
             //유저정보는 리코일에
             //access토큰 정보는 session storege클래스에 담아준다.
             storeAccessToken(retObj.accessToken);
