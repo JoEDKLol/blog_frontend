@@ -8,6 +8,7 @@ import { useRecoilState } from "recoil";
 import { CiSquarePlus } from "react-icons/ci";
 import { RxUpdate } from "react-icons/rx";
 import { CiSquareMinus } from "react-icons/ci";
+import { transactionAuth } from "@/app/utils/axiosAuth";
 
 
 const randomNum = getRandomNumber(10);
@@ -20,15 +21,19 @@ const BlogUpdateForm = (props: any) => {
 	const [img, setImg] = useState<any>();
 	const [majorCategories, setMajorCategories] = useState<any>([]);
 	const [subCategories, setSubCategories] = useState<any>([]);
-	const [viewSubCategories, setViewSubCategories] = useState<any>([]);
 	const [majorCategoryText, setMajorCategoryText] = useState<any>("");
 	const [subCategoryText, setSubCategoryText] = useState<any>("");
 	const [subMajorCategoryText, setSubMajorCategoryText] = useState<any>("");
 	
+	const [userName, setUserName] = useState<any>("");
+	const [blogName, setBlogName] = useState<any>("");
+	const [introduction, setIntroduction] = useState<any>("");
+	
+	
 	// const [majo, setSubCategories] = useState<any>([]);
 
 	useEffect(()=>{
-		
+		console.log(user);
 	},[])
 
 	async function fileUploadHandler(e:any){
@@ -184,7 +189,7 @@ const BlogUpdateForm = (props: any) => {
 				majorIndex:majorIndex,
 				subIndex:subIndexR
 			}
-			// console.log(subCategory);
+	
 			setSubCategories([...subCategories, subCategory]);
 		}
 		setSubCategoryText("");
@@ -213,6 +218,38 @@ const BlogUpdateForm = (props: any) => {
 		subUpFlag = false;
 	}
 
+	async function saveBlogInfo(){
+		const obj = {
+			user_id : user.id,
+			email : user.email,
+			name : userName,
+			blogtitle : blogName,
+			introduction :introduction, 
+			blogimg_thumbnailimg :img,
+			blogimg : img,
+			blog_seq :user.blog_seq,
+			majorCategories:majorCategories,
+			subCategories:subCategories,
+			// randomNum : randomNum
+		}
+		
+		console.log(obj);
+
+		const blogUpdateRes = await transactionAuth("post", "blog/blogUpdate", obj, "", false);
+		console.log(blogUpdateRes.sendObj.success );
+
+		// if(blogUpdateRes.sendObj.success === 'y'){
+		// 	// setWriteSuc(true);
+		// }else{
+			
+		// }
+	}
+
+	function blogOnchangeHandler(e:any){
+		if(e.target.id === "username") setUserName(e.target.value);
+		if(e.target.id === "blogname") setBlogName(e.target.value);
+		if(e.target.id === "introduction") setIntroduction(e.target.value);
+	}
 
 	return(
 		<>
@@ -231,7 +268,7 @@ const BlogUpdateForm = (props: any) => {
 					<div className="w-[470px] ">
 						<input 
 						// ref={focusTitle} 
-						// onChange={(e)=>title_onchangeHandler(e)}
+						onChange={(e)=>blogOnchangeHandler(e)}
 						// value={title}
 						autoComplete="off" id="username" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 					</div>
@@ -251,7 +288,7 @@ const BlogUpdateForm = (props: any) => {
 					<div className="w-[470px] ">
 						<input 
 						// ref={focusTitle} 
-						// onChange={(e)=>title_onchangeHandler(e)}
+						onChange={(e)=>blogOnchangeHandler(e)}
 						// value={title}
 						autoComplete="off" id="blogname" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 					</div>
@@ -271,7 +308,7 @@ const BlogUpdateForm = (props: any) => {
 					<div className="w-[470px] ">
 						<textarea  
 						// ref={focusTitle} 
-						// onChange={(e)=>title_onchangeHandler(e)}
+						onChange={(e)=>blogOnchangeHandler(e)}
 						// value={title}
 						id="introduction" rows={2}  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 					</div>
@@ -402,7 +439,7 @@ const BlogUpdateForm = (props: any) => {
 								value={subCategoryText}
 								autoComplete="off" id="subCategoryText" type="text"
 								></input>
-								<span className="inline-block text-[25px] pt-1 ms-1
+								<span className="inline-block text-[23px] pt-1 ms-1
 								cursor-pointer
 								"
 								onClick={()=>addSubItem()}>
@@ -458,12 +495,13 @@ const BlogUpdateForm = (props: any) => {
 								:""
 								}
 								
-								<div className="w-[225px]">
-								<button className="
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
-                // onClick={()=>mainPage()}
-                >save
-                </button>
+								<div className="flex justify-end w-[225px] mt-2">
+									<button className="
+									border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200
+									"
+									// onClick={()=>mainPage()}
+									>categories save
+									</button>
 								</div>
 								
 						</div>
@@ -472,6 +510,19 @@ const BlogUpdateForm = (props: any) => {
 					</div>
 							
 				</div>
+
+				<div className="flex justify-end 
+				w-[470px]
+				2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px]
+				mt-2 mb-5">
+					<button className="
+					border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200
+					"
+					onClick={()=>saveBlogInfo()}
+					>save
+					</button>
+				</div>
+
 
 			 </div>
 		</>

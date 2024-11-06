@@ -116,10 +116,10 @@ import { useRouter } from "next/navigation";
 			
 			console.log(obj);
 
-			const imgUploadRes = await transactionAuth("post", "blog/update", obj, "", false);
+			const updateRes = await transactionAuth("post", "blog/update", obj, "", false);
 			// console.log(imgUploadRes.sendObj.success );
 
-			if(imgUploadRes.sendObj.success === 'y'){
+			if(updateRes.sendObj.success === 'y'){
 				setWriteSuc(true);
 			}else{
 				
