@@ -20,6 +20,7 @@ const BlogUpdateForm = (props: any) => {
 	const [user, setUser] = useRecoilState(userState);
 	const [img, setImg] = useState<any>();
 	const [majorCategories, setMajorCategories] = useState<any>([]);
+	const [majorCategoryCnt, setMajorCategoryCnt] = useState<any>(0);
 	const [subCategories, setSubCategories] = useState<any>([]);
 	const [majorCategoryText, setMajorCategoryText] = useState<any>("");
 	const [subCategoryText, setSubCategoryText] = useState<any>("");
@@ -28,13 +29,40 @@ const BlogUpdateForm = (props: any) => {
 	const [userName, setUserName] = useState<any>("");
 	const [blogName, setBlogName] = useState<any>("");
 	const [introduction, setIntroduction] = useState<any>("");
+
+	const [blogInfo, setBlogInfo] = useState<any>();
 	
 	
 	// const [majo, setSubCategories] = useState<any>([]);
 
 	useEffect(()=>{
-		console.log(user);
+		getblogInfo();
 	},[])
+	let blogListDB:any = [];
+	async function getblogInfo(){
+		const obj = {
+			user_id : user.id,
+			email : user.email,
+			blog_seq :user.blog_seq,
+		}
+		const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false); 
+		
+		setUserName(blogInfoRes.sendObj.resObj.blogInfo.name);
+		setBlogName(blogInfoRes.sendObj.resObj.blogInfo.blogtitle);
+		setIntroduction(blogInfoRes.sendObj.resObj.blogInfo.introduction);
+		setImg(blogInfoRes.sendObj.resObj.blogInfo.blogimg_thumbnailimg);
+		setBlogInfo(blogInfoRes.sendObj.resObj.blogInfo);
+		if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
+			setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
+			console.log(blogInfoRes.sendObj.resObj.majorCategory);
+			setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
+		}
+		// if(blogInfoRes.sendObj.resObj.subCategoryCnt > 0){
+		// 	subCategories(blogInfoRes.sendObj.subCategory);
+		// }
+
+		// console.log(blogInfoRes.sendObj.MajorCategory);
+	}
 
 	async function fileUploadHandler(e:any){
 
@@ -42,7 +70,7 @@ const BlogUpdateForm = (props: any) => {
     // - 저장 누르면 해당 temp 삭제 및 실제 저장
 		// - 새로운 이미지 선택시 기존 temp 삭제 및 새로 temp 저장 
 		// - 사이즈 조정 
-		const file = e.target.files[0];
+		const file = e.target.files[0]; 
 		
     if(!file) return;
 
@@ -93,10 +121,10 @@ const BlogUpdateForm = (props: any) => {
 		const majorIndexR = getRandomNumber(10);
 		if(!majorUpFlag){
 			const majorCategory = {
-				id:"",
-				blog_id:"",
+				seq:"",
+				blog_id:blogInfo._id,
 				categoryNm:majorCategoryText,
-				order:"",
+				order:0,
 				majorIndex:majorIndexR
 			}
 			setMajorCategories([...majorCategories, majorCategory]);
@@ -111,7 +139,13 @@ const BlogUpdateForm = (props: any) => {
 	
 		if(majorUpFlag){
 			const modifieMajorCategories = majorCategories.filter((val:any, index:any) => {
-				return val.majorIndex !== majorIndex;
+				{
+					if(val.seq){
+						return val.seq !== majorIndex
+					}else{
+						return val.majorIndex !== majorIndex
+					}
+				}
 			});
 			setMajorCategories(modifieMajorCategories);
 			
@@ -138,20 +172,32 @@ const BlogUpdateForm = (props: any) => {
 			setMajorCategoryText(e.target.value);
 			setSubMajorCategoryText(e.target.value);
 			
-			const indext = majorCategories.findIndex((val:any) => val.majorIndex === majorIndex);
+			const indext = majorCategories.findIndex((val:any) => 
+				{
+					if(val.seq){
+						return val.seq === majorIndex
+					}else{
+						return val.majorIndex === majorIndex
+					}
+				}
+			);
 			
 			majorCategories[indext].categoryNm = e.target.value;
 			setMajorCategories(majorCategories);
 		}
 	}
 
-	function addMajorItemTextUpdate(index:any){
-		// console.log(majorCategories[index]);
+	function addMajorItemTextUpdate(index:any, seq:any){
 		majorUpFlag = true;
-		majorIndex = index;
+		let maJorCNm;
+		if(!seq){ //new
+			majorIndex = index;
+			maJorCNm = majorCategories.filter((val:any, index:any) => val.majorIndex === majorIndex)[0].categoryNm;
+		}else{
+			majorIndex = seq;
+			maJorCNm = majorCategories.filter((val:any, index:any) => val.seq === majorIndex)[0].categoryNm;
+		}
 
-		const maJorCNm = majorCategories.filter((val:any, index:any) => val.majorIndex === majorIndex)[0].categoryNm;
-		
 		setMajorCategoryText(maJorCNm);
 		setSubMajorCategoryText(maJorCNm);
 		setSubCategoryText("");
@@ -181,11 +227,11 @@ const BlogUpdateForm = (props: any) => {
 		const subIndexR = getRandomNumber(10);
 		if(!subUpFlag){
 			const subCategory = {
-				id:"",
-				blog_id:"",
-				m_category_id:"",
+				seq:"",
+				blog_id:blogInfo._id,
+				m_category_seq:"",
 				categoryNm:subCategoryText,
-				order:"",
+				order:0,
 				majorIndex:majorIndex,
 				subIndex:subIndexR
 			}
@@ -199,7 +245,7 @@ const BlogUpdateForm = (props: any) => {
 	function addSubItemTextUpdate(index:any){
 		subUpFlag = true;
 		subIndex = index;
-		console.log(subIndex);
+
 		const subCName = subCategories.filter((val:any, index:any)=>val.subIndex === subIndex)[0].categoryNm;
 		setSubCategoryText(subCName);
 	}
@@ -233,8 +279,6 @@ const BlogUpdateForm = (props: any) => {
 			// randomNum : randomNum
 		}
 		
-		console.log(obj);
-
 		const blogUpdateRes = await transactionAuth("post", "blog/blogUpdate", obj, "", false);
 		console.log(blogUpdateRes.sendObj.success );
 
@@ -269,7 +313,7 @@ const BlogUpdateForm = (props: any) => {
 						<input 
 						// ref={focusTitle} 
 						onChange={(e)=>blogOnchangeHandler(e)}
-						// value={title}
+						value={userName}
 						autoComplete="off" id="username" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 					</div>
 				</div>
@@ -289,7 +333,7 @@ const BlogUpdateForm = (props: any) => {
 						<input 
 						// ref={focusTitle} 
 						onChange={(e)=>blogOnchangeHandler(e)}
-						// value={title}
+						value={blogName}
 						autoComplete="off" id="blogname" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 					</div>
 				</div>
@@ -309,7 +353,7 @@ const BlogUpdateForm = (props: any) => {
 						<textarea  
 						// ref={focusTitle} 
 						onChange={(e)=>blogOnchangeHandler(e)}
-						// value={title}
+						value={introduction}
 						id="introduction" rows={2}  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 					</div>
 				</div>
@@ -388,7 +432,7 @@ const BlogUpdateForm = (props: any) => {
 							</div>
 							{
 
-								(majorCategories.length > 0) ? 
+								(majorCategoryCnt > 0) ?
 								
 								<div className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200">
 									<nav className="flex flex-col p-1">
@@ -399,7 +443,7 @@ const BlogUpdateForm = (props: any) => {
 													<div 
 													role="button" 
 													className="w-[225px] text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-													onClick={()=>addMajorItemTextUpdate(item.majorIndex)}
+													onClick={()=>addMajorItemTextUpdate(item.majorIndex, item.seq)}
 													>
 													{item.categoryNm}
 													</div>

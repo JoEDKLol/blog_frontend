@@ -69,7 +69,6 @@ const PriHeader = (props: any) => {
       blog_seq:props.blog_seq
     }
     const blogInfoObj = await transaction("get", "blog/blogInfo", obj, "", false);
-    console.log(blogInfoObj.sendObj.resObj);
     setBlogInfo(blogInfoObj.sendObj.resObj);
   }
   const router = useRouter();
