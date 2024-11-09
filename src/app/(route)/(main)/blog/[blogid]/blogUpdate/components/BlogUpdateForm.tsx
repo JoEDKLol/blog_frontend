@@ -3,7 +3,7 @@ import { transactionFile } from "@/app/utils/axiosFile";
 import { getRandomNumber } from "@/app/utils/common";
 import imageCompression from "browser-image-compression";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { CiSquarePlus } from "react-icons/ci";
 import { RxUpdate } from "react-icons/rx";
@@ -13,10 +13,11 @@ import { transactionAuth } from "@/app/utils/axiosAuth";
 
 const randomNum = getRandomNumber(10);
 let majorUpFlag = false;
-let majorIndex = 0;
+let majorIndex = -1;
 let subUpFlag = false;
-let subIndex = 0;
+let subIndex = -1;
 const BlogUpdateForm = (props: any) => {
+	
 	const [user, setUser] = useRecoilState(userState);
 	const [img, setImg] = useState<any>();
 	const [majorCategories, setMajorCategories] = useState<any>([]);
@@ -25,14 +26,14 @@ const BlogUpdateForm = (props: any) => {
 	const [majorCategoryText, setMajorCategoryText] = useState<any>("");
 	const [subCategoryText, setSubCategoryText] = useState<any>("");
 	const [subMajorCategoryText, setSubMajorCategoryText] = useState<any>("");
-	
 	const [userName, setUserName] = useState<any>("");
 	const [blogName, setBlogName] = useState<any>("");
 	const [introduction, setIntroduction] = useState<any>("");
+	const [blogInfo, setBlogInfo] = useState<any>();	
+	
+	const focusMajor = useRef<HTMLInputElement>(null);
+  	const focusSub = useRef<HTMLInputElement>(null);
 
-	const [blogInfo, setBlogInfo] = useState<any>();
-	
-	
 	// const [majo, setSubCategories] = useState<any>([]);
 
 	useEffect(()=>{
@@ -57,11 +58,6 @@ const BlogUpdateForm = (props: any) => {
 			console.log(blogInfoRes.sendObj.resObj.majorCategory);
 			setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
 		}
-		// if(blogInfoRes.sendObj.resObj.subCategoryCnt > 0){
-		// 	subCategories(blogInfoRes.sendObj.subCategory);
-		// }
-
-		// console.log(blogInfoRes.sendObj.MajorCategory);
 	}
 
 	async function fileUploadHandler(e:any){
@@ -111,54 +107,84 @@ const BlogUpdateForm = (props: any) => {
 
 	}
 
-	function addMajorItem(){
+	async function addMajorItem(){
 		
 		if(majorCategoryText == null || majorCategoryText == undefined || majorCategoryText == ""){
+			//focus
+			focusMajor.current?.focus();
 			return;
 		}
 
-		// arrTest.push({name:"name1"});
-		const majorIndexR = getRandomNumber(10);
-		if(!majorUpFlag){
-			const majorCategory = {
-				seq:"",
-				blog_id:blogInfo._id,
-				categoryNm:majorCategoryText,
-				order:0,
-				majorIndex:majorIndexR
-			}
-			setMajorCategories([...majorCategories, majorCategory]);
+		const majorCategory = {
+			seq:majorIndex,
+			blog_id:blogInfo._id,
+			email : user.email,
+			categoryNm:majorCategoryText,
+			order:0,
+			// majorIndex:majorIndexR
 		}
+
+		const addMajorRes = await transactionAuth("post", "blog/majorAdd", majorCategory, "", false); 
+		// console.log(addMajorRes.sendObj.resObj);
+
+		const indexM = majorCategories.findIndex((val:any) => val.seq === addMajorRes.sendObj.resObj.seq);
+		// console.log(indexM);
+
+		if(indexM < 0){
+			setMajorCategories([...majorCategories, addMajorRes.sendObj.resObj]);
+		}
+		
 		setMajorCategoryText("");
 		setSubCategoryText("");
 		setSubMajorCategoryText("");
+		majorIndex = -1;
 		majorUpFlag = false;
-	}
+	}				
 
-	function deleteMajorItem(){
-	
-		if(majorUpFlag){
-			const modifieMajorCategories = majorCategories.filter((val:any, index:any) => {
-				{
-					if(val.seq){
-						return val.seq !== majorIndex
-					}else{
-						return val.majorIndex !== majorIndex
-					}
-				}
-			});
-			setMajorCategories(modifieMajorCategories);
-			
-			
-			const modifieSubCategories = subCategories.filter((val:any, index:any) => {
-				return val.majorIndex !== majorIndex
-			});
-			
-			setSubCategories(modifieSubCategories);
+	async function deleteMajorItem(){
 
-
+		if(majorIndex < 0){
+			return;
+		}
+		
+		const majorCategory = {
+			seq:majorIndex,
+			blog_id:blogInfo._id,
+			email : user.email,
+			categoryNm:majorCategoryText,
+			order:0,
+			// majorIndex:majorIndexR
 		}
 
+		const deleteMajorRes = await transactionAuth("post", "blog/majorDelete", majorCategory, "", false); 
+		// console.log(addMajorRes);
+
+		if(deleteMajorRes.sendObj.success === "y"){
+			getblogInfo();
+		}
+	
+		// if(majorUpFlag){
+		// 	const modifieMajorCategories = majorCategories.filter((val:any, index:any) => {
+		// 		{
+		// 			if(val.seq){
+		// 				return val.seq !== majorIndex
+		// 			}else{
+		// 				return val.majorIndex !== majorIndex
+		// 			}
+		// 		}
+		// 	});
+		// 	setMajorCategories(modifieMajorCategories);
+			
+			
+		// 	const modifieSubCategories = subCategories.filter((val:any, index:any) => {
+		// 		return val.majorIndex !== majorIndex
+		// 	});
+			
+		// 	setSubCategories(modifieSubCategories);
+
+
+		// }
+		majorIndex = -1;
 		setMajorCategoryText("");
 		setSubCategoryText("");
 		setSubMajorCategoryText("");
@@ -220,6 +246,7 @@ const BlogUpdateForm = (props: any) => {
 	function addSubItem(){
 		
 		if(subCategoryText == null || subCategoryText == undefined || subCategoryText == ""){
+			focusSub.current?.focus();
 			return;
 		}
 		
@@ -280,7 +307,7 @@ const BlogUpdateForm = (props: any) => {
 		}
 		
 		const blogUpdateRes = await transactionAuth("post", "blog/blogUpdate", obj, "", false);
-		console.log(blogUpdateRes.sendObj.success );
+		// console.log(blogUpdateRes.sendObj.success );
 
 		// if(blogUpdateRes.sendObj.success === 'y'){
 		// 	// setWriteSuc(true);
@@ -293,6 +320,13 @@ const BlogUpdateForm = (props: any) => {
 		if(e.target.id === "username") setUserName(e.target.value);
 		if(e.target.id === "blogname") setBlogName(e.target.value);
 		if(e.target.id === "introduction") setIntroduction(e.target.value);
+	}
+
+	function refreshMajorItem(){
+		majorUpFlag = false;
+		majorIndex = 0;
+		setMajorCategoryText("");
+		focusMajor.current?.focus();
 	}
 
 	return(
@@ -409,6 +443,7 @@ const BlogUpdateForm = (props: any) => {
 							px-2"
 							onChange={(e)=>majorCategoryTextOnChange(e)}
 							value={majorCategoryText}
+							ref={focusMajor}
 							autoComplete="off" id="majorCategoryText" type="text"
 							></input>
 							<span className="inline-block text-[23px] pt-1 ms-1
@@ -426,6 +461,7 @@ const BlogUpdateForm = (props: any) => {
 							<span className="inline-block text-[17px] ps-1 pt-2
 							cursor-pointer
 							"
+							onClick={()=>refreshMajorItem()}
 							>
 							<RxUpdate />
 							</span>
@@ -481,6 +517,7 @@ const BlogUpdateForm = (props: any) => {
 								px-2"
 								onChange={(e)=>subCategoryTextOnChange(e)}
 								value={subCategoryText}
+								ref={focusSub}
 								autoComplete="off" id="subCategoryText" type="text"
 								></input>
 								<span className="inline-block text-[23px] pt-1 ms-1
