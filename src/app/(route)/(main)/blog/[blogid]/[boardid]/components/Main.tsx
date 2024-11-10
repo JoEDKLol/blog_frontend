@@ -1,5 +1,6 @@
 'use client';
 
+import { userState } from "@/app/store/user";
 import { transaction } from "@/app/utils/axios";
 import DOMPurify from "dompurify";
 import dynamic from "next/dynamic";
@@ -7,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactQuill, { ReactQuillProps } from "react-quill";
 import 'react-quill/dist/quill.snow.css';
+import { useRecoilState } from "recoil";
 
 interface ForwardedQuillComponent extends ReactQuillProps {
 	forwardedRef: React.Ref<ReactQuill>;
@@ -26,7 +28,7 @@ const QuillNoSSRWrapper = dynamic(
 
 
 const PriBlogListDetail = (props: any) => {
-	
+	const [user, setUser] = useRecoilState(userState);
 	const [blogDetailObj, setBlogDetailObj] =  useState<any>([]);
 	const quillRef = useRef<any>(ReactQuill);
 
@@ -89,13 +91,18 @@ const PriBlogListDetail = (props: any) => {
 						}/>
 					</div>
 				</div>
-				<div className="flex justify-end  w-[90vw]">
+				{
+					(user.id.length > 0 && user.blog_seq+"" === props.blog_seq)?
+					<div className="flex justify-end  w-[90vw]">
 					<button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
 					onClick={()=>updatePageMove()}
 					>
 						Update
 					</button>
 				</div>
+					:""
+				}
+				
 			</div>
 		</>
 	)

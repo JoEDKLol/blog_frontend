@@ -1,10 +1,12 @@
 import Layout from "./components/Layout";
 
 
-const BlogBoards = () => {
+const BlogBoards = ({ children }: { children: React.ReactNode }) => {
+    console.log("testsetsetsetswetset");
+    
     return(
     <>  
-      <Layout />
+      <Layout />{children}
     </>
     );
 };

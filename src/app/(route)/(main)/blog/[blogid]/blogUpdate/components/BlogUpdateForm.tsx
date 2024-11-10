@@ -23,6 +23,7 @@ const BlogUpdateForm = (props: any) => {
 	const [majorCategories, setMajorCategories] = useState<any>([]);
 	const [majorCategoryCnt, setMajorCategoryCnt] = useState<any>(0);
 	const [subCategories, setSubCategories] = useState<any>([]);
+	const [subCategoryCnt, setSubCategoryCnt] = useState<any>(0);
 	const [majorCategoryText, setMajorCategoryText] = useState<any>("");
 	const [subCategoryText, setSubCategoryText] = useState<any>("");
 	const [subMajorCategoryText, setSubMajorCategoryText] = useState<any>("");
@@ -32,7 +33,7 @@ const BlogUpdateForm = (props: any) => {
 	const [blogInfo, setBlogInfo] = useState<any>();	
 	
 	const focusMajor = useRef<HTMLInputElement>(null);
-  	const focusSub = useRef<HTMLInputElement>(null);
+  const focusSub = useRef<HTMLInputElement>(null);
 
 	// const [majo, setSubCategories] = useState<any>([]);
 
@@ -53,10 +54,15 @@ const BlogUpdateForm = (props: any) => {
 		setIntroduction(blogInfoRes.sendObj.resObj.blogInfo.introduction);
 		setImg(blogInfoRes.sendObj.resObj.blogInfo.blogimg_thumbnailimg);
 		setBlogInfo(blogInfoRes.sendObj.resObj.blogInfo);
+		
 		if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
 			setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
-			console.log(blogInfoRes.sendObj.resObj.majorCategory);
 			setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
+		}
+
+		if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
+			setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
+			setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
 		}
 	}
 
@@ -162,28 +168,7 @@ const BlogUpdateForm = (props: any) => {
 		if(deleteMajorRes.sendObj.success === "y"){
 			getblogInfo();
 		}
-	
-		// if(majorUpFlag){
-		// 	const modifieMajorCategories = majorCategories.filter((val:any, index:any) => {
-		// 		{
-		// 			if(val.seq){
-		// 				return val.seq !== majorIndex
-		// 			}else{
-		// 				return val.majorIndex !== majorIndex
-		// 			}
-		// 		}
-		// 	});
-		// 	setMajorCategories(modifieMajorCategories);
-			
-			
-		// 	const modifieSubCategories = subCategories.filter((val:any, index:any) => {
-		// 		return val.majorIndex !== majorIndex
-		// 	});
-			
-		// 	setSubCategories(modifieSubCategories);
 
-
-		// }
 		majorIndex = -1;
 		setMajorCategoryText("");
 		setSubCategoryText("");
@@ -213,17 +198,16 @@ const BlogUpdateForm = (props: any) => {
 		}
 	}
 
-	function addMajorItemTextUpdate(index:any, seq:any){
+	function addMajorItemTextUpdate(seq:any){
 		majorUpFlag = true;
 		let maJorCNm;
-		if(!seq){ //new
-			majorIndex = index;
-			maJorCNm = majorCategories.filter((val:any, index:any) => val.majorIndex === majorIndex)[0].categoryNm;
-		}else{
-			majorIndex = seq;
-			maJorCNm = majorCategories.filter((val:any, index:any) => val.seq === majorIndex)[0].categoryNm;
-		}
-
+		
+		majorIndex = seq;
+		maJorCNm = majorCategories.filter((val:any, index:any) => val.seq === majorIndex)[0].categoryNm;
+	
+		subUpFlag = false;
+		subIndex = -1;
+		
 		setMajorCategoryText(maJorCNm);
 		setSubMajorCategoryText(maJorCNm);
 		setSubCategoryText("");
@@ -236,60 +220,80 @@ const BlogUpdateForm = (props: any) => {
 		}else{
 			setSubCategoryText(e.target.value);
 			
-			const indext = subCategories.findIndex((val:any) => val.subIndex === subIndex);
+			const indext = subCategories.findIndex((val:any) => val.seq === subIndex);
 			// console.log(indext);
 			subCategories[indext].categoryNm = e.target.value;
 			setSubCategories(subCategories);
 		}
 	}
 
-	function addSubItem(){
+	async function addSubItem(){
 		
-		if(subCategoryText == null || subCategoryText == undefined || subCategoryText == ""){
+		if(subCategoryText == null || subCategoryText == undefined || subCategoryText == ""||majorIndex<0){
 			focusSub.current?.focus();
 			return;
 		}
-		
 
-		const subIndexR = getRandomNumber(10);
-		if(!subUpFlag){
-			const subCategory = {
-				seq:"",
-				blog_id:blogInfo._id,
-				m_category_seq:"",
-				categoryNm:subCategoryText,
-				order:0,
-				majorIndex:majorIndex,
-				subIndex:subIndexR
-			}
-	
-			setSubCategories([...subCategories, subCategory]);
+		const subCategory = {
+			seq:subIndex,
+			m_category_seq:majorIndex,
+			blog_id:blogInfo._id,
+			email : user.email,
+			categoryNm:subCategoryText,
+			order:0,
 		}
+
+		const addSubRes = await transactionAuth("post", "blog/subAdd", subCategory, "", false);
+
+		const indexS = subCategories.findIndex((val:any) => val.seq === addSubRes.sendObj.resObj.seq);
+		// console.log(indexM);
+
+		if(indexS < 0){
+			setSubCategories([...subCategories, addSubRes.sendObj.resObj]);
+		}
+
 		setSubCategoryText("");
 		subUpFlag = false;
+		subIndex = -1;
 	}
 
-	function addSubItemTextUpdate(index:any){
+	function addSubItemTextUpdate(seq:any){
 		subUpFlag = true;
-		subIndex = index;
+		subIndex = seq;
 
-		const subCName = subCategories.filter((val:any, index:any)=>val.subIndex === subIndex)[0].categoryNm;
+		const subCName = subCategories.filter((val:any, index:any)=>val.seq === seq)[0].categoryNm;
 		setSubCategoryText(subCName);
 	}
 
-	function deleteSubItem(){
-		
-		if(subUpFlag){
-			const modifieSubCategories = subCategories.filter((val:any, index:any) => {
-				return val.subIndex !== subIndex;
-			});
-			setSubCategories(modifieSubCategories);
+	async function deleteSubItem(){
+
+		if(subIndex < 0){
+			return; 
+		}
+
+		const subCategory = {
+			seq:subIndex,
+			m_category_seq:majorIndex,
+			blog_id:blogInfo._id,
+			email : user.email,
+			categoryNm:subCategoryText,
+			order:0,
+		}
+
+		const deleteSubRes = await transactionAuth("post", "blog/subDelete", subCategory, "", false); 
+		// console.log(addMajorRes);
+
+		if(deleteSubRes.sendObj.success === "y"){
+			getblogInfo();
 		}
 
 		setMajorCategoryText("");
 		setSubCategoryText("");
+		subIndex = -1;
 		subUpFlag = false;
 	}
+
+	
 
 	async function saveBlogInfo(){
 		const obj = {
@@ -309,11 +313,9 @@ const BlogUpdateForm = (props: any) => {
 		const blogUpdateRes = await transactionAuth("post", "blog/blogUpdate", obj, "", false);
 		// console.log(blogUpdateRes.sendObj.success );
 
-		// if(blogUpdateRes.sendObj.success === 'y'){
-		// 	// setWriteSuc(true);
-		// }else{
-			
-		// }
+		if(blogUpdateRes.sendObj.success === 'y'){
+			getblogInfo();
+		}
 	}
 
 	function blogOnchangeHandler(e:any){
@@ -324,9 +326,15 @@ const BlogUpdateForm = (props: any) => {
 
 	function refreshMajorItem(){
 		majorUpFlag = false;
-		majorIndex = 0;
+		majorIndex = -1;
 		setMajorCategoryText("");
 		focusMajor.current?.focus();
+	}
+
+	function refreshSubItem(){
+		subUpFlag = false;
+		subIndex = -1;
+		setSubCategoryText("");
 	}
 
 	return(
@@ -479,7 +487,7 @@ const BlogUpdateForm = (props: any) => {
 													<div 
 													role="button" 
 													className="w-[225px] text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-													onClick={()=>addMajorItemTextUpdate(item.majorIndex, item.seq)}
+													onClick={()=>addMajorItemTextUpdate(item.seq)}
 													>
 													{item.categoryNm}
 													</div>
@@ -535,19 +543,20 @@ const BlogUpdateForm = (props: any) => {
 								<span className="inline-block text-[17px] ps-1 pt-2
 								cursor-pointer
 								"
+								onClick={()=>refreshSubItem()}
 								>
 								<RxUpdate />
 								</span>
 							</div>
 							{
 
-								(subCategories.filter( (val:any, index:any) => val.majorIndex === majorIndex).length > 0) ? 
+								(subCategories.filter( (val:any, index:any) => val.m_category_seq === majorIndex).length > 0) ? 
 
 								<div className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200">
 									<nav className="flex flex-col p-1">
 										{
 											subCategories.map((item:any, index:any)=>{
-												return (item.majorIndex===majorIndex)?												
+												return (item.m_category_seq===majorIndex)?												
 												
 												(
 												
@@ -555,35 +564,20 @@ const BlogUpdateForm = (props: any) => {
 														<div 
 														role="button" 
 														className="w-[225px] text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-														onClick={()=>addSubItemTextUpdate(item.subIndex)}
+														onClick={()=>addSubItemTextUpdate(item.seq)}
 														>
 														{item.categoryNm}
 														</div>
-														{/* <span className="inline-block text-[15px] pt-2 ms-1
-														hover:bg-slate-100
-														"
-														onClick={()=>addMajorItemTextUpdate(index)}>
-														<RxUpdate />
-														</span>		 */}
 													</div>
 												):""
 											})
 											
 										}
 										
-									</nav>
+									</nav> 
 								</div>
 								:""
 								}
-								
-								<div className="flex justify-end w-[225px] mt-2">
-									<button className="
-									border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200
-									"
-									// onClick={()=>mainPage()}
-									>categories save
-									</button>
-								</div>
 								
 						</div>
 

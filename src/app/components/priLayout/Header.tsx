@@ -21,8 +21,10 @@ const PriHeader = (props: any) => {
   const [showModal3, setShowModal3] = useState(false);
   const [user, setUser] = useRecoilState(userState);
   const [blogInfo, setBlogInfo] = useState<any>({});
+  const [searchText, setSearchText] = useState<any>();
   
   useEffect(() => {
+
     window.addEventListener('scroll', handleScroll);
     // setTheme(document.body.className as Theme);
     return () => {
@@ -72,8 +74,17 @@ const PriHeader = (props: any) => {
     setBlogInfo(blogInfoObj.sendObj.resObj);
   }
   const router = useRouter();
+
   function mainPage(){
     router.push('/');
+  }
+
+  function priSearch(){
+   router.push("/blog/"+user.blog_seq+"?keyword="+searchText);
+  }
+
+  function searchTextOnchangeHandler(e:any){
+    setSearchText(e.target.value);
   }
 
   return (
@@ -85,7 +96,7 @@ const PriHeader = (props: any) => {
           <nav className="flex items-center justify-between flex-wrap p-3">
 
               <div className="flex items-center flex-shrink-0 text-dark mr-6">
-                <Link href={"/blog/"+blogInfo.seq}>
+                <Link href={"/blog/"+user.blog_seq}>
                 <span className="font-semibold text-xl tracking-tight hidden
                 2xl:block xl:block lg:block md:hidden sm:hidden
                 ">
@@ -93,7 +104,7 @@ const PriHeader = (props: any) => {
                 </span>
                 </Link>
 
-                <Link href={"/blog/"+blogInfo.seq}>
+                <Link href={"/blog/"+user.blog_seq}>
                 <span className="text-xl block 2xl:hidden xl:hidden lg:hidden md:block sm:block">
                   <GiHamburgerMenu />
                 </span>
@@ -101,10 +112,13 @@ const PriHeader = (props: any) => {
 
                  
                 <div className="relative pl-3  text-gray-600">
-                  <input type="search" name="serch" placeholder="Search" className="w-[180px] 
+                  <input type="search" name="serch" id="serch" placeholder="Search" className="w-[180px] 
                   2xl:w-[300px] xl:w-[300px] lg:w-[300px] md:w-[300px] sm:w-[260px]
-                  border bg-white h-10 px-5 pr-10 rounded text-sm focus:outline-none"/>
-                  <button type="submit" className="absolute right-0 top-0 mt-3 mr-4">
+                  border bg-white h-10 px-5 pr-10 rounded text-sm focus:outline-none"
+                  onChange={(e)=>searchTextOnchangeHandler(e)}
+                  />
+                  <button type="submit" className="absolute right-0 top-0 mt-3 mr-4"
+                  onClick={(e)=>priSearch()}>
                     <svg className="h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 56.966 56.966" width="512px" height="512px">
                       <path d="M55.146,51.887L41.588,37.786c3.486-4.144,5.396-9.358,5.396-14.786c0-12.682-10.318-23-23-23s-23,10.318-23,23  s10.318,23,23,23c4.761,0,9.298-1.436,13.177-4.162l13.661,14.208c0.571,0.593,1.339,0.92,2.162,0.92  c0.779,0,1.518-0.297,2.079-0.837C56.255,54.982,56.293,53.08,55.146,51.887z M23.984,6c9.374,0,17,7.626,17,17s-7.626,17-17,17  s-17-7.626-17-17S14.61,6,23.984,6z"/>
                     </svg>

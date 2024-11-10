@@ -4,26 +4,26 @@ import SideBar from "@/app/components/sidebar/SideBar";
 import { transaction } from "@/app/utils/axios";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 
 const PriMain = (props: any) => {
   const [blogList,setblogList] = useState<any>([]);
   // const [currentPage,setCurrentPage] = useState<any>(0);
-  
-  
+
   let currentPage = 0;
   let searchYn = true;
   let blogListDB:any = [];
  
   
-
-  async function getBlogLists(cPage:any){
-    // console.log("page:",cPage);
+  async function getBlogLists(cPage:any, blogSeq:any, majorSeq:any, subSeq:any, ){
+    console.log("cPage:", cPage, "blogSeq:", blogSeq, "majorSeq:",majorSeq, "subSeq:", subSeq);
     let obj = {
       currentPage:cPage,
-      blog_seq:props.blog_seq
-
+      blog_seq:blogSeq, 
+      majorSeq:majorSeq,
+      subSeq:subSeq,
     }
 
     const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
@@ -51,7 +51,7 @@ const PriMain = (props: any) => {
           */ 
           if(searchYn === true){
             currentPage = currentPage+1;
-            getBlogLists(currentPage);
+            getBlogLists(currentPage, props.blog_seq, "", "");
           }
         }
          
@@ -77,7 +77,7 @@ const PriMain = (props: any) => {
     <>
       <div className="">
         
-        <SideBar/>
+        <SideBar blog_seq={props.blog_seq} getBlogLists={getBlogLists}/>
          
         <div className="">
           <div className="ms-[0px] px-60 grid place-items-center grid-cols-1 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1
