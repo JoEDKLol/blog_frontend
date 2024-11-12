@@ -1,40 +1,64 @@
 'use client';
 
 import SideBar from "@/app/components/sidebar/SideBar";
+import { useRecoilState } from "recoil";
+import { priSearchResArrState } from "@/app/store/priSearch";
+import { priSearchKeywordState } from "@/app/store/priSearchkeyword";
 import { transaction } from "@/app/utils/axios";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 
+let keywordG = "";
+let majorSeqG = -1;
+let subSeqG = -1;
+let searchYnG = true;
+
 const PriMain = (props: any) => {
-  const [blogList,setblogList] = useState<any>([]);
-  // const [currentPage,setCurrentPage] = useState<any>(0);
+  
+  const [priSearchRes, setPriSearchRes] = useRecoilState(priSearchResArrState);
+  const [priSearchKeyword, setPriSearchKeyword] = useRecoilState(priSearchKeywordState);
 
   let currentPage = 0;
-  let searchYn = true;
-  let blogListDB:any = [];
- 
   
-  async function getBlogLists(cPage:any, blogSeq:any, majorSeq:any, subSeq:any, ){
-    console.log("cPage:", cPage, "blogSeq:", blogSeq, "majorSeq:",majorSeq, "subSeq:", subSeq);
+  
+  useEffect(()=>{
+    keywordG = priSearchKeyword.keyword;
+    majorSeqG = priSearchKeyword.majorSeq;
+    subSeqG = priSearchKeyword.subSeq;
+    searchYnG = priSearchKeyword.searchYn
+	},[priSearchKeyword]);
+  
+  async function getBlogLists(cPage:any, blogSeq:any, majorSeq:any, subSeq:any, keyword:any ){
+    // console.log("cPage:", cPage, "blogSeq:", blogSeq, "majorSeq:",majorSeq, "subSeq:", subSeq, "keyword:", keyword);
+    
+    if(cPage===1){
+      setPriSearchRes([]);
+    }
+    
     let obj = {
       currentPage:cPage,
       blog_seq:blogSeq, 
       majorSeq:majorSeq,
       subSeq:subSeq,
+      keyword:keyword
     }
 
     const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
 
-    if(bloglistObj.sendObj.resObj.list.length > 0){
-      blogListDB = blogListDB.concat(bloglistObj.sendObj.resObj.list)
-      setblogList(blogListDB); 
+    if(cPage > 1){
+      if(bloglistObj.sendObj.resObj.list > 0){
+        setPriSearchRes(priSearchRes.concat(bloglistObj.sendObj.resObj.list)); 
+      }else{
+        //다음 조회건수가 없을 경우 처리해야 됨.
+        searchYnG = false;
+        setPriSearchKeyword({...priSearchKeyword, searchYn:false});
+      }
     }else{
-      //다음 조회건수가 없을 경우 처리해야 됨.
-      searchYn = false; 
+      setPriSearchRes(bloglistObj.sendObj.resObj.list); 
     }
+      
   }
 
   const observerEl = useRef<HTMLDivElement>(null);
@@ -42,16 +66,11 @@ const PriMain = (props: any) => {
     
     (entries: IntersectionObserverEntry[]) => {
         const target = entries[0];
-        // if (target.isIntersecting && pagination?.hasNextPage) {
-        //     pagination.gotoPage(pagination.current + 1);
-        // }
-        if(target.isIntersecting){ //스크롤이 가장 밑에 닿았을경우   
-          /*
-          1. 다음 페이지가 있을경우 back 에서 전달하도록 처리
-          */ 
-          if(searchYn === true){
+
+        if(target.isIntersecting){ //scroll bottom   
+          if(searchYnG === true){
             currentPage = currentPage+1;
-            getBlogLists(currentPage, props.blog_seq, "", "");
+            getBlogLists(currentPage, props.blog_seq, majorSeqG, subSeqG, keywordG);
           }
         }
          
@@ -72,7 +91,6 @@ const PriMain = (props: any) => {
       };
   }, [handleObserver]);
 
-
   return(
     <>
       <div className="">
@@ -86,7 +104,7 @@ const PriMain = (props: any) => {
 
           " >
             {
-            blogList.map((item:any, index:any)=>{
+            priSearchRes.map((item:any, index:any)=>{
               return (
                 
                 <Link key={index} href={"/blog/"+item.blog_seq + "/" + item.seq}>

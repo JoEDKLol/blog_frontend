@@ -11,6 +11,8 @@ import { userState } from "@/app/store/user";
 import { useRecoilState } from "recoil";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { priSearchResArrState } from "@/app/store/priSearch";
+import { priSearchKeywordState } from "@/app/store/priSearchkeyword";
 
 const PriHeader = (props: any) => {
 
@@ -22,7 +24,9 @@ const PriHeader = (props: any) => {
   const [user, setUser] = useRecoilState(userState);
   const [blogInfo, setBlogInfo] = useState<any>({});
   const [searchText, setSearchText] = useState<any>();
-  
+  const [priSearchRes, setPriSearchRes] = useRecoilState(priSearchResArrState);
+  const [priSearchKeyword, setPriSearchKeyword] = useRecoilState(priSearchKeywordState);
+
   useEffect(() => {
 
     window.addEventListener('scroll', handleScroll);
@@ -33,8 +37,13 @@ const PriHeader = (props: any) => {
   }, []);
 
   useEffect(() => {
-    getBlogInfo();
-  }, []);
+
+    if(user.blog_seq != ""){
+      priSearch();
+      getBlogInfo();
+    }
+    
+  }, [user]);
 
   
   const handleScroll = () => {
@@ -66,9 +75,8 @@ const PriHeader = (props: any) => {
 
   //blog_seq로 블로그 정보를 조회한다.
   async function getBlogInfo(){
-    
     let obj = {
-      blog_seq:props.blog_seq
+      blog_seq:user.blog_seq
     }
     const blogInfoObj = await transaction("get", "blog/blogInfo", obj, "", false);
     setBlogInfo(blogInfoObj.sendObj.resObj);
@@ -80,11 +88,50 @@ const PriHeader = (props: any) => {
   }
 
   function priSearch(){
-   router.push("/blog/"+user.blog_seq+"?keyword="+searchText);
+    
+    const searchObj = {
+      blog_seq:user.blog_seq,
+      keyword:searchText,
+      majorSeq:priSearchKeyword.majorSeq,
+      subSeq:priSearchKeyword.subSeq,
+      currentPage:priSearchKeyword.currentPage,
+      searchYn:true,
+    }
+
+    setPriSearchKeyword(
+      searchObj 
+    )
+
+    getBlogLists();
+
+  }
+  
+  async function getBlogLists(){
+    
+    let obj = {
+      blog_seq:user.blog_seq,
+      keyword:searchText,
+      majorSeq:priSearchKeyword.majorSeq,
+      subSeq:priSearchKeyword.subSeq,
+      currentPage:1
+    }
+    
+ 
+    // return;
+    const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
+    setPriSearchRes(bloglistObj.sendObj.resObj.list); 
+    console.log(priSearchKeyword);
   }
 
   function searchTextOnchangeHandler(e:any){
     setSearchText(e.target.value);
+    setPriSearchKeyword({...priSearchKeyword, keyword:e.target.value});
+  }
+
+  function searchTextOnKeyDownHandler(e:any){
+    if(e.key === 'Enter') {
+      priSearch();
+    }
   }
 
   return (
@@ -116,6 +163,7 @@ const PriHeader = (props: any) => {
                   2xl:w-[300px] xl:w-[300px] lg:w-[300px] md:w-[300px] sm:w-[260px]
                   border bg-white h-10 px-5 pr-10 rounded text-sm focus:outline-none"
                   onChange={(e)=>searchTextOnchangeHandler(e)}
+                  onKeyDown={(e)=>searchTextOnKeyDownHandler(e)}
                   />
                   <button type="submit" className="absolute right-0 top-0 mt-3 mr-4"
                   onClick={(e)=>priSearch()}>
