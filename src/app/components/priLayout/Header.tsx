@@ -36,14 +36,14 @@ const PriHeader = (props: any) => {
     };
   }, []);
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if(user.blog_seq != ""){
-      priSearch();
-      getBlogInfo();
-    }
+  //   if(user.blog_seq != ""){
+  //     // priSearch();
+  //     // getBlogInfo();
+  //   }
     
-  }, [user]);
+  // }, [user]);
 
   
   const handleScroll = () => {
@@ -89,17 +89,17 @@ const PriHeader = (props: any) => {
 
   function priSearch(){
     
-    const searchObj = {
-      blog_seq:user.blog_seq,
-      keyword:searchText,
-      majorSeq:priSearchKeyword.majorSeq,
-      subSeq:priSearchKeyword.subSeq,
-      currentPage:priSearchKeyword.currentPage,
-      searchYn:true,
-    }
-
     setPriSearchKeyword(
-      searchObj 
+      {
+        blog_seq:user.blog_seq,
+        keyword:searchText,
+        majorSeq:priSearchKeyword.majorSeq,
+        majorName:priSearchKeyword.majorName,
+        subSeq:priSearchKeyword.subSeq,
+        subName:priSearchKeyword.subName,
+        currentPage:priSearchKeyword.currentPage,
+        searchYn:priSearchKeyword.searchYn,
+      } 
     )
 
     getBlogLists();
@@ -113,14 +113,15 @@ const PriHeader = (props: any) => {
       keyword:searchText,
       majorSeq:priSearchKeyword.majorSeq,
       subSeq:priSearchKeyword.subSeq,
-      currentPage:1
+      currentPage:1,
+      searchYn:true
     }
-    
- 
+    // setPriSearchKeyword(obj);
     // return;
     const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
+    // console.log(bloglistObj);
     setPriSearchRes(bloglistObj.sendObj.resObj.list); 
-    console.log(priSearchKeyword);
+    // console.log(priSearchKeyword);
   }
 
   function searchTextOnchangeHandler(e:any){

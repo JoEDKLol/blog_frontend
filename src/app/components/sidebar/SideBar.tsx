@@ -10,12 +10,12 @@ import { CgFileDocument } from "react-icons/cg";
 import { useEffect, useState } from "react";
 import { transactionAuth } from "@/app/utils/axiosAuth";
 import { useRecoilState } from "recoil";
-import { userState } from "@/app/store/user";
 import Link from "next/link";
 import { priSearchKeywordState } from "@/app/store/priSearchkeyword";
+import { priSearchResArrState } from "@/app/store/priSearch";
+import { transaction } from "@/app/utils/axios";
 
 const SideBar = (props: any) => {
-	const [user, setUser] = useRecoilState(userState);
 	const [blogInfo, setblogInfo] = useState<any>({});
 	
 	const [majorCategories, setMajorCategories] = useState<any>([]);
@@ -24,18 +24,17 @@ const SideBar = (props: any) => {
 	const [subCategoryCnt, setSubCategoryCnt] = useState<any>(0);
 
 	const [priSearchKeyword, setPriSearchKeyword] = useRecoilState(priSearchKeywordState);
-
+	const [priSearchRes, setPriSearchRes] = useRecoilState(priSearchResArrState);
 	useEffect(()=>{
 		getblogInfo();
 	},[]);
 
 	async function getblogInfo(){
 		const obj = {
-			user_id : user.id,
-			email : user.email,
-			blog_seq :user.blog_seq,
+			blog_seq :props.blog_seq,
 		}
 		const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false);
+		
 		setblogInfo(blogInfoRes.sendObj.resObj.blogInfo);
 		if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
 			setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
@@ -48,12 +47,29 @@ const SideBar = (props: any) => {
 		}
 	}
 
-	function searchCategories(majorSeqP:any, subSeqP:any){
-		setPriSearchKeyword({...priSearchKeyword, searchYn:true})
-		setPriSearchKeyword({...priSearchKeyword, majorSeq:majorSeqP})
-		setPriSearchKeyword({...priSearchKeyword, subSeq:subSeqP})
-		props.getBlogLists(1, user.blog_seq, majorSeqP, subSeqP, priSearchKeyword.keyword);
-
+	async function searchCategories(majorSeqP:any, subSeqP:any, majorNameP:any, subNameP:any){
+    
+		let obj = {
+			blog_seq:props.user.blog_seq,
+			keyword:priSearchKeyword.keyword, 
+			majorSeq:majorSeqP,
+			majorName:majorNameP, 
+			subSeq:subSeqP,
+			subName:subNameP,
+			currentPage:1,
+			searchYn:true
+		}
+		// console.log(priSearchKeyword);
+		setPriSearchKeyword(obj);
+		
+		// return;
+		const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
+		
+		setPriSearchRes(bloglistObj.sendObj.resObj.list);
+		
+		// console.log(priSearchKeyword);
+		  
+	
 	}
 
 	return (
@@ -74,7 +90,7 @@ const SideBar = (props: any) => {
 					<div className="flex justify-between border-b">
 						<p className="mt-1 truncate  ">{blogInfo.name}</p>
 						{
-							(user.id.length > 0 && user.blog_seq+"" === props.blog_seq)?
+							(props.user.id.length > 0 && props.user.blog_seq+"" === props.blog_seq)?
 							<Link href={"/blog/"+props.blog_seq + "/blogUpdate"}>
 								<p className="mt-2 w-[10px] hover:text-lg" ><IoDocumentTextOutline /></p>
 							</Link>
@@ -88,10 +104,10 @@ const SideBar = (props: any) => {
 					<p className="font-bold mt-1 border-b pb-1 mb-1">Categories</p>
 					<div >
 						<div className="group flex justify-start mt-1 cursor-pointer"
-						onClick={(e)=>searchCategories(-1, -1)}
+						onClick={(e)=>searchCategories(-1, -1, "all", "")}
 						>
 							<p className="text-base me-1 group-hover:text-lg"><CgFileDocument /></p>
-							<p className="text-sm font-bold truncate group-hover:text-lg">entire</p>
+							<p className="text-sm font-bold truncate group-hover:text-lg">all</p>
 						</div>
 					
 					</div>
@@ -101,7 +117,7 @@ const SideBar = (props: any) => {
 							return (
 								<div key={majorIndex}>
 									<div className="group flex justify-start mt-1 cursor-pointer"
-									onClick={(e)=>searchCategories(majoritem.seq, -1)}
+									onClick={(e)=>searchCategories(majoritem.seq, -1, majoritem.categoryNm, "")}
 									>
 										<p className="text-base me-1 group-hover:text-lg"><IoDocumentsOutline /></p>
 										<p className="text-sm font-bold truncate group-hover:text-lg">{majoritem.categoryNm}</p>
@@ -111,7 +127,7 @@ const SideBar = (props: any) => {
 										return (item.m_category_seq===majoritem.seq)?												
 										(
 											<div key={index} className="group flex justify-start text-sm mt-1 cursor-pointer"
-											onClick={(e)=>searchCategories(majoritem.seq, item.seq)}>
+											onClick={(e)=>searchCategories(majoritem.seq, item.seq, majoritem.categoryNm, item.categoryNm)}>
 												<p><PiLineVerticalThin /></p>
 												<p className="text-base me-1 group-hover:text-lg"><IoDocumentOutline /></p>
 												<p className="text-sm truncate group-hover:text-base">{item.categoryNm}</p>
