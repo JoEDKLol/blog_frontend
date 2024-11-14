@@ -40,11 +40,37 @@ import { useRouter,usePathname } from "next/navigation";
 		
 		useEffect(()=>{
 			focusTitle.current?.focus();
+			getCategoryInfo();
 		},[])
 
+		async function getCategoryInfo(){
+			const obj = {
+				user_id : user.id,
+				email : user.email,
+				blog_seq :user.blog_seq,
+			}
+			const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false); 
+			
+			// setUserName(blogInfoRes.sendObj.resObj.blogInfo.name);
+			// setBlogName(blogInfoRes.sendObj.resObj.blogInfo.blogtitle);
+			// setIntroduction(blogInfoRes.sendObj.resObj.blogInfo.introduction);
+			// setImg(blogInfoRes.sendObj.resObj.blogInfo.blogimg_thumbnailimg);
+			// setBlogInfo(blogInfoRes.sendObj.resObj.blogInfo);
+			
+			// if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
+			// 	setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
+			// 	setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
+			// }
+	
+			// if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
+			// 	setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
+			// 	setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
+			// }
+		}
+
 		
+
 		const imageHandler = async (imageBase64URL:any, imageBlob:any, editor:any) => {
-			console.log(randomNum); 
 			const obj = {
 				user_id : user.id,
 				email : user.email,

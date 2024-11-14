@@ -33,14 +33,14 @@ const BlogUpdateForm = (props: any) => {
 	const [blogInfo, setBlogInfo] = useState<any>();	
 	
 	const focusMajor = useRef<HTMLInputElement>(null);
-  const focusSub = useRef<HTMLInputElement>(null);
+  	const focusSub = useRef<HTMLInputElement>(null);
 
 	// const [majo, setSubCategories] = useState<any>([]);
 
 	useEffect(()=>{
 		getblogInfo();
 	},[])
-	let blogListDB:any = [];
+
 	async function getblogInfo(){
 		const obj = {
 			user_id : user.id,

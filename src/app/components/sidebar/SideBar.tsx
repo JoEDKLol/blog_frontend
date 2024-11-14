@@ -6,6 +6,7 @@ import { IoDocumentOutline } from "react-icons/io5";
 import { PiLineVerticalThin } from "react-icons/pi";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { CgFileDocument } from "react-icons/cg";
+import { TfiWrite } from "react-icons/tfi";
 
 import { useEffect, useState } from "react";
 import { transactionAuth } from "@/app/utils/axiosAuth";
@@ -78,7 +79,7 @@ const SideBar = (props: any) => {
 		p-2 border-2 ">
 			<div className="">
 				<div className="h-[225px] p-1 border-b">
-					<p className="mt-1 truncate  ">{blogInfo.blogtitle}</p>
+					<p className="mt-1 mb-1 truncate  ">{blogInfo.blogtitle}</p>
 					<div className='ring-1 ring-gray-300 rounded-xl h-32 relative' >
 						<Image 
 						src=""
@@ -88,20 +89,26 @@ const SideBar = (props: any) => {
 						alt='' />
 					</div> 
 					<div className="flex justify-between border-b">
-						<p className="mt-1 truncate  ">{blogInfo.name}</p>
+						<p className="mt-1 mb-1 truncate  ">{blogInfo.name}</p>
 						{
 							(props.user.id.length > 0 && props.user.blog_seq+"" === props.blog_seq)?
-							<Link href={"/blog/"+props.blog_seq + "/blogUpdate"}>
-								<p className="mt-2 w-[10px] hover:text-lg" ><IoDocumentTextOutline /></p>
-							</Link>
+							<div className="flex justify-center">
+								<Link href={"/blog/"+props.blog_seq + "/blogUpdate"}>
+									<p className="mt-2 w-[10px] text-lg hover:text-xl" ><IoDocumentTextOutline /></p>
+								</Link>
+								{/* <Link href={"/blog/"+props.blog_seq + "/blogUpdate"}>
+									<p className="mt-2 ms-3 w-[10px] text-[19px] hover:text-xl" ><TfiWrite /></p>
+								</Link> */}
+							</div>
 							:""
 						}
+						
 					</div>
 					<p className="mt-2 text-xs line-clamp-3">{blogInfo.introduction}</p>
 				</div>
 				
 				<div className="mb-20">
-					<p className="font-bold mt-1 border-b pb-1 mb-1">Categories</p>
+					<p className="font-bold mt-1 border-b pb-1 mb-2">Categories</p>
 					<div >
 						<div className="group flex justify-start mt-1 cursor-pointer"
 						onClick={(e)=>searchCategories(-1, -1, "all", "")}

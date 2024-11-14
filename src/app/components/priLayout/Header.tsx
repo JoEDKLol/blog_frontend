@@ -13,6 +13,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { priSearchResArrState } from "@/app/store/priSearch";
 import { priSearchKeywordState } from "@/app/store/priSearchkeyword";
+import { FaPenToSquare } from "react-icons/fa6";
 
 const PriHeader = (props: any) => {
 
@@ -135,6 +136,10 @@ const PriHeader = (props: any) => {
     }
   }
 
+  function write(){
+    router.push('/blog/' + user.blog_seq + "/write");
+  }
+
   return (
       <>
           <header
@@ -174,7 +179,10 @@ const PriHeader = (props: any) => {
                   </button>
                 </div>
               </div>
-              <div>
+              <div className="flex justify-center">
+                
+                
+                
                 <button className="
                 bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
                 onClick={()=>mainPage()}
@@ -186,10 +194,18 @@ const PriHeader = (props: any) => {
                 <button className="
                 bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
                   
+                onClick={()=>write()}
+
+                >Write
+                </button>
+                <button className="
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
+                  
                 onClick={()=>logoutOnclickHandler()}
 
                 >Logout
                 </button>
+                
                 </>
                 :
                 <>

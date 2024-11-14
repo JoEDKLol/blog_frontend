@@ -105,8 +105,8 @@ const PriMain = (props: any) => {
         <SideBar user={user} blog_seq={props.blog_seq} getBlogLists={getBlogLists} priSearchKeyword={priSearchKeyword} setPriSearchKeyword={setPriSearchKeyword} />
          
         <div className="">
-          <div className="flex justify-start pt-6 ms-[0px] ps-28 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
-            <p className="text-3xl
+          <div className="flex justify-start pt-6 ms-[0px] ps-24 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
+            <p className="text-3xl  px-2 py-2 border-b-2
             ">
             
               {priSearchKeyword.majorName}
