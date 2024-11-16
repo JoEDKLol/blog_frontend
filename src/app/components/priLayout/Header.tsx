@@ -41,7 +41,8 @@ const PriHeader = (props: any) => {
 
   //   if(user.blog_seq != ""){
   //     // priSearch();
-  //     // getBlogInfo();
+  //     console.log("여기 호출됨");
+  //     getBlogInfo();
   //   }
     
   // }, [user]);
@@ -75,13 +76,15 @@ const PriHeader = (props: any) => {
   }
 
   //blog_seq로 블로그 정보를 조회한다.
-  async function getBlogInfo(){
-    let obj = {
-      blog_seq:user.blog_seq
-    }
-    const blogInfoObj = await transaction("get", "blog/blogInfo", obj, "", false);
-    setBlogInfo(blogInfoObj.sendObj.resObj);
-  }
+  // async function getBlogInfo(){
+  //   let obj = {
+  //     blog_seq:user.blog_seq
+  //   }
+  //   console.log("obj::::::::::::;", obj); 
+  //   const blogInfoObj = await transaction("get", "blog/blogInfo", obj, "", false);
+  //   console.log("obj::::::::::::;", blogInfoObj); 
+  //   setBlogInfo(blogInfoObj.sendObj.resObj.blogInfo);
+  // }
   const router = useRouter();
 
   function mainPage(){
@@ -183,11 +186,11 @@ const PriHeader = (props: any) => {
                 
                 
                 
-                <button className="
+                {/* <button className="
                 bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
                 onClick={()=>mainPage()}
                 >main
-                </button>
+                </button> */}
                 {
                 (user.id)?
                 <>

@@ -27,7 +27,8 @@ import { useRouter,usePathname } from "next/navigation";
 		},
 		{ loading: () => <div>...loading</div>, ssr: false },
 	)
-
+	// let majorIndex = -1;
+	// let subIndex = -1;
 	// export default function QuillEditor(){
 	const QuillEditor = (props: any) => {
 		const focusTitle = useRef<HTMLInputElement>(null);
@@ -37,7 +38,16 @@ import { useRouter,usePathname } from "next/navigation";
 		
 		const [title, setTitle] = useState("");
 		const [writeSuc, setWriteSuc] = useState(false);
+
+		const [majorCategories, setMajorCategories] = useState<any>([]);
+		const [majorCategoryCnt, setMajorCategoryCnt] = useState<any>(0);
+		const [subCategories, setSubCategories] = useState<any>([]);
+		const [subCategoryCnt, setSubCategoryCnt] = useState<any>(0);
+		const [majorIndex, setMajorIndex] = useState<any>(-1);
+		const [chooseMajor, setChooseMajor] = useState<any>();
+		const [chooseSub, setChooseSub] = useState<any>();
 		
+
 		useEffect(()=>{
 			focusTitle.current?.focus();
 			getCategoryInfo();
@@ -51,21 +61,15 @@ import { useRouter,usePathname } from "next/navigation";
 			}
 			const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false); 
 			
-			// setUserName(blogInfoRes.sendObj.resObj.blogInfo.name);
-			// setBlogName(blogInfoRes.sendObj.resObj.blogInfo.blogtitle);
-			// setIntroduction(blogInfoRes.sendObj.resObj.blogInfo.introduction);
-			// setImg(blogInfoRes.sendObj.resObj.blogInfo.blogimg_thumbnailimg);
-			// setBlogInfo(blogInfoRes.sendObj.resObj.blogInfo);
-			
-			// if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
-			// 	setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
-			// 	setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
-			// }
+			if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
+				setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
+				setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
+			}
 	
-			// if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
-			// 	setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
-			// 	setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
-			// }
+			if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
+				setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
+				setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
+			}
 		}
 
 		
@@ -109,51 +113,23 @@ import { useRouter,usePathname } from "next/navigation";
 			[],
 		);
 
-		// const modules2 = useMemo(() => {
-		// 	return {
-		// 		toolbar: {
-		// 			container: [
-		// 				[{ size: ['small', false, 'large', 'huge'] }],
-		// 				[{ align: [] }],
-		// 				['bold', 'italic', 'underline', 'strike'],
-		// 				[{ list: 'ordered' }, { list: 'bullet' }],
-		// 				[{color: [],},{ background: [] },],
-		// 				[{ align: [] }],
-		// 			],
-		// 		},
-		// 	};
-		// }, []);
-
-		// const modules3 = useMemo(() => {
-		// 	return {
-		// 		toolbar: {
-		// 			container: [
-		// 				[{ header: [1, 2, false] }],
-		// 				['bold', 'italic', 'underline', 'strike', 'blockquote'],
-		// 				[{ list: 'ordered' }, { list: 'bullet' }],
-		// 				["link", "image", "video"],
-		// 				['clean'],
-		// 				[{ color: [] }, { background: [] }],
-		// 				[{ align: [] }],
-		// 			],
-		// 		},
-		// 	};
-		// }, []);
-
 		function title_onchangeHandler(e:any){
 			setTitle(e.target.value);
 		}
 
 		async function writeButtenHandler(){
-
 			// const title = event.target.title.value;
+			// console.log(chooseMajor, chooseSub);
+			// return; 
 			const obj = {
 				user_id : user.id,
 				email : user.email,
 				title:title,
 				content:content,
 				blog_seq:user.blog_seq,
-				randomNum : randomNum
+				randomNum : randomNum,
+				m_category_seq:chooseMajor,
+				s_category_seq:chooseSub
 			}
 			
 			const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false);
@@ -168,7 +144,16 @@ import { useRouter,usePathname } from "next/navigation";
 		const router = useRouter();
 		function movetoboard(){
 			router.push('/blog/' + user.blog_seq)
+		} 
+
+		function changeMajorCategory(e:any){
+			setMajorIndex(Number(e.target.value));
+			setChooseMajor(Number(e.target.value));
 		}
+		function changeSubCategory(e:any){
+			setChooseSub(Number(e.target.value));
+		}
+
 
 		return (
 			
@@ -195,81 +180,124 @@ import { useRouter,usePathname } from "next/navigation";
 			
 			
 				(<div className="grid place-items-center grid-cols-1">
-					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
+					
+					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
 						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
 						">
 					Title</div>
-					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
+					<div className="flex justify-center 
+					border-b border-gray-200 pb-2 mb-2 w-[100%]
+					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
+					">
 						<div className="font-bold w-[0px]
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Title
 						</div>
-						<div className="w-[470px] ">
+						<div className="w-[100%] ">
 						<input ref={focusTitle} 
 						onChange={(e)=>title_onchangeHandler(e)}
 						autoComplete="off" id="title" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 						</div>
 					</div>
 
-					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
+					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
 						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
 						">
 					Category</div>
 
-					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
-						<div className="font-bold w-[0px]
+					<div className="flex justify-center 
+					border-b border-gray-200 pb-2 mb-2 w-[100%]
+					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
+					">
+						<div className="font-bold w-[0%]
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Category</div>
-						<div className="w-[470px]">
-							<select id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[230px] px-3 py-2 outline-none">
+						<div className="w-[100%]">
+							<select id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] px-3 py-2 outline-none"
+							onChange={(e)=>changeMajorCategory(e)}
+							>
 								{/* <option selected>Choose a MajorCategory</option>
 								<option value="US">United States</option>
 								<option value="CA">Canada</option>
 								<option value="FR">France</option>
 								<option value="DE">Germany</option> */}
+								<option selected>Choose a MajorCategory</option>
+								{
+									majorCategories.map((item:any, index:any)=>{
+										return (
+											<option value={item.seq}>{item.categoryNm}</option>
+										)
+									})
+								}
 							</select>
-							<select id="subCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[230px] ms-2 px-3 py-2 outline-none">
+							<select id="subCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] ms-2 px-3 py-2 outline-none"
+							onChange={(e)=>changeSubCategory(e)}
+							>
 								{/* <option selected>Choose a SubCategory</option>
 								<option value="US">United States</option>
 								<option value="CA">Canada</option>
 								<option value="FR">France</option>
 								<option value="DE">Germany</option> */}
+								<option selected>Choose a SubCategory</option>
+								{
+									subCategories.map((item:any, index:any)=>{
+										// return (
+										// 	<option value={item.seq}>{item.m_category_seq}{majorIndex}</option>
+										// )
+										return (item.m_category_seq===majorIndex)?												
+										(
+											<option value={item.seq}>{item.categoryNm}</option>
+										):""
+									})
+								}
 							</select>
 						</div>
 					</div>
-					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
+					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
 						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
 						">
 					Content</div>
-					<div className="flex justify-center pb-2 border-b mb-2">	
+					<div className="flex justify-center pb-2 border-b mb-2 w-[100%]
+					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
+					">	
 						<div className="font-bold w-[0px] invisible
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Content</div>	 
-						<div className="h-[370px]">  
+						<div className="h-[400px] w-[100%]">  
 							<QuillNoSSRWrapper 
 							theme="snow" 
-							style={{height: "300px", width: "470px"}}
+							style={{height: "100%"}}
 							forwardedRef={quillRef}
 							onChange={setContent}
 							modules={
 								modules
 							}/>
+							<div className="flex justify-end">
+								<button className=" mt-20 border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5
+								2xl:mt-14 xl:mt-14 lg:mt-14 md:mt-20 sm:mt-14"
+								onClick={()=>writeButtenHandler()}
+								>
+									Write
+								</button>
+							</div>	
 						</div>
+						
 					</div>
-					<div className="flex justify-end  w-[470px]
-					2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px]
+					<div className="mt-16 pe-16 flex justify-end bg-slate-700
+					 w-[100%]
+					2xl:w-m-10 xl:m-10 lg:m-10 md:m-10 sm:mt-16
 					">
-						<button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
+						{/* <button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
 						onClick={()=>writeButtenHandler()}
 						>
 							Write
-						</button>
+						</button> */}
 					</div>
 				</div>)
 			}
