@@ -220,11 +220,6 @@ import { useRouter,usePathname } from "next/navigation";
 							<select id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] px-3 py-2 outline-none"
 							onChange={(e)=>changeMajorCategory(e)}
 							>
-								{/* <option selected>Choose a MajorCategory</option>
-								<option value="US">United States</option>
-								<option value="CA">Canada</option>
-								<option value="FR">France</option>
-								<option value="DE">Germany</option> */}
 								<option selected>Choose a MajorCategory</option>
 								{
 									majorCategories.map((item:any, index:any)=>{
@@ -237,11 +232,6 @@ import { useRouter,usePathname } from "next/navigation";
 							<select id="subCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] ms-2 px-3 py-2 outline-none"
 							onChange={(e)=>changeSubCategory(e)}
 							>
-								{/* <option selected>Choose a SubCategory</option>
-								<option value="US">United States</option>
-								<option value="CA">Canada</option>
-								<option value="FR">France</option>
-								<option value="DE">Germany</option> */}
 								<option selected>Choose a SubCategory</option>
 								{
 									subCategories.map((item:any, index:any)=>{
@@ -289,16 +279,16 @@ import { useRouter,usePathname } from "next/navigation";
 						</div>
 						
 					</div>
-					<div className="mt-16 pe-16 flex justify-end bg-slate-700
+					{/* <div className="mt-16 pe-16 flex justify-end bg-slate-700
 					 w-[100%]
 					2xl:w-m-10 xl:m-10 lg:m-10 md:m-10 sm:mt-16
-					">
+					"> */}
 						{/* <button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
 						onClick={()=>writeButtenHandler()}
 						>
 							Write
 						</button> */}
-					</div>
+					{/* </div> */}
 				</div>)
 			}
 

@@ -39,9 +39,20 @@ import { useRouter } from "next/navigation";
 		
 		const [title, setTitle] = useState<any>("");
 		const [writeSuc, setWriteSuc] = useState(false);
+
+		const [majorCategories, setMajorCategories] = useState<any>([]);
+		const [majorCategoryCnt, setMajorCategoryCnt] = useState<any>(0);
+		const [subCategories, setSubCategories] = useState<any>([]);
+		const [subCategoryCnt, setSubCategoryCnt] = useState<any>(0);
+		const [majorIndex, setMajorIndex] = useState<any>(-1);
+		const [chooseMajor, setChooseMajor] = useState<any>();
+		const [chooseSub, setChooseSub] = useState<any>();
+
+		const [blogDetail, setBlogDetail] = useState<any>({});
 		
         useEffect(()=>{
             getBlogDetail();
+			getCategoryInfo();
 		},[])
 
 		async function getBlogDetail(){
@@ -51,11 +62,35 @@ import { useRouter } from "next/navigation";
 			}
 	
 			const bloglistObj = await transaction("get", "blog/blogDetail", obj, "", false);
-			console.log(bloglistObj.sendObj.resObj.blogDetail);
+			
+			// console.log(bloglistObj.sendObj.resObj.blogDetail);
 			setContent(bloglistObj.sendObj.resObj.blogDetail.content);
 			setTitle(bloglistObj.sendObj.resObj.blogDetail.title);
 			tempNum = bloglistObj.sendObj.resObj.blogDetail.temp_num;
+			setBlogDetail(bloglistObj.sendObj.resObj.blogDetail);
+			// console.log(bloglistObj.sendObj.resObj.blogDetail.m_category_seq);
+			setMajorIndex(bloglistObj.sendObj.resObj.blogDetail.m_category_seq);
 			// console.log(tempNum); 
+		}
+
+		async function getCategoryInfo(){
+			
+			const obj = {
+				user_id : user.id,
+				email : user.email,
+				blog_seq :user.blog_seq,
+			}
+			const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false); 
+			
+			if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
+				setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
+				setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
+			}
+	
+			if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
+				setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
+				setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
+			}
 		}
 		
 		const imageHandler = async (imageBase64URL:any, imageBlob:any, editor:any) => {
@@ -102,7 +137,7 @@ import { useRouter } from "next/navigation";
 			setTitle(e.target.value);
 		}
 
-		async function writeButtenHandler(){
+		async function updateButtenHandler(){
 			// const title = event.target.title.value;
 			const obj = {
 				user_id : user.id,
@@ -111,10 +146,12 @@ import { useRouter } from "next/navigation";
 				content:content,
 				blog_seq:user.blog_seq,
 				randomNum : tempNum,
-				seq:props.seq
+				seq:props.seq,
+				m_category_seq:chooseMajor,
+				s_category_seq:chooseSub
 			}
 			
-			console.log(obj);
+			// console.log(obj);
 
 			const updateRes = await transactionAuth("post", "blog/update", obj, "", false);
 			// console.log(imgUploadRes.sendObj.success );
@@ -131,6 +168,17 @@ import { useRouter } from "next/navigation";
 			router.push('/blog/' + user.blog_seq + "/" + props.seq);
 		}
 
+		function changeMajorCategory(e:any){
+			setMajorIndex(Number(e.target.value));
+			setChooseMajor(Number(e.target.value));
+		}
+		function changeSubCategory(e:any){
+			setChooseSub(Number(e.target.value));
+		}
+		function movetoPriList(){
+			router.push('/blog/' + user.blog_seq + "/");
+		}
+
 		return (
 			
 			<>
@@ -140,7 +188,7 @@ import { useRouter } from "next/navigation";
 					<div className="flex justify-center  w-[470px]
 					2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px] mt-40 mb-4
 					">
-						<p className="text-xl font-bold">write successed</p>
+						<p className="text-xl font-bold">update successed</p>
 					</div>
 					<div className="flex justify-center  w-[470px]
 					2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px] 
@@ -150,24 +198,35 @@ import { useRouter } from "next/navigation";
 						>
 							Board Detail
 						</button>
+
+						<button className="ms-2 border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded"
+						onClick={()=>movetoPriList()}
+						>
+							Board list
+						</button>
+
 					</div>
 					
 				</div>):
 			
 			
 				(<div className="grid place-items-center grid-cols-1">
-					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
+
+					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
 						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
 						">
 					Title</div>
-					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
-						<div className="font-bold w-[0px] invisible
+					<div className="flex justify-center 
+					border-b border-gray-200 pb-2 mb-2 w-[100%]
+					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
+					">
+						<div className="font-bold w-[0px]
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Title
 						</div>
-						<div className="w-[470px] ">
+						<div className="w-[100%] ">
 						<input ref={focusTitle} 
 						onChange={(e)=>title_onchangeHandler(e)}
 						value={title}
@@ -175,48 +234,71 @@ import { useRouter } from "next/navigation";
 						</div>
 					</div>
 
-					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
+					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
 						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
 						">
 					Category</div>
 
-					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
+					<div className="flex justify-center 
+					border-b border-gray-200 pb-2 mb-2 w-[100%]
+					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
+					">
 						<div className="font-bold w-[0px]
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Category</div> 
-						<div className="w-[470px]">
-							<select id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[230px] px-3 py-2 outline-none">
-								{/* <option selected>Choose a MajorCategory</option>
-								<option value="US">United States</option>
-								<option value="CA">Canada</option>
-								<option value="FR">France</option>
-								<option value="DE">Germany</option> */}
+						<div className="w-[100%]">
+							<select id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] px-3 py-2 outline-none"
+							onChange={(e)=>changeMajorCategory(e)}
+							>
+								<option selected>Choose a MajorCategory</option>
+								{
+									majorCategories.map((item:any, index:any)=>{
+										return (
+											(item.seq == blogDetail.m_category_seq)?<option selected value={item.seq}>{item.categoryNm}</option>
+											:<option value={item.seq}>{item.categoryNm}</option>
+											// <option value={item.seq}>{item.categoryNm}</option>
+										)
+									})
+								}
 							</select>
-							<select id="subCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[230px] ms-2 px-3 py-2 outline-none">
-								{/* <option selected>Choose a SubCategory</option>
-								<option value="US">United States</option>
-								<option value="CA">Canada</option>
-								<option value="FR">France</option>
-								<option value="DE">Germany</option> */}
+							<select id="subCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] ms-2 px-3 py-2 outline-none"
+							onChange={(e)=>changeSubCategory(e)}
+							>
+								<option selected>Choose a SubCategory</option>
+								{
+									subCategories.map((item:any, index:any)=>{  
+										// return (
+										// 	<option value={item.seq}>{item.m_category_seq}{majorIndex}</option>
+										// )
+										return (item.m_category_seq==majorIndex)?												
+										(
+											(item.seq == blogDetail.s_category_seq)?<option selected value={item.seq}>{item.categoryNm}</option>
+											:<option value={item.seq}>{item.categoryNm}</option>
+											// <option value={item.seq}>{item.categoryNm}</option>
+										):""
+									})
+								}
 							</select>
 						</div>
 					</div>
-					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
+					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
 						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
 						">
 					Content</div>
-					<div className="flex justify-center pb-2 border-b mb-2">	
+					<div className="flex justify-center pb-2 border-b mb-2 w-[100%]
+					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
+					">	
 						<div className="font-bold w-[0px] invisible
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Content</div>	 
-						<div className="h-[370px]">  
+						<div className="h-[400px] w-[100%]">  
 							<QuillNoSSRWrapper 
 							theme="snow" 
-							style={{height: "300px", width: "470px"}}
+							style={{height: "100%"}}
 							forwardedRef={quillRef}
 							value={content}
 							onChange={setContent}
@@ -224,9 +306,17 @@ import { useRouter } from "next/navigation";
 								modules
 							}
 							/>
+							<div className="flex justify-end">
+								<button className=" mt-20 border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5
+								2xl:mt-14 xl:mt-14 lg:mt-14 md:mt-20 sm:mt-14"
+								onClick={()=>updateButtenHandler()}
+								>
+									Update
+								</button>
+							</div>	
 						</div>
 					</div>
-					<div className="flex justify-end  w-[470px]
+					{/* <div className="flex justify-end  w-[470px]
 					2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px]
 					">
 						<button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
@@ -234,7 +324,7 @@ import { useRouter } from "next/navigation";
 						>
 							Write
 						</button>
-					</div>
+					</div> */}
 				</div>)
 			}
 

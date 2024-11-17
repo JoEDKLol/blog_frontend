@@ -87,6 +87,10 @@ const MainHeader = (props: any) => {
     const retObj = await transaction("get", "logout", {}, "", false);
   }
 
+  function movetoMyBlogOnclickHandler(){
+    router.push('/blog/' + user.blog_seq)
+  }
+
   return (
       <>
           {/* <head><title>Lola's Home</title></head> */}
@@ -96,12 +100,22 @@ const MainHeader = (props: any) => {
           >
             <nav className="flex items-center justify-between flex-wrap p-3">
               <div className="flex items-center flex-shrink-0 text-dark mr-6">
-                <span className="font-semibold text-xl tracking-tight hidden
+                <p className="font-semibold text-sm tracking-tight block
                 2xl:block xl:block lg:block md:block sm:block
-                ">Lola's Blog</span>
+                 px-2 py-2 rounded-md border
+                  border-yellow-800 
+                 bg-gradient-to-r from-yellow-600 via-yellow-200 to-yellow-200
+                ">Lola's Blog
+                </p>
+
+                {/* <p className="font-semibold text-sm tracking-tight block
+                2xl:hidden xl:hidden lg:hidden md:hidden sm:block
+                 px-2 py-2 rounded-full border-2 border-yellow-800 bg-yellow-100
+                ">L
+                </p> */}
                 
                 <div className="relative pl-3  text-gray-600">
-                  <input type="search" name="serch" placeholder="Search" className="w-[180px] 
+                  <input type="search" name="serch" placeholder="Search" className="w-[150px] 
                   2xl:w-[300px] xl:w-[300px] lg:w-[300px] md:w-[300px] sm:w-[260px]
                   border bg-white h-10 px-5 pr-10 rounded text-sm focus:outline-none"/>
                   <button type="submit" className="absolute right-0 top-0 mt-3 mr-4">
@@ -116,7 +130,15 @@ const MainHeader = (props: any) => {
                 (user.id)?
                 <>
                 <button className="
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
+                  
+                onClick={()=>movetoMyBlogOnclickHandler()}
+
+                >MyBlog
+                </button>
+
+                <button className="
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
                   
                 onClick={()=>logoutOnclickHandler()}
 
@@ -126,7 +148,7 @@ const MainHeader = (props: any) => {
                 :
                 <>
                 <button className="
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
                   
                 onClick={()=>loginOnclickHandler()}
 
@@ -134,7 +156,7 @@ const MainHeader = (props: any) => {
                 </button>
                 <button className="
                 
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 border border-black-500 hover:border-transparent rounded"
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 border border-black-500 hover:border-transparent rounded"
                   onClick={()=>siginUpOnclickHandler()}
                 >Sign Up
                 </button>

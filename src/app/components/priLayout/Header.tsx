@@ -14,6 +14,9 @@ import Link from "next/link";
 import { priSearchResArrState } from "@/app/store/priSearch";
 import { priSearchKeywordState } from "@/app/store/priSearchkeyword";
 import { FaPenToSquare } from "react-icons/fa6";
+import { FaHouse } from "react-icons/fa6";
+import { TbHome } from "react-icons/tb";
+import { TfiWrite } from "react-icons/tfi";
 
 const PriHeader = (props: any) => {
 
@@ -28,6 +31,9 @@ const PriHeader = (props: any) => {
   const [priSearchRes, setPriSearchRes] = useRecoilState(priSearchResArrState);
   const [priSearchKeyword, setPriSearchKeyword] = useRecoilState(priSearchKeywordState);
 
+  const path:any = usePathname();
+  const blog_seq = path.split("/")[2];
+
   useEffect(() => {
 
     window.addEventListener('scroll', handleScroll);
@@ -37,15 +43,13 @@ const PriHeader = (props: any) => {
     };
   }, []);
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   if(user.blog_seq != ""){
-  //     // priSearch();
-  //     console.log("여기 호출됨");
-  //     getBlogInfo();
-  //   }
+    if((blogInfo.blogtitle == "" || blogInfo.blogtitle == undefined || blogInfo.blogtitle == null )){
+     getBlogInfo();
+    }
     
-  // }, [user]);
+  }, []);
 
   
   const handleScroll = () => {
@@ -76,15 +80,14 @@ const PriHeader = (props: any) => {
   }
 
   //blog_seq로 블로그 정보를 조회한다.
-  // async function getBlogInfo(){
-  //   let obj = {
-  //     blog_seq:user.blog_seq
-  //   }
-  //   console.log("obj::::::::::::;", obj); 
-  //   const blogInfoObj = await transaction("get", "blog/blogInfo", obj, "", false);
-  //   console.log("obj::::::::::::;", blogInfoObj); 
-  //   setBlogInfo(blogInfoObj.sendObj.resObj.blogInfo);
-  // }
+  async function getBlogInfo(){
+    let obj = {
+      blog_seq:blog_seq
+    }
+    const blogInfoObj = await transaction("get", "blog/blogInfo", obj, "", false);
+    setBlogInfo(blogInfoObj.sendObj.resObj.blogInfo);
+  }
+  
   const router = useRouter();
 
   function mainPage(){
@@ -95,7 +98,7 @@ const PriHeader = (props: any) => {
     
     setPriSearchKeyword(
       {
-        blog_seq:user.blog_seq,
+        blog_seq:blog_seq,
         keyword:searchText,
         majorSeq:priSearchKeyword.majorSeq,
         majorName:priSearchKeyword.majorName,
@@ -113,7 +116,7 @@ const PriHeader = (props: any) => {
   async function getBlogLists(){
     
     let obj = {
-      blog_seq:user.blog_seq,
+      blog_seq:blog_seq,
       keyword:searchText,
       majorSeq:priSearchKeyword.majorSeq,
       subSeq:priSearchKeyword.subSeq,
@@ -152,24 +155,44 @@ const PriHeader = (props: any) => {
           <nav className="flex items-center justify-between flex-wrap p-3">
 
               <div className="flex items-center flex-shrink-0 text-dark mr-6">
-                <Link href={"/blog/"+user.blog_seq}>
-                <span className="font-semibold text-xl tracking-tight hidden
-                2xl:block xl:block lg:block md:hidden sm:hidden
-                ">
-                    {blogInfo.name} 
-                </span>
+                <Link href={"/"}>
+                <p 
+                className="rounded-md border border-yellow-800 p-1 me-2
+                bg-gradient-to-r from-yellow-600 via-yellow-200 to-yellow-200
+                "
+                >
+                  <span
+                  className="text-[20px]"
+                  ><TbHome /></span>
+                </p>
                 </Link>
 
-                <Link href={"/blog/"+user.blog_seq}>
-                <span className="text-xl block 2xl:hidden xl:hidden lg:hidden md:block sm:block">
-                  <GiHamburgerMenu />
-                </span>
+                <Link href={"/blog/"+blog_seq}>
+                <p className="pl-3 font-semibold text-xl tracking-tight hidden
+                2xl:block xl:block lg:block md:block sm:hidden
+                rounded-md border border-black px-3
+                bg-gradient-to-r from-slate-500 via-slate-200 to-white
+                ">
+                    {blogInfo.blogtitle} 
+                </p>
+                </Link>
+
+                <Link href={"/blog/"+blog_seq}>
+                <p className="pl-3 font-semibold text-xl tracking-tight block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block
+                px-3 rounded-md border border-black
+                
+                ">
+                  {
+                    (blogInfo.blogtitle != "" && blogInfo.blogtitle != undefined && blogInfo.blogtitle != null )
+                    ?blogInfo.blogtitle.substring(0, 1):""
+                  }
+                </p>
                 </Link>
 
                  
                 <div className="relative pl-3  text-gray-600">
-                  <input type="search" name="serch" id="serch" placeholder="Search" className="w-[180px] 
-                  2xl:w-[300px] xl:w-[300px] lg:w-[300px] md:w-[300px] sm:w-[260px]
+                  <input type="search" name="serch" id="serch" placeholder="Search" className="w-[160px] 
+                  2xl:w-[300px] xl:w-[300px] lg:w-[300px] md:w-[260px] sm:w-[260px]
                   border bg-white h-10 px-5 pr-10 rounded text-sm focus:outline-none"
                   onChange={(e)=>searchTextOnchangeHandler(e)}
                   onKeyDown={(e)=>searchTextOnKeyDownHandler(e)}
@@ -195,14 +218,14 @@ const PriHeader = (props: any) => {
                 (user.id)?
                 <>
                 <button className="
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
                   
                 onClick={()=>write()}
 
                 >Write
                 </button>
                 <button className="
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
                   
                 onClick={()=>logoutOnclickHandler()}
 
@@ -213,7 +236,7 @@ const PriHeader = (props: any) => {
                 :
                 <>
                 <button className="
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
                   
                 onClick={()=>loginOnclickHandler()}
 
@@ -221,7 +244,7 @@ const PriHeader = (props: any) => {
                 </button>
                 <button className="
                 
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 border border-black-500 hover:border-transparent rounded"
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 border border-black-500 hover:border-transparent rounded"
                   onClick={()=>siginUpOnclickHandler()}
                 >Sign Up
                 </button>

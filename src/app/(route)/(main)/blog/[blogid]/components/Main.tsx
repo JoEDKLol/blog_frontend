@@ -10,11 +10,15 @@ import { userState } from "@/app/store/user";
 import { useRecoilState } from "recoil";
 import { priSearchKeywordState } from "@/app/store/priSearchkeyword";
 import { priSearchResArrState } from "@/app/store/priSearch";
+import { getDate } from "@/app/utils/common";
 
 let keywordG = "";
 let majorSeqG = -1;
 let subSeqG = -1;
 let searchYnG = true;
+let currentPage = 0;
+
+let blogList = [] as any;
 
 const PriMain = (props: any) => {
   const [setCategory, category] = useState<any>({});
@@ -23,25 +27,35 @@ const PriMain = (props: any) => {
   const [priSearchKeyword, setPriSearchKeyword] = useRecoilState(priSearchKeywordState);
  
 
-  let currentPage = 0;
+  // let currentPage = 0;
   
   
   useEffect(()=>{
     keywordG = priSearchKeyword.keyword;
     majorSeqG = priSearchKeyword.majorSeq;
     subSeqG = priSearchKeyword.subSeq;
-    
+    currentPage = priSearchKeyword.currentPage;
+    console.log("현재 페이지 ???", currentPage);
     // searchYnG = priSearchKeyword.searchYn;
     // console.log(priSearchKeyword.searchYn);
 
 	},[priSearchKeyword]);
 
   
+  useEffect(()=>{
+    blogList = priSearchRes;
+    
+    // searchYnG = priSearchKeyword.searchYn;
+    // console.log(priSearchKeyword.searchYn);
+    console.log("여기 블로그 리스트");
+	},[priSearchRes]);
+
+
   async function getBlogLists(cPage:any, blogSeq:any, majorSeq:any, subSeq:any, keyword:any ){
+    console.log(blogList);
+    console.log("cPage:", cPage, "blogSeq:", blogSeq, "majorSeq:",majorSeqG, "subSeq:", subSeqG, "keyword:", keywordG);
     
-    // console.log("cPage:", cPage, "blogSeq:", blogSeq, "majorSeq:",majorSeqG, "subSeq:", subSeqG, "keyword:", keywordG);
-    
-    let obj = {
+    let obj = { 
       currentPage:cPage,
       blog_seq:blogSeq, 
       majorSeq:majorSeq,
@@ -53,14 +67,16 @@ const PriMain = (props: any) => {
     const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
 
     if(cPage > 1){
-      if(bloglistObj.sendObj.resObj.list > 0){
-        setPriSearchRes(priSearchRes.concat(bloglistObj.sendObj.resObj.list)); 
+      if(bloglistObj.sendObj.resObj.list.length > 0){
+        
+        setPriSearchRes(blogList.concat(bloglistObj.sendObj.resObj.list)); 
       }else{
         //다음 조회건수가 없을 경우 처리해야 됨.
         // console.log("다음 조회건수가 없을 경우 처리해야 됨");
         currentPage--;
       }
     }else{
+      // console.log("최초조회");
       setPriSearchRes(bloglistObj.sendObj.resObj.list);
 
     }
@@ -72,11 +88,11 @@ const PriMain = (props: any) => {
     
     (entries: IntersectionObserverEntry[]) => {
         const target = entries[0];
-        // console.log("여기는 조회됨?", priSearchKeyword);
+        console.log("여기는 조회됨?11111111", priSearchKeyword);
         if(target.isIntersecting){ //scroll bottom   
-          // console.log("여기::",priSearchKeyword);
+         
           if(searchYnG === true){
-            currentPage = currentPage+1;
+            // /currentPage = currentPage+1;
             getBlogLists(currentPage, props.blog_seq, majorSeqG, subSeqG, keywordG);
           }
         }
@@ -106,9 +122,13 @@ const PriMain = (props: any) => {
          
         <div className="">
           <div className="flex justify-start pt-6 ms-[0px] ps-24 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
-            <p className="text-3xl  px-2 py-2 border-b-2
+            <p className="text-3xl  px-2 py-2 border-b-2 border-b-black w-[90%]
             ">
-            
+              {
+                (!priSearchKeyword.majorName)?
+                "all":""
+              }
+              
               {priSearchKeyword.majorName}
               {
                 (priSearchKeyword.subName.length>0)?"  >  " + priSearchKeyword.subName:""
@@ -117,23 +137,22 @@ const PriMain = (props: any) => {
             </p>
           </div>
 
-          <div className="ms-[0px] px-60 grid place-items-center grid-cols-1 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1
-                        lg:px-20 md:px-20 z-1 
+          <div className="ms-[0px] px-64 grid place-items-center grid-cols-1 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1
+                        2xl:px-16 xl:px-16 lg:px-20 md:px-20 z-1 
                         2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]
 
           " >
-            {/* <button className="
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-4 mr-2 border border-black-500 hover:border-transparent rounded"
-                onClick={()=>getBlogLists(1, 14, -1, -1, "")}
-                >조회테스트
-            </button> */}
             {
             priSearchRes.map((item:any, index:any)=>{
               return (
                 
                 <Link key={index} href={"/blog/"+item.blog_seq + "/" + item.seq}>
                 <div className="mx-1">
-                  <div  className="rounded-lg overflow-hidden shadow-lg hover:bg-[#eaedee] p-2 mt-5 h-[400px] w-[300px]">
+                  <div  className="rounded-lg overflow-hidden shadow-2xl border-black border hover:bg-[#eaedee] p-2 mt-5 h-[400px] w-[300px]">
+                    <div className="flex justify-between border-b border-black mb-2">
+                      <p className=" text-xs my-2 ">{getDate(item.regdate)}</p>
+                      
+                    </div>
                     <div className="">
                       {item.pic ? (
                         <div className='ring-1 ring-gray-300 rounded-xl h-32 relative' >
@@ -147,7 +166,7 @@ const PriMain = (props: any) => {
                       }
                         
                     </div> 
-                    <div className=""><p className=" text-xs my-4 ">{item.regdate}</p></div>
+                    
                     <div className="">
                       <div className="font-bold text-xl mb-2 truncate">{item.title}</div>
                       
@@ -165,7 +184,9 @@ const PriMain = (props: any) => {
                     
                       }
                     </div>
-                    <div className="">태그</div>
+                    <div className="border-t border-black ">
+                      <p className="mt-2">태그</p>
+                    </div>
                   </div>
                 </div>  
                 </Link>

@@ -27,4 +27,20 @@ const clearAccessToken = () => {
     return sessionStorage.removeItem("myblog-accesstoken");
 }
 
-export  {getRandomNumber, addComma, storeAccessToken, getAccessToken}
+const getDate = (str:string) => {
+
+    let retStr;
+    let year;
+    let month;
+    let day;
+
+    year = str.substring(0, 4) + ".";
+    month = str.substring(5, 7) + ".";
+    day = str.substring(8, 10) + ".";
+    retStr = year + month + day;
+
+    return retStr;
+
+}
+
+export  {getRandomNumber, addComma, storeAccessToken, getAccessToken, getDate}

@@ -9,6 +9,7 @@ import { CiSquarePlus } from "react-icons/ci";
 import { RxUpdate } from "react-icons/rx";
 import { CiSquareMinus } from "react-icons/ci";
 import { transactionAuth } from "@/app/utils/axiosAuth";
+import { useRouter } from "next/navigation";
 
 
 const randomNum = getRandomNumber(10);
@@ -31,9 +32,13 @@ const BlogUpdateForm = (props: any) => {
 	const [blogName, setBlogName] = useState<any>("");
 	const [introduction, setIntroduction] = useState<any>("");
 	const [blogInfo, setBlogInfo] = useState<any>();	
+	const [blogUpSuc, setBlogUpSuc]= useState<any>(false);
+	
 	
 	const focusMajor = useRef<HTMLInputElement>(null);
   	const focusSub = useRef<HTMLInputElement>(null);
+
+	
 
 	// const [majo, setSubCategories] = useState<any>([]);
 
@@ -314,7 +319,10 @@ const BlogUpdateForm = (props: any) => {
 		// console.log(blogUpdateRes.sendObj.success );
 
 		if(blogUpdateRes.sendObj.success === 'y'){
-			getblogInfo();
+			// getblogInfo();
+			setBlogUpSuc(true);
+		}else{
+
 		}
 	}
 
@@ -335,271 +343,294 @@ const BlogUpdateForm = (props: any) => {
 		subUpFlag = false;
 		subIndex = -1;
 		setSubCategoryText("");
+		focusSub.current?.focus();
+	}
+	const router = useRouter();
+	function movetoPriList(){
+		router.push('/blog/' + user.blog_seq)
 	}
 
 	return(
 		<>
-			 <div className="grid place-items-center grid-cols-1">
-				<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
-							2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
-							2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
-							">
-				User Name</div>
-				<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
-					<div className="font-bold w-[0px] invisible
-					2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
-					2xl:visible xl:visible lg:visible md:visible sm:invisible
-					">User Name
-					</div>
-					<div className="w-[470px] ">
-						<input 
-						// ref={focusTitle} 
-						onChange={(e)=>blogOnchangeHandler(e)}
-						value={userName}
-						autoComplete="off" id="username" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
-					</div>
-				</div>
+			{
+				blogUpSuc?(
+					<div className="grid place-items-center grid-cols-1">
+						<div className="flex justify-center  w-[470px]
+						2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px] mt-40 mb-4
+						">
+							<p className="text-xl font-bold">save successed</p>
+						</div>
+						<div className="flex justify-center  w-[470px]
+						2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px] 
+						">
 
-				<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
-							2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
-							2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
-							">
-				Blog Name</div>
-				<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
-					<div className="font-bold w-[0px] invisible
-					2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
-					2xl:visible xl:visible lg:visible md:visible sm:invisible
-					">Blog Name
-					</div>
-					<div className="w-[470px] ">
-						<input 
-						// ref={focusTitle} 
-						onChange={(e)=>blogOnchangeHandler(e)}
-						value={blogName}
-						autoComplete="off" id="blogname" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
-					</div>
-				</div>
-
-				<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
-							2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
-							2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
-							">
-				Introduction</div>
-				<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
-					<div className="font-bold w-[0px] invisible
-					2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
-					2xl:visible xl:visible lg:visible md:visible sm:invisible
-					">Introduction
-					</div>
-					<div className="w-[470px] ">
-						<textarea  
-						// ref={focusTitle} 
-						onChange={(e)=>blogOnchangeHandler(e)}
-						value={introduction}
-						id="introduction" rows={2}  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
-					</div>
-				</div>
-				<div className="mb-2">
-					<div className='ring-1 w-[230px] h-[225px] ring-gray-300 rounded-xl relative ' >
-						{img ? (
-							
-									<Image 
-									src={img}
-									quality={30}
-									layout="fill"
-									style={{ objectFit: "cover" , borderRadius: '8px' }}
-									alt='' />
-							) : ""
-						}
-					</div>
-				</div>
-				<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
-					<label className="w-[130px] border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200" htmlFor="file_input">
-							Upload File
-					</label>
-					<input className="w-[340px]
-					2xl:w-[440px] xl:w-[440px] lg:w-[440px] md:w-[440px] sm:w-[340px]
-					text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer
-					invisible
-					" id="file_input" type="file"
-					accept="image/*" 
-					onChange={(e)=>fileUploadHandler(e)}
-					
-					>
-					</input>
-					
-				</div>
-				<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
-							2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
-							2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
-							">
-				Categories
-				
-				
-				</div>
-				<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
-					<div className="font-bold w-[0px] invisible
-					2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
-					2xl:visible xl:visible lg:visible md:visible sm:invisible
-					">Categories
-					</div>
-					<div className="flex justify-center w-[470px]">
-						<div className="w-[235px] border-e border-gray-200 text-bold">Major
-							<div className="flex justify-center">	
-							<input 
-							className="relative flex flex-col w-[155px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
-							px-2"
-							onChange={(e)=>majorCategoryTextOnChange(e)}
-							value={majorCategoryText}
-							ref={focusMajor}
-							autoComplete="off" id="majorCategoryText" type="text"
-							></input>
-							<span className="inline-block text-[23px] pt-1 ms-1
-							cursor-pointer
-							"
-							onClick={()=>addMajorItem()}>
-							<CiSquarePlus />
-							</span>
-							<span className="inline-block text-[23px] pt-1 
-							cursor-pointer
-							"
-							onClick={()=>deleteMajorItem()}>
-							<CiSquareMinus />
-							</span>
-							<span className="inline-block text-[17px] ps-1 pt-2
-							cursor-pointer
-							"
-							onClick={()=>refreshMajorItem()}
+							<button className="ms-2 border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded"
+							onClick={()=>movetoPriList()}
 							>
-							<RxUpdate />
-							</span>
-							</div>
-							{
+								Board list
+							</button>
 
-								(majorCategoryCnt > 0) ?
+						</div>
+					
+					</div>
+				):(
+					<div className="grid place-items-center grid-cols-1">
+					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
+								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+								">
+					User Name</div>
+					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
+						<div className="font-bold w-[0px] invisible
+						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+						2xl:visible xl:visible lg:visible md:visible sm:invisible
+						">User Name
+						</div>
+						<div className="w-[470px] ">
+							<input 
+							// ref={focusTitle} 
+							onChange={(e)=>blogOnchangeHandler(e)}
+							value={userName}
+							autoComplete="off" id="username" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+						</div>
+					</div>
+	
+					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
+								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+								">
+					Blog Name</div>
+					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
+						<div className="font-bold w-[0px] invisible
+						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+						2xl:visible xl:visible lg:visible md:visible sm:invisible
+						">Blog Name
+						</div>
+						<div className="w-[470px] ">
+							<input 
+							// ref={focusTitle} 
+							onChange={(e)=>blogOnchangeHandler(e)}
+							value={blogName}
+							autoComplete="off" id="blogname" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+						</div>
+					</div>
+	
+					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
+								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+								">
+					Introduction</div>
+					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
+						<div className="font-bold w-[0px] invisible
+						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+						2xl:visible xl:visible lg:visible md:visible sm:invisible
+						">Introduction
+						</div>
+						<div className="w-[470px] ">
+							<textarea  
+							// ref={focusTitle} 
+							onChange={(e)=>blogOnchangeHandler(e)}
+							value={introduction}
+							id="introduction" rows={2}  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+						</div>
+					</div>
+					<div className="mb-2">
+						<div className='ring-1 w-[230px] h-[225px] ring-gray-300 rounded-xl relative ' >
+							{img ? (
 								
-								<div className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200">
-									<nav className="flex flex-col p-1">
-										{
-											majorCategories.map((item:any, index:any)=>{
-												return (
-												<div key={index} className="flex justify-between">	
-													<div 
-													role="button" 
-													className="w-[225px] text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-													onClick={()=>addMajorItemTextUpdate(item.seq)}
-													>
-													{item.categoryNm}
-													</div>
-													{/* <span className="inline-block text-[15px] pt-2 ms-1
-													hover:bg-slate-100
-													"
-													onClick={()=>addMajorItemTextUpdate(index)}>
-													<RxUpdate />
-													</span>		 */}
-												</div>
-												)
-											})
-											
-										}
-										
-									</nav>
-								</div>
-								:""
+										<Image 
+										src={img}
+										quality={30}
+										layout="fill"
+										style={{ objectFit: "cover" , borderRadius: '8px' }}
+										alt='' />
+								) : ""
 							}
 						</div>
-						<div className="w-[235px] ms-2 text-bold">Sub
-							<div className="flex justify-center">	
-								<input 
-								className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
-								px-2"
-								value={subMajorCategoryText}
-								autoComplete="off" id="subCategoryText" type="text"
-								disabled
-								></input>
-								
-							</div>
-							<div className="flex justify-center">	
+					</div>
+					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
+						<label className="w-[130px] border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200" htmlFor="file_input">
+								Upload File
+						</label>
+						<input className="w-[340px]
+						2xl:w-[440px] xl:w-[440px] lg:w-[440px] md:w-[440px] sm:w-[340px]
+						text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer
+						invisible
+						" id="file_input" type="file"
+						accept="image/*" 
+						onChange={(e)=>fileUploadHandler(e)}
+						
+						>
+						</input>
+						
+					</div>
+					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
+								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+								">
+					Categories
+					
+					
+					</div>
+					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
+						<div className="font-bold w-[0px] invisible
+						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+						2xl:visible xl:visible lg:visible md:visible sm:invisible
+						">Categories
+						</div>
+						<div className="flex justify-center w-[470px]">
+							<div className="w-[235px] border-e border-gray-200 text-bold">Major
+								<div className="flex justify-center">	
 								<input 
 								className="relative flex flex-col w-[155px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
 								px-2"
-								onChange={(e)=>subCategoryTextOnChange(e)}
-								value={subCategoryText}
-								ref={focusSub}
-								autoComplete="off" id="subCategoryText" type="text"
+								onChange={(e)=>majorCategoryTextOnChange(e)}
+								value={majorCategoryText}
+								ref={focusMajor}
+								autoComplete="off" id="majorCategoryText" type="text"
 								></input>
 								<span className="inline-block text-[23px] pt-1 ms-1
 								cursor-pointer
 								"
-								onClick={()=>addSubItem()}>
+								onClick={()=>addMajorItem()}>
 								<CiSquarePlus />
 								</span>
 								<span className="inline-block text-[23px] pt-1 
 								cursor-pointer
 								"
-								onClick={()=>deleteSubItem()}>
+								onClick={()=>deleteMajorItem()}>
 								<CiSquareMinus />
 								</span>
 								<span className="inline-block text-[17px] ps-1 pt-2
 								cursor-pointer
 								"
-								onClick={()=>refreshSubItem()}
+								onClick={()=>refreshMajorItem()}
 								>
 								<RxUpdate />
 								</span>
-							</div>
-							{
-
-								(subCategories.filter( (val:any, index:any) => val.m_category_seq === majorIndex).length > 0) ? 
-
-								<div className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200">
-									<nav className="flex flex-col p-1">
-										{
-											subCategories.map((item:any, index:any)=>{
-												return (item.m_category_seq===majorIndex)?												
-												
-												(
-												
+								</div>
+								{
+	
+									(majorCategoryCnt > 0) ?
+									
+									<div className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200">
+										<nav className="flex flex-col p-1">
+											{
+												majorCategories.map((item:any, index:any)=>{
+													return (
 													<div key={index} className="flex justify-between">	
 														<div 
 														role="button" 
 														className="w-[225px] text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
-														onClick={()=>addSubItemTextUpdate(item.seq)}
+														onClick={()=>addMajorItemTextUpdate(item.seq)}
 														>
 														{item.categoryNm}
 														</div>
 													</div>
-												):""
-											})
+													)
+												})
+												
+											}
 											
-										}
-										
-									</nav> 
-								</div>
-								:""
+										</nav>
+									</div>
+									:""
 								}
-								
-						</div>
-
-						
-					</div>
+							</div>
+							<div className="w-[235px] ms-2 text-bold">Sub
+								<div className="flex justify-center">	
+									<input 
+									className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
+									px-2"
+									value={subMajorCategoryText}
+									autoComplete="off" id="subCategoryText" type="text"
+									disabled
+									></input>
+									
+								</div>
+								<div className="flex justify-center">	
+									<input 
+									className="relative flex flex-col w-[155px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
+									px-2"
+									onChange={(e)=>subCategoryTextOnChange(e)}
+									value={subCategoryText}
+									ref={focusSub}
+									autoComplete="off" id="subCategoryText" type="text"
+									></input>
+									<span className="inline-block text-[23px] pt-1 ms-1
+									cursor-pointer
+									"
+									onClick={()=>addSubItem()}>
+									<CiSquarePlus />
+									</span>
+									<span className="inline-block text-[23px] pt-1 
+									cursor-pointer
+									"
+									onClick={()=>deleteSubItem()}>
+									<CiSquareMinus />
+									</span>
+									<span className="inline-block text-[17px] ps-1 pt-2
+									cursor-pointer
+									"
+									onClick={()=>refreshSubItem()}
+									>
+									<RxUpdate />
+									</span>
+								</div>
+								{
+	
+									(subCategories.filter( (val:any, index:any) => val.m_category_seq === majorIndex).length > 0) ? 
+	
+									<div className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200">
+										<nav className="flex flex-col p-1">
+											{
+												subCategories.map((item:any, index:any)=>{
+													return (item.m_category_seq===majorIndex)?												
+													
+													(
+													
+														<div key={index} className="flex justify-between">	
+															<div 
+															role="button" 
+															className="w-[225px] text-slate-800 flex items-center rounded-md p-1 transition-all hover:bg-slate-100 focus:bg-slate-100 active:bg-slate-100"
+															onClick={()=>addSubItemTextUpdate(item.seq)}
+															>
+															{item.categoryNm}
+															</div>
+														</div>
+													):""
+												})
+												
+											}
+											
+										</nav> 
+									</div>
+									:""
+									}
+									
+							</div>
+	
 							
-				</div>
+						</div>
+								
+					</div>
+	
+					<div className="flex justify-end 
+					w-[470px]
+					2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px]
+					mt-2 mb-5">
+						<button className="
+						border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200
+						"
+						onClick={()=>saveBlogInfo()}
+						>save
+						</button>
+					</div>
+				 </div>
+				)
+			}
+			 
 
-				<div className="flex justify-end 
-				w-[470px]
-				2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px]
-				mt-2 mb-5">
-					<button className="
-					border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200
-					"
-					onClick={()=>saveBlogInfo()}
-					>save
-					</button>
-				</div>
-
-
-			 </div>
 		</>
 	)
 };

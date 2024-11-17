@@ -26,6 +26,7 @@ const SideBar = (props: any) => {
 
 	const [priSearchKeyword, setPriSearchKeyword] = useRecoilState(priSearchKeywordState);
 	const [priSearchRes, setPriSearchRes] = useRecoilState(priSearchResArrState);
+
 	useEffect(()=>{
 		getblogInfo();
 	},[]);
@@ -51,7 +52,7 @@ const SideBar = (props: any) => {
 	async function searchCategories(majorSeqP:any, subSeqP:any, majorNameP:any, subNameP:any){
     
 		let obj = {
-			blog_seq:props.user.blog_seq,
+			blog_seq:props.blog_seq,
 			keyword:priSearchKeyword.keyword, 
 			majorSeq:majorSeqP,
 			majorName:majorNameP, 
@@ -60,7 +61,7 @@ const SideBar = (props: any) => {
 			currentPage:1,
 			searchYn:true
 		}
-		// console.log(priSearchKeyword);
+
 		setPriSearchKeyword(obj);
 		
 		// return;
@@ -76,11 +77,11 @@ const SideBar = (props: any) => {
 	return (
 		<div className="absolute invisible  ms-4 w-[230px]
 		2xl:visible xl:visible lg:visible md:invisible sm:invisible mt-5 rounded-lg
-		p-2 border-2 ">
+		p-2 border-2 border-black">
 			<div className="">
-				<div className="h-[225px] p-1 border-b">
-					<p className="mt-1 mb-1 truncate  ">{blogInfo.blogtitle}</p>
-					<div className='ring-1 ring-gray-300 rounded-xl h-32 relative' >
+				<div className="h-[100%] p-1 border-b">
+					<p className="mt-1 mb-1 font-bold truncate  ">{blogInfo.blogtitle}</p>
+					<div className='ring-1 ring-black rounded-xl h-32 relative' >
 						<Image 
 						src=""
 						quality={30}
@@ -89,7 +90,7 @@ const SideBar = (props: any) => {
 						alt='' />
 					</div> 
 					<div className="flex justify-between border-b">
-						<p className="mt-1 mb-1 truncate  ">{blogInfo.name}</p>
+						<p className="mt-1 mb-1 font-bold truncate  ">{blogInfo.name}</p>
 						{
 							(props.user.id.length > 0 && props.user.blog_seq+"" === props.blog_seq)?
 							<div className="flex justify-center">
@@ -104,10 +105,10 @@ const SideBar = (props: any) => {
 						}
 						
 					</div>
-					<p className="mt-2 text-xs line-clamp-3">{blogInfo.introduction}</p>
+					<div className=" mt-2 text-xs line-clamp-7 break-all">{blogInfo.introduction}</div>
 				</div>
 				
-				<div className="mb-20">
+				<div className="mb-10">
 					<p className="font-bold mt-1 border-b pb-1 mb-2">Categories</p>
 					<div >
 						<div className="group flex justify-start mt-1 cursor-pointer"

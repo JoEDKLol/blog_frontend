@@ -1,10 +1,11 @@
 'use client';
 
 import { transaction } from "@/app/utils/axios";
+import { getDate } from "@/app/utils/common";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-
+import { BiHomeAlt2 } from "react-icons/bi";
 
 
 
@@ -82,7 +83,15 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
             
               <Link key={index} href={"/blog/"+item.blog_seq + "/" + item.seq}>
               <div className="">
-                <div  className="rounded-lg overflow-hidden shadow-lg hover:bg-[#eaedee] p-2 mt-5 h-[400px] w-[300px]">
+                <div  className="rounded-lg overflow-hidden shadow-2xl border-black border hover:bg-[#eaedee] p-2 mt-5 h-[400px] w-[300px]">
+                  <div className="flex justify-between border-b border-black mb-2">
+                    <p className=" text-xs my-2 ">{getDate(item.regdate)}</p>
+                    <Link href={"/blog/"+item.blog_seq}>
+                    <p className="hover:text-lg my-2">
+                      <span><BiHomeAlt2 /></span> 
+                    </p>
+                    </Link>
+                  </div>
                   <div className="">
                     {item.pic ? (
                       <div className='ring-1 ring-gray-300 rounded-xl h-32 relative' >
@@ -96,9 +105,9 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
                     }
                       
                   </div> 
-                  <div className=""><p className=" text-xs my-4 ">{item.regdate}</p></div>
+                  
                   <div className="">
-                    <div className="font-bold text-xl mb-2 truncate">{item.title}</div>
+                    <div className="font-bold text-xl mb-2 mt-1 truncate">{item.title}</div>
                     
                     {item.pic ? (
                       <div className=" m-1 h-[120px] my-4 break-all line-clamp-5">
@@ -114,7 +123,9 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
                   
                     }
                   </div>
-                  <div className="">태그</div>
+                  <div className="border-t border-black ">
+                    <p className="mt-2">태그</p>
+                  </div>
                 </div>
               </div>  
               </Link>  

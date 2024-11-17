@@ -8,8 +8,8 @@ interface priSearchKeyword {
     majorName:string,
     subSeq:number,
     subName:string,
-    currentPage:number
-    searchYn:boolean
+    currentPage:number,
+    searchYn:boolean,
 }
 
 export const priSearchKeywordState = atom<priSearchKeyword>({
