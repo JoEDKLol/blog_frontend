@@ -21,7 +21,6 @@ let currentPage = 0;
 let blogList = [] as any;
 
 const PriMain = (props: any) => {
-  const [setCategory, category] = useState<any>({});
   const [user, setUser] = useRecoilState(userState);
   const [priSearchRes, setPriSearchRes] = useRecoilState(priSearchResArrState);
   const [priSearchKeyword, setPriSearchKeyword] = useRecoilState(priSearchKeywordState);
@@ -35,25 +34,18 @@ const PriMain = (props: any) => {
     majorSeqG = priSearchKeyword.majorSeq;
     subSeqG = priSearchKeyword.subSeq;
     currentPage = priSearchKeyword.currentPage;
-    console.log("현재 페이지 ???", currentPage);
-    // searchYnG = priSearchKeyword.searchYn;
-    // console.log(priSearchKeyword.searchYn);
-
+  
 	},[priSearchKeyword]);
 
   
   useEffect(()=>{
     blogList = priSearchRes;
-    
-    // searchYnG = priSearchKeyword.searchYn;
-    // console.log(priSearchKeyword.searchYn);
-    console.log("여기 블로그 리스트");
 	},[priSearchRes]);
 
 
   async function getBlogLists(cPage:any, blogSeq:any, majorSeq:any, subSeq:any, keyword:any ){
-    console.log(blogList);
-    console.log("cPage:", cPage, "blogSeq:", blogSeq, "majorSeq:",majorSeqG, "subSeq:", subSeqG, "keyword:", keywordG);
+    // console.log(blogList);
+    // console.log("cPage:", cPage, "blogSeq:", blogSeq, "majorSeq:",majorSeqG, "subSeq:", subSeqG, "keyword:", keywordG);
     
     let obj = { 
       currentPage:cPage,
@@ -68,16 +60,20 @@ const PriMain = (props: any) => {
 
     if(cPage > 1){
       if(bloglistObj.sendObj.resObj.list.length > 0){
-        
         setPriSearchRes(blogList.concat(bloglistObj.sendObj.resObj.list)); 
+        currentPage++;
+        setPriSearchKeyword({...priSearchKeyword, currentPage});
+        
       }else{
         //다음 조회건수가 없을 경우 처리해야 됨.
         // console.log("다음 조회건수가 없을 경우 처리해야 됨");
-        currentPage--;
+        // console.log("여기는 아니지?");
+        // currentPage--;
       }
     }else{
-      // console.log("최초조회");
+      // console.log("최초조회:::", cPage);
       setPriSearchRes(bloglistObj.sendObj.resObj.list);
+      currentPage++;
 
     }
       
@@ -88,11 +84,12 @@ const PriMain = (props: any) => {
     
     (entries: IntersectionObserverEntry[]) => {
         const target = entries[0];
-        console.log("여기는 조회됨?11111111", priSearchKeyword);
+        
         if(target.isIntersecting){ //scroll bottom   
          
           if(searchYnG === true){
             // /currentPage = currentPage+1;
+            // console.log(currentPage);
             getBlogLists(currentPage, props.blog_seq, majorSeqG, subSeqG, keywordG);
           }
         }
@@ -146,50 +143,54 @@ const PriMain = (props: any) => {
             priSearchRes.map((item:any, index:any)=>{
               return (
                 
-                <Link key={index} href={"/blog/"+item.blog_seq + "/" + item.seq}>
-                <div className="mx-1">
-                  <div  className="rounded-lg overflow-hidden shadow-2xl border-black border hover:bg-[#eaedee] p-2 mt-5 h-[400px] w-[300px]">
+                
+                <div key={index} className="mx-1">
+                  <div  className="rounded-lg overflow-hidden shadow-2xl border-black border p-2 mt-5 h-[400px] w-[300px]">
                     <div className="flex justify-between border-b border-black mb-2">
                       <p className=" text-xs my-2 ">{getDate(item.regdate)}</p>
                       
                     </div>
-                    <div className="">
-                      {item.pic ? (
-                        <div className='ring-1 ring-gray-300 rounded-xl h-32 relative' >
-                            <Image 
-                            src={item.pic}
-                            quality={30}
-                            layout="fill"
-                            style={{ objectFit: "cover" , borderRadius: '8px' }}
-                            alt='' />
-                        </div>) : ""
-                      }
-                        
-                    </div> 
-                    
-                    <div className="">
-                      <div className="font-bold text-xl mb-2 truncate">{item.title}</div>
-                      
-                      {item.pic ? (
-                        <div className=" m-1 h-[120px] my-4 break-all line-clamp-5">
-                          {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
-                        </div>  
-                      ):(
-                        <div className=" m-1 h-[248px] my-4 break-all line-clamp-5">
-                          {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
-                        </div>
 
-                      )
+                    <Link  href={"/blog/"+item.blog_seq + "/" + item.seq}>
+                    <div className="group">
+                      <div className="">
+                        {item.pic ? (
+                          <div className='ring-1 ring-gray-300 rounded-xl h-32 relative' >
+                              <Image 
+                              src={item.pic}
+                              quality={30}
+                              layout="fill"
+                              style={{ objectFit: "cover" , borderRadius: '8px' }}
+                              alt='' />
+                          </div>) : ""
+                        }
+                          
+                      </div> 
                       
-                    
-                      }
+                      <div className="">
+                        <div className="font-bold text-xl mb-2 truncate group-hover:text-2xl">{item.title}</div>
+                        
+                        {item.pic ? (
+                          <div className=" m-1 h-[120px] my-4 break-all line-clamp-5">
+                            {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
+                          </div>  
+                        ):(
+                          <div className=" m-1 h-[248px] my-4 break-all line-clamp-5">
+                            {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
+                          </div>
+
+                        )
+                        
+                      
+                        }
+                      </div>
                     </div>
+                    </Link>
                     <div className="border-t border-black ">
                       <p className="mt-2">태그</p>
                     </div>
                   </div>
                 </div>  
-                </Link>
                 
               )
             })

@@ -51,6 +51,8 @@ const SideBar = (props: any) => {
 
 	async function searchCategories(majorSeqP:any, subSeqP:any, majorNameP:any, subNameP:any){
     
+		
+
 		let obj = {
 			blog_seq:props.blog_seq,
 			keyword:priSearchKeyword.keyword, 
@@ -61,17 +63,26 @@ const SideBar = (props: any) => {
 			currentPage:1,
 			searchYn:true
 		}
-
+		// console.log("side bar 조회", obj);
 		setPriSearchKeyword(obj);
 		
 		// return;
 		const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
 		
+
 		setPriSearchRes(bloglistObj.sendObj.resObj.list);
-		
-		// console.log(priSearchKeyword);
-		  
-	
+		let obj2 = {
+			blog_seq:props.blog_seq,
+			keyword:priSearchKeyword.keyword, 
+			majorSeq:majorSeqP,
+			majorName:majorNameP, 
+			subSeq:subSeqP,
+			subName:subNameP,
+			currentPage:2,
+			searchYn:true
+		}
+		setPriSearchKeyword(obj2);
+
 	}
 
 	return (
@@ -81,13 +92,16 @@ const SideBar = (props: any) => {
 			<div className="">
 				<div className="h-[100%] p-1 border-b">
 					<p className="mt-1 mb-1 font-bold truncate  ">{blogInfo.blogtitle}</p>
-					<div className='ring-1 ring-black rounded-xl h-32 relative' >
-						<Image 
-						src=""
-						quality={30}
-						layout="fill"
-						style={{ objectFit: "cover" , borderRadius: '8px' }}
-						alt='' />
+					<div className='w-[100%] h-[200px] ring-1 ring-black rounded-xl relative' >
+						{blogInfo.blogimg?
+						(<Image 
+							src={blogInfo.blogimg}
+							quality={30}
+							layout="fill"
+							style={{ objectFit: "cover" , borderRadius: '8px' }}
+							alt='' />):""
+						}
+						
 					</div> 
 					<div className="flex justify-between border-b">
 						<p className="mt-1 mb-1 font-bold truncate  ">{blogInfo.name}</p>
@@ -148,13 +162,6 @@ const SideBar = (props: any) => {
 						}):"" 
 					}
 							
-							
-						
-						
-					
-					
-
-
 
 				</div>
 			</div>

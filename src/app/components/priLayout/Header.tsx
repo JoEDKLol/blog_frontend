@@ -9,7 +9,7 @@ import SignUp from "../signup/Index";
 import Password from "../password/Index";
 import { userState } from "@/app/store/user";
 import { useRecoilState } from "recoil";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { priSearchResArrState } from "@/app/store/priSearch";
 import { priSearchKeywordState } from "@/app/store/priSearchkeyword";
@@ -34,6 +34,9 @@ const PriHeader = (props: any) => {
   const path:any = usePathname();
   const blog_seq = path.split("/")[2];
 
+  const searchParams = useSearchParams()
+  const search = searchParams.get('refresh')
+
   useEffect(() => {
 
     window.addEventListener('scroll', handleScroll);
@@ -50,6 +53,12 @@ const PriHeader = (props: any) => {
     }
     
   }, []);
+
+  useEffect(() => {
+    if(search === "refresh"){
+      priSearch();
+    }
+  }, [searchParams]);
 
   
   const handleScroll = () => {
@@ -90,9 +99,9 @@ const PriHeader = (props: any) => {
   
   const router = useRouter();
 
-  function mainPage(){
-    router.push('/');
-  }
+  // function mainPage(){
+  //   router.push('/');
+  // }
 
   function priSearch(){
     
@@ -114,21 +123,36 @@ const PriHeader = (props: any) => {
   }
   
   async function getBlogLists(){
-    
+
     let obj = {
       blog_seq:blog_seq,
       keyword:searchText,
       majorSeq:priSearchKeyword.majorSeq,
+      majorName:priSearchKeyword.majorName,
       subSeq:priSearchKeyword.subSeq,
+      subName:priSearchKeyword.subName,
       currentPage:1,
       searchYn:true
     }
-    // setPriSearchKeyword(obj);
-    // return;
+    setPriSearchKeyword(obj);
+
     const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
-    // console.log(bloglistObj);
+
     setPriSearchRes(bloglistObj.sendObj.resObj.list); 
-    // console.log(priSearchKeyword);
+    let obj2 = {
+      blog_seq:blog_seq,
+      keyword:searchText,
+      majorSeq:priSearchKeyword.majorSeq,
+      majorName:priSearchKeyword.majorName,
+      subSeq:priSearchKeyword.subSeq,
+      subName:priSearchKeyword.subName,
+      currentPage:2,
+      searchYn:true
+    }
+    
+    setPriSearchKeyword(obj2);
+
+
   }
 
   function searchTextOnchangeHandler(e:any){
@@ -155,7 +179,10 @@ const PriHeader = (props: any) => {
           <nav className="flex items-center justify-between flex-wrap p-3">
 
               <div className="flex items-center flex-shrink-0 text-dark mr-6">
-                <Link href={"/"}>
+                <Link href={{
+                  pathname: '/',
+                  query: { refresh: 'refresh' },
+                }}>
                 <p 
                 className="rounded-md border border-yellow-800 p-1 me-2
                 bg-gradient-to-r from-yellow-600 via-yellow-200 to-yellow-200
@@ -167,7 +194,12 @@ const PriHeader = (props: any) => {
                 </p>
                 </Link>
 
-                <Link href={"/blog/"+blog_seq}>
+                <Link href={{
+                  pathname: "/blog/"+blog_seq,
+                  query: { refresh: 'refresh' },
+                }}
+                
+                >
                 <p className="pl-3 font-semibold text-xl tracking-tight hidden
                 2xl:block xl:block lg:block md:block sm:hidden
                 rounded-md border border-black px-3

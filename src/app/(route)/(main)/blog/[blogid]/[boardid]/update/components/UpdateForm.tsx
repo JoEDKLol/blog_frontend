@@ -176,7 +176,7 @@ import { useRouter } from "next/navigation";
 			setChooseSub(Number(e.target.value));
 		}
 		function movetoPriList(){
-			router.push('/blog/' + user.blog_seq + "/");
+			router.push('/blog/' + user.blog_seq + "?refresh=refresh");
 		}
 
 		return (

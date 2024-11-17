@@ -133,7 +133,7 @@ import { useRouter,usePathname } from "next/navigation";
 			}
 			
 			const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false);
-			console.log(imgUploadRes.sendObj.success );
+			// console.log(imgUploadRes.sendObj.success );
 
 			if(imgUploadRes.sendObj.success === 'y'){
 				setWriteSuc(true);
@@ -142,8 +142,8 @@ import { useRouter,usePathname } from "next/navigation";
 			}
 		}
 		const router = useRouter();
-		function movetoboard(){
-			router.push('/blog/' + user.blog_seq)
+		function movetoblog(){
+			router.push('/blog/' + user.blog_seq + "?refresh=refresh")
 		} 
 
 		function changeMajorCategory(e:any){
@@ -170,7 +170,7 @@ import { useRouter,usePathname } from "next/navigation";
 					2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px] 
 					">
 						<button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded"
-						onClick={()=>movetoboard()}
+						onClick={()=>movetoblog()}
 						>
 							Board Lists
 						</button>
@@ -220,11 +220,11 @@ import { useRouter,usePathname } from "next/navigation";
 							<select id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] px-3 py-2 outline-none"
 							onChange={(e)=>changeMajorCategory(e)}
 							>
-								<option selected>Choose a MajorCategory</option>
+								<option>Choose a MajorCategory</option>
 								{
 									majorCategories.map((item:any, index:any)=>{
 										return (
-											<option value={item.seq}>{item.categoryNm}</option>
+											<option key={index} value={item.seq}>{item.categoryNm}</option>
 										)
 									})
 								}
@@ -232,7 +232,7 @@ import { useRouter,usePathname } from "next/navigation";
 							<select id="subCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] ms-2 px-3 py-2 outline-none"
 							onChange={(e)=>changeSubCategory(e)}
 							>
-								<option selected>Choose a SubCategory</option>
+								<option>Choose a SubCategory</option>
 								{
 									subCategories.map((item:any, index:any)=>{
 										// return (
@@ -240,7 +240,7 @@ import { useRouter,usePathname } from "next/navigation";
 										// )
 										return (item.m_category_seq===majorIndex)?												
 										(
-											<option value={item.seq}>{item.categoryNm}</option>
+											<option key={index} value={item.seq}>{item.categoryNm}</option>
 										):""
 									})
 								}

@@ -39,6 +39,8 @@ const PriBlogListDetail = (props: any) => {
 	const [deleteSuc, setDeleteSuc] = useState<any>(false);
 	const [boardYn, setBoardYn]  = useState<any>(true);
 
+	const [blogComment, setBlogComment] = useState<any>("");
+
 	useEffect(()=>{
 		getBlogDetail();
 	},[])
@@ -98,7 +100,27 @@ const PriBlogListDetail = (props: any) => {
 	}
 
 	function movetoPriList(){
-		router.push('/blog/' + props.blog_seq)
+		router.push('/blog/' + props.blog_seq + "?refresh=refresh")
+	}
+
+	function blogCommentOnchangeHandler(e:any){
+		setBlogComment(e.target.value);
+	}
+	
+	async function commentWriteHandler(){
+		const obj = {
+			email : user.email,
+			blog_seq :user.blog_seq,
+			comment : blogComment
+		}
+		console.log(obj);
+		const blogCommentWriteRes = await transactionAuth("post", "blog/commentwrite", obj, "", false); 
+
+		if(blogCommentWriteRes.sendObj.success === 'y'){
+			// setDeleteSuc(true);
+		}else{
+			
+		}
 	}
 
 
@@ -124,7 +146,7 @@ const PriBlogListDetail = (props: any) => {
 					</div>
 					
 				</div>):
-				(<div className="grid place-items-center grid-cols-1">
+				(<div className="grid place-items-center grid-cols-1 ">
 					<div className="flex justify-start border-b w-[90vw] border-gray-200 pb-2 mb-2">
 						{blogDetailObj.title}
 					</div>
@@ -150,18 +172,47 @@ const PriBlogListDetail = (props: any) => {
 					</div>
 					{
 						(user.id.length > 0 && user.blog_seq+"" === props.blog_seq)?
+						<div>
 						<div className="flex justify-end  w-[90vw]">
-						<button className="tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
-						onClick={()=>updatePageMove()}
-						>
-							Update page
-						</button>
-						<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
-						onClick={()=>deleteHandler()}
-						>
-							Delete
-						</button>
-					</div>
+							<button className="tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
+							onClick={()=>updatePageMove()}
+							>
+								Update page
+							</button>
+							<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
+							onClick={()=>deleteHandler()}
+							>
+								Delete
+							</button>
+						</div>
+						<div className="h-[500px]">
+								
+						</div>
+						{
+							(user.id)?(
+								<div className="sticky items-center bottom-0"> 
+									<div className="w-[90vw] ">
+										<p className="font-bold">comment</p> 
+										<div className="w-[100%] ">
+										<textarea  
+										// ref={focusTitle} 
+										onChange={(e)=>blogCommentOnchangeHandler(e)}
+										id="introduction" rows={2}  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+										</div>
+										<div className="flex justify-end">
+										<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
+											onClick={()=>commentWriteHandler()}
+										>
+										Comment Write
+										</button>
+										</div>
+									</div>
+								</div>
+							):""
+						}
+						
+						
+						</div>
 						:""
 					}
 					
@@ -179,7 +230,7 @@ const PriBlogListDetail = (props: any) => {
 					2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px] 
 					">
 						<button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded"
-						onClick={()=>movetoboard()}
+						onClick={()=>movetoPriList()}
 						>
 							Board Lists
 						</button>
