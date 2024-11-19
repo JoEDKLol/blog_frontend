@@ -54,11 +54,11 @@ const PriHeader = (props: any) => {
     
   }, []);
 
-  useEffect(() => {
-    if(search === "refresh"){
-      priSearch();
-    }
-  }, [searchParams]);
+  // useEffect(() => {
+  //   if(search === "refresh"){
+  //     priSearch();
+  //   }
+  // }, [searchParams]);
 
   
   const handleScroll = () => {

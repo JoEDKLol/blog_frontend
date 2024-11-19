@@ -6,7 +6,7 @@ import { transaction } from "@/app/utils/axios";
 import { getDate } from "@/app/utils/common";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BiHomeAlt2 } from "react-icons/bi";
 import { useRecoilState } from "recoil";
@@ -23,7 +23,12 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
   const [searchRes, setSearchRes] = useRecoilState(searchResArrState);
   const [searchKeyword, setSearchKeyword] = useRecoilState(searchKeywordState);
   
-  
+  const path:any = usePathname();
+  const blog_seq = path.split("/")[2];
+
+  const searchParams = useSearchParams()
+  const search = searchParams.get('refresh')
+
   // let currentPage = 0;
   // let searchYn = true;
   // let blogListDB:any = [];
@@ -34,21 +39,32 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
   
 	},[searchKeyword]);
 
-  
   useEffect(()=>{
     blogListDB = searchRes;
 	},[searchRes]);
 
+  useEffect(() => {
+    if(search === "refresh"){
+      getBlogLists(1, "");
+    }
+  }, [searchParams]);
+
   async function getBlogLists(cPage:any, keyword:any){
+    // console.log("currentPage:::", currentPage);
     // console.log("page:",cPage, "keyword:", keyword);
+    currentPage = cPage;
     let obj = { 
       currentPage:cPage,
       keyword:keyword,
       searchYn:false
     }
+    
+    
+    // console.log("조회전:::", currentPage);
     const bloglistObj = await transaction("get", "blog/bloglist", obj, "", false);
-
+    // console.log("중간:::", currentPage);
     if(cPage > 1){
+      // console.log("최초에는 안옴");
       if(bloglistObj.sendObj.resObj.list.length > 0){
         setSearchRes(blogListDB.concat(bloglistObj.sendObj.resObj.list)); 
         currentPage++;
@@ -61,9 +77,17 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
         // currentPage--;
       }
     }else{
-      // console.log("최초조회:::", cPage);
+     
+      // console.log("최초조회:::", currentPage);
       setSearchRes(bloglistObj.sendObj.resObj.list);
       currentPage++;
+
+      let obj2 = {
+        keyword:keyword,
+        currentPage:currentPage,
+        searchYn:true
+      }
+      setSearchKeyword(obj2);
 
     }
 
@@ -81,15 +105,17 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
     
     (entries: IntersectionObserverEntry[]) => {
         const target = entries[0];
-        // if (target.isIntersecting && pagination?.hasNextPage) {
-        //     pagination.gotoPage(pagination.current + 1);
-        // }
         if(target.isIntersecting){ //스크롤이 가장 밑에 닿았을경우   
           /*
           1. 다음 페이지가 있을경우 back 에서 전달하도록 처리
           */ 
+          // console.log("currentPage::", currentPage);
           if(searchYnG === true){
-            getBlogLists(currentPage, keywordG);
+            if(search === "refresh" && currentPage !== 1){
+              getBlogLists(currentPage, keywordG);
+            }else if(search !== "refresh"){
+              getBlogLists(currentPage, keywordG);
+            }
           }
         }
          

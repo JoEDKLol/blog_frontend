@@ -38,11 +38,11 @@ const MainHeader = (props: any) => {
     };
   }, []);
 
-  useEffect(() => {
-    if(search === "refresh"){
-      priSearch();
-    }
-  }, [searchParams]);
+  // useEffect(() => {
+  //   if(search === "refresh"){
+  //     // priSearch();
+  //   }
+  // }, [searchParams]);
 
   // function onclickMenuButton(e:any){
   //   if(menu === "hidden"){
@@ -115,7 +115,7 @@ const MainHeader = (props: any) => {
   }
 
   async function getBlogLists(){
-
+    // console.log("여기 조회됨")
     let obj = {
       keyword:searchText,
       currentPage:1,
@@ -124,7 +124,7 @@ const MainHeader = (props: any) => {
     setSearchKeyword(obj);
     
     const bloglistObj = await transaction("get", "blog/bloglist", obj, "", false);
-    console.log(bloglistObj);
+    // console.log(bloglistObj);
 
     setSearchRes(bloglistObj.sendObj.resObj.list); 
     let obj2 = {

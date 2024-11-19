@@ -33,11 +33,15 @@ const getDate = (str:string) => {
     let year;
     let month;
     let day;
+    let time;
 
     year = str.substring(0, 4) + ".";
     month = str.substring(5, 7) + ".";
-    day = str.substring(8, 10) + ".";
-    retStr = year + month + day;
+    day = str.substring(8, 10) + " ";
+
+    time = str.substring(11, 19);
+
+    retStr = year + month + day + time; 
 
     return retStr;
 

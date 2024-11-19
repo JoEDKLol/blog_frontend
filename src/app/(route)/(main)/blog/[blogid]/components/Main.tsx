@@ -11,6 +11,7 @@ import { useRecoilState } from "recoil";
 import { priSearchKeywordState } from "@/app/store/priSearchkeyword";
 import { priSearchResArrState } from "@/app/store/priSearch";
 import { getDate } from "@/app/utils/common";
+import { usePathname, useSearchParams } from "next/navigation";
 
 let keywordG = "";
 let majorSeqG = -1;
@@ -26,7 +27,12 @@ const PriMain = (props: any) => {
   const [priSearchKeyword, setPriSearchKeyword] = useRecoilState(priSearchKeywordState);
  
 
-  // let currentPage = 0;
+  
+  const path:any = usePathname();
+  const blog_seq = path.split("/")[2];
+
+  const searchParams = useSearchParams()
+  const search = searchParams.get('refresh')
   
   
   useEffect(()=>{
@@ -42,11 +48,16 @@ const PriMain = (props: any) => {
     blogList = priSearchRes;
 	},[priSearchRes]);
 
-
+  useEffect(() => {
+    if(search === "refresh"){
+      getBlogLists(1, props.blog_seq, -1, -1, "");
+    }
+  }, [searchParams]);
+  
   async function getBlogLists(cPage:any, blogSeq:any, majorSeq:any, subSeq:any, keyword:any ){
     // console.log(blogList);
     // console.log("cPage:", cPage, "blogSeq:", blogSeq, "majorSeq:",majorSeqG, "subSeq:", subSeqG, "keyword:", keywordG);
-    
+    currentPage = cPage;
     let obj = { 
       currentPage:cPage,
       blog_seq:blogSeq, 
@@ -74,6 +85,17 @@ const PriMain = (props: any) => {
       // console.log("최초조회:::", cPage);
       setPriSearchRes(bloglistObj.sendObj.resObj.list);
       currentPage++;
+      let obj2 = {
+        blog_seq:blog_seq,
+        keyword:keyword,
+        majorSeq:majorSeq,
+        majorName:"",
+        subSeq:subSeq,
+        subName:"",
+        currentPage:currentPage,
+        searchYn:true
+      }
+      setPriSearchKeyword(obj2);
 
     }
       
@@ -90,7 +112,12 @@ const PriMain = (props: any) => {
           if(searchYnG === true){
             // /currentPage = currentPage+1;
             // console.log(currentPage);
-            getBlogLists(currentPage, props.blog_seq, majorSeqG, subSeqG, keywordG);
+            // getBlogLists(currentPage, props.blog_seq, majorSeqG, subSeqG, keywordG);
+            if(search === "refresh" && currentPage !== 1){
+              getBlogLists(currentPage, props.blog_seq, majorSeqG, subSeqG, keywordG);
+            }else if(search !== "refresh"){
+              getBlogLists(currentPage, props.blog_seq, majorSeqG, subSeqG, keywordG);
+            }
           }
         }
          
