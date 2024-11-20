@@ -212,6 +212,7 @@ const PriHeader = (props: any) => {
                 <Link href={"/blog/"+blog_seq}>
                 <p className="pl-3 font-semibold text-xl tracking-tight block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block
                 px-3 rounded-md border border-black
+                bg-gradient-to-r from-slate-500 via-slate-200 to-white
                 
                 ">
                   {

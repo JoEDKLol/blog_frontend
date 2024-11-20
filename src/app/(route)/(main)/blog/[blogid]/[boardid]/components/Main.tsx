@@ -5,13 +5,17 @@ import { transaction } from "@/app/utils/axios";
 import { transactionAuth } from "@/app/utils/axiosAuth";
 import { getDate } from "@/app/utils/common";
 import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ReactQuill, { ReactQuillProps } from "react-quill";
 import 'react-quill/dist/quill.snow.css';
 import { useRecoilState } from "recoil";
 import { BiHomeAlt2 } from "react-icons/bi";
 import Link from "next/link";
+
+import { BiLike } from "react-icons/bi"; //<BiLike />
+import { BiSolidLike } from "react-icons/bi"; //<BiSolidLike />
+ 
 
 interface ForwardedQuillComponent extends ReactQuillProps {
 	forwardedRef: React.Ref<ReactQuill>;
@@ -44,6 +48,11 @@ export interface commentListsArr {
 	
 }
 
+let currentPageG = 0;
+let currentSeqG = 0;
+let blogCommentArr = [] as any;
+let showCommentG = false;
+
 const PriBlogListDetail = (props: any) => {
 	const [user, setUser] = useRecoilState(userState);
 	const [blogDetailObj, setBlogDetailObj] = useState<any>([]);
@@ -58,14 +67,52 @@ const PriBlogListDetail = (props: any) => {
 	const [blogComment, setBlogComment] = useState<any>("");
 
 	const [commentLists, setCommentLists] = useState<commentListsArr[]>([]); 
+	const [showComment, setShowComment] = useState<boolean>(false);
 
-	let currentPageG = 0;
-	let currentSeqG = 0;
+	const [bottomCommentButton, setBottomCommentButton] = useState<boolean>(false);
+	const [bottomCommentBox, setBottomCommentBox] = useState<boolean>(false);
+
+	const focusComment = useRef<HTMLTextAreaElement>(null);
+	const commentRegRef = useRef<HTMLDivElement>(null);
+	const focusBottomCommentBox = useRef<HTMLTextAreaElement>(null);
+
+	const path:any = usePathname();
+  const blog_seq = path.split("/")[2];
 
 	useEffect(()=>{
-		console.log(user);
 		getBlogDetail();
 	},[])
+
+	useEffect(()=>{
+    blogCommentArr = commentLists;
+	},[commentLists]);
+	
+	useEffect(()=>{
+		if(showComment){
+			focusComment.current?.focus();
+
+		}
+		showCommentG = showComment;
+	},[showComment])
+
+	useEffect(()=>{
+		if(bottomCommentBox){
+			focusBottomCommentBox.current?.focus();
+
+		}
+		// showCommentG = showComment;
+	},[bottomCommentBox])
+
+	useEffect(()=>{
+    if(user.id){
+			console.log("해당 블로그상세에서 해당 유저ID로 좋아요 있는지 조회 ");
+
+		}
+	},[user]);
+
+	// useEffect(() => {
+  //   currentSeqG = 0;
+  // }, [path]);
 
 	async function getBlogDetail(){
 		
@@ -82,6 +129,8 @@ const PriBlogListDetail = (props: any) => {
 			setSubCaName(bloglistObj.sendObj.resObj.subCaName);
 
 			// commentSearch();
+			currentSeqG = 0;
+			commentSearchUseSeq(currentSeqG);
 
 		}else{
 			console.log("There is not a board");
@@ -141,76 +190,34 @@ const PriBlogListDetail = (props: any) => {
 		const blogCommentWriteRes = await transactionAuth("post", "blog/commentwrite", obj, "", false); 
 
 		if(blogCommentWriteRes.sendObj.success === 'y'){
-			// setDeleteSuc(true);
-		}else{
-			
-		}
-	}
+			setShowComment(false);
+			blogCommentArr.unshift(blogCommentWriteRes.sendObj.resObj)
+			setCommentLists(blogCommentArr);
+			setBottomCommentBox(false);
 
-	async function commentSearch(cPage:any){
-		
-		const obj = {
-			blog_seq :props.blog_seq,
-			blog_list_seq:props.seq,
-			currentPage:cPage
-		}
-		// console.log(obj);
-		const blogCommentSearchRes = await transactionAuth("get", "blog/comments", obj, "", false); 
-		console.log(blogCommentSearchRes.sendObj.resObj);
-		// if(blogCommentSearchRes.sendObj.success === 'y'){
-		// 	// setDeleteSuc(true);
-			
-		// }else{
-			
-		// }
-		// console.log(blogCommentSearchRes);
-		if(cPage > 1){
-			if(blogCommentSearchRes.sendObj.resObj.length > 0){
-				setCommentLists(commentLists.concat(blogCommentSearchRes.sendObj.resObj));
-			}else{
-				currentPageG--;
-			}
-			
 		}else{
-			setCommentLists(blogCommentSearchRes.sendObj.resObj);
+			
 		}
 	}
 
 	async function commentSearchUseSeq(seq:any){
-		
 		const obj = {
 			blog_seq :props.blog_seq,
 			blog_list_seq:props.seq,
 			currentSeq:seq
 		}
-		// console.log(obj);
 		const blogCommentSearchSeqRes = await transactionAuth("get", "blog/commentsseq", obj, "", false); 
-		//console.log(blogCommentSearchRes.sendObj.resObj.blogComments);
-		// console.log(blogCommentSearchSeqRes.sendObj.resObj.lastCommentSeq);
-		
-		// if(blogCommentSearchSeqRes.sendObj.resObj.blogComments.length > 0){
-		// 	setCommentLists(commentLists.concat(blogCommentSearchSeqRes.sendObj.resObj));
-		// 	currentSeqG = blogCommentSearchSeqRes.sendObj.resObj.lastCommentSeq;
-		// }
-		
-		// if(blogCommentSearchSeqRes.sendObj.success === 'y'){
-		// 	// setDeleteSuc(true);
-		// }
-			
 
-
-		// }
-		// console.log(blogCommentSearchRes);
-		// if(cPage > 1){
-		// 	if(blogCommentSearchRes.sendObj.resObj.length > 0){
-		// 		setCommentLists(commentLists.concat(blogCommentSearchRes.sendObj.resObj));
-		// 	}else{
-		// 		currentPageG--;
-		// 	}
+		if(blogCommentSearchSeqRes.sendObj.resObj.blogComments.length > 0){
 			
-		// }else{
-		// 	setCommentLists(blogCommentSearchRes.sendObj.resObj);
-		// }
+			if(seq > 0){
+				setCommentLists(blogCommentArr.concat(blogCommentSearchSeqRes.sendObj.resObj.blogComments));
+			}else{
+				setCommentLists(blogCommentSearchSeqRes.sendObj.resObj.blogComments);
+			}
+			currentSeqG = blogCommentSearchSeqRes.sendObj.resObj.lastCommentSeq;
+
+		}
 	}
 
 	const observerEl = useRef<HTMLDivElement>(null);
@@ -220,18 +227,10 @@ const PriBlogListDetail = (props: any) => {
 			const target = entries[0];
 			
 			if(target.isIntersecting){ //스크롤이 가장 밑에 닿았을경우
-				currentPageG++;
-				// commentSearch(currentPageG);
-				commentSearchUseSeq(currentSeqG);
-				/*currentSeqG
-			1. 다음 페이지가 있을경우 back 에서 전달하도록 처리
-			*/ 
-			//   if(searchYnG === true){
-			//     getBlogLists(currentPage, keywordG);
-			//   }
-				
+				if(currentSeqG !== 0){
+					commentSearchUseSeq(currentSeqG);
+				}				
 			}
-			
 		},
 		[]
   	);
@@ -262,9 +261,9 @@ const PriBlogListDetail = (props: any) => {
 		const blogDeleteRes = await transactionAuth("post", "blog/commentdelete", obj, "", false); 
 		
 		if(blogDeleteRes.sendObj.success === 'y'){
-			console.log("삭제 성공");
+			// console.log("삭제 성공");
 			const deleteComentIndex = commentLists.findIndex(element => element._id === comment_id);
-			console.log(commentLists[deleteComentIndex]);
+			// console.log(commentLists[deleteComentIndex]);
 			
 			commentLists[deleteComentIndex].deleteyn = "y";
 			setCommentLists([...commentLists]);
@@ -272,9 +271,74 @@ const PriBlogListDetail = (props: any) => {
 		}
 	}
 
+	function showCommentClickHandler(){
+		if(showComment){
+			setShowComment(false);
+			
+		}else{
+			setShowComment(true);
+			// focusComment.current?.focus();
+		}
+	} 
+
+	useEffect(() => {
+    if (!commentRegRef.current) return;
+    window.addEventListener("scroll", yScrollEvent);
+    return () => {
+      window.removeEventListener("scroll", yScrollEvent);
+    };
+  }, [commentRegRef.current]);
+
+  const yScrollEvent = () => {
+    const scroll = commentRegRef.current?.getBoundingClientRect();
+    // console.log(scroll?.top);
+    // setHideElement(scroll?.top <= 85);
+		if(scroll?.top){
+			if(showCommentG){
+				if(scroll?.top < -60){
+					// console.log("하단에 댓글 등록 버튼 보이도록 처리");
+					setBottomCommentButton(true);
+				}else{
+					// console.log("하단에 댓글 등록 버튼 안보이도록 처리");
+					setBottomCommentButton(false);
+					setBottomCommentBox(false);
+				}
+			}else{
+				if(scroll?.top < 85){
+					// console.log("하단에 댓글 등록 버튼 보이도록 처리");
+					setBottomCommentButton(true);
+				}else{
+					// console.log("하단에 댓글 등록 버튼 안보이도록 처리");
+					setBottomCommentButton(false);
+					setBottomCommentBox(false);
+				}
+			}
+		}
+  };
+
+	function bottomCommentClickHandler(){
+		if(bottomCommentBox){
+			setBottomCommentBox(false);
+		}else{
+			// focusBottomCommentBox.current?.focus();
+			setBottomCommentBox(true);
+		}
+	}
+
+	function searchLike(){
+		const obj ={
+			user_id : user.id,
+			blog_list_seq:props.seq
+		} 
+	}
+
+	function likeOnclickHandler(){
+
+	}
+
 	return(
 		<>
-			<div>
+			<div className="" >
 			{(boardYn)?
 				((deleteSuc)?(
 					<div className="grid place-items-center grid-cols-1">
@@ -320,8 +384,22 @@ const PriBlogListDetail = (props: any) => {
 					</div>
 					{
 						(user.id.length > 0 && user.blog_seq+"" === props.blog_seq)?
-						<div>
-							<div className="flex justify-end  w-[90vw]">
+						<div className="flex justify-between w-[90vw] ">
+							<div className="flex justify-start">
+								<div>
+									<button className="tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
+									onClick={()=>showCommentClickHandler()}
+									>
+										comment
+									</button>
+								</div>
+								<div className="flex justify-normal ">
+									<p className="text-[20px] pt-2 ms-2 cursor-pointer"
+									onClick={()=>likeOnclickHandler()}
+									><BiLike /></p>
+								</div>
+							</div>
+							<div className="flex justify-end ">
 								<button className="tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
 								onClick={()=>updatePageMove()}
 								>
@@ -333,81 +411,20 @@ const PriBlogListDetail = (props: any) => {
 									Delete
 								</button>
 							</div>
-							</div>
+						</div>
 						:""
 					}
-					<div className="h-[100%]"> 
-						{
-							(commentLists.length > 0)?
-								commentLists.map((item:any, index:any)=>{
-									return(
-										
-										(item.deleteyn === 'y')?
-										(
-											
-											<div key={index} className="mt-1 p-1 w-[90vw] h-[150px] border ">
-												<div className="flex justify-center items-center w-[100%] h-[100%] bg-slate-50">
-													<p className="font-bold" >deleted</p> 
-												</div>
-											</div>
-											
-										)
-										:(<div key={index} className="mt-1 p-1 w-[90vw] h-[150px] border ">
-										<div className="flex justify-start">
-											<p className="mx-2 my-2 text-[12px] w-[49%]">
-												<Link href={"/blog/"+item.blog_seq}>
-												<span className="font-bold">{item.bloginfo.name}</span>
-												</Link>
-												{` (`+getDate(item.regdate) + `)`}
-											</p>
-
-											<p className="w-[49%]">
-												{/* <button>asdf</button> */}
-												<div className="justify-items-end ">
-													<p className="me-2">
-													{
-														(user.email === item.email)?(
-															<button className="
-															tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
-															onClick={()=>deleteComment(item._id)}
-															>
-																Delete
-															</button>
-														):""
-													}
-													
-													
-													</p>
-												</div>
-											</p>
-											
-										</div>
-										
-										<textarea className="mx-2 mt-1 text-sm break-all  bg-slate-50 w-[98%] h-[65%] p-1
-										resize-none border-none outline-none" spellCheck={false} readOnly
-										value={item.comment}
-										/>
-									</div>)
-									)
-								})
-							: ""
-						}
-						<div></div>
-					<div>
-
-					</div>
-						
-					</div>
+					<div ref={commentRegRef}></div>
 					{
-						(user.id)?(
-							<div className="sticky items-center bottom-0"> 
+						(showComment)?(
+							<div  className="items-center bottom-0"> 
 								<div className="w-[90vw] ">
-									<p className="font-bold">comment</p> 
+									{/* <p className="font-bold">comment</p>  */}
 									<div className="w-[100%] ">
 									<textarea  
-									// ref={focusTitle} 
+									ref={focusComment} 
 									onChange={(e)=>blogCommentOnchangeHandler(e)}
-									id="introduction" rows={2}  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+									id="introduction" rows={4}  className="resize-none border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 									</div>
 									<div className="flex justify-end">
 									<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
@@ -420,11 +437,101 @@ const PriBlogListDetail = (props: any) => {
 							</div>
 						):""
 					}
-							
-						
-						
-						
 					
+					<div className="w-[90vw] mt-3">
+						<p className="font-bold">Comments</p>
+					</div>
+
+					<div className="h-[100%]"> 
+						{
+							(commentLists.length > 0)?
+								commentLists.map((item:any, index:any)=>{
+									return(
+										
+										(item.deleteyn === 'y')?
+										(
+											<div key={index} className="mt-1 p-1 w-[90vw] h-[150px] border ">
+												<div className="flex justify-center items-center w-[100%] h-[100%] bg-slate-50">
+													<p className="font-bold" >deleted</p> 
+												</div>
+											</div>
+											
+										)
+										:(<div key={index} className="mt-1 p-1 w-[90vw] h-[150px] border ">
+												<div className="flex justify-start">
+													<p className="mx-2 my-2 text-[12px] w-[49%]">
+														<Link href={"/blog/"+item.blog_seq}>
+														<span className="font-bold">{item.bloginfo.name}</span>
+														</Link>
+														{` (`+getDate(item.regdate) + `)`}
+													</p>
+
+													<div className="w-[49%]">
+														{/* <button>asdf</button> */}
+														<div className="justify-items-end ">
+															<p className="me-2">
+															{
+																(user.email === item.email)?(
+																	<button className="
+																	tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
+																	onClick={()=>deleteComment(item._id)}
+																	>
+																		Delete
+																	</button>
+																):""
+															}
+															
+															
+															</p>
+														</div>
+													</div>
+												</div>
+												
+												<textarea className="mx-2 mt-1 text-sm break-all  bg-slate-50 w-[98%] h-[65%] p-1
+												resize-none border-none outline-none" spellCheck={false} readOnly
+												value={item.comment}/>
+									</div>)
+									)
+								})
+							: ""
+						}
+
+					</div>
+					{/* <div className="h-[70px]"></div>  */}
+					{
+					((user.id.length > 0 && user.blog_seq+"" === props.blog_seq) && bottomCommentButton)?
+					<div className="sticky  bottom-10">
+						<div className="flex justify-end w-[98vw] ">
+							<button className="font-bold border border-yellow-600 text-[25px] 
+							rounded-full bg-yellow-200 px-3 cursor-pointer"
+							onClick={()=>bottomCommentClickHandler()}
+							>+</button>
+						</div>
+					</div> 
+					:""
+					}
+					{
+						((user.id.length > 0 && user.blog_seq+"" === props.blog_seq) && bottomCommentBox)?(
+							<div className="sticky items-center bottom-5 border border-black bg-slate-100 px-3"> 
+								<div className="w-[85vw] ">
+									<p className="font-bold">comment</p> 
+									<div className="w-[100%] ">
+									<textarea  
+									ref={focusBottomCommentBox} 
+									onChange={(e)=>blogCommentOnchangeHandler(e)}
+									id="introduction" rows={4}  className="resize-none border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+									</div>
+									<div className="flex justify-end">
+									<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
+										onClick={()=>commentWriteHandler()}
+									>
+									Comment Write
+									</button>
+									</div>
+								</div>
+							</div>
+						):""
+					}
 				</div>)
 
 
@@ -450,6 +557,7 @@ const PriBlogListDetail = (props: any) => {
 
 			
 			}
+			{/* <div ref={scrollRef} className="bg-slate-600">test</div>  */}
 			<div ref={observerEl} className="h-1"/>
 		</div>
 		</>
