@@ -13,6 +13,8 @@ interface searchResArr {
     content:string,
     public:string,
     hashtag:string,
+    commentscnt:Number,
+    likecnt:Number
     deleteyn:string,
     regdate:string,
     reguser:string,

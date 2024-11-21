@@ -10,6 +10,9 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { BiHomeAlt2 } from "react-icons/bi";
 import { useRecoilState } from "recoil";
+import { TiDocumentText } from "react-icons/ti";
+import { BiLike } from "react-icons/bi"; //<BiLike />
+import { BiSolidLike } from "react-icons/bi"; //<BiSolidLike />
 
 let keywordG = "";
 let searchYnG = true;
@@ -155,6 +158,13 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
                   <div className="flex justify-between border-b border-black mb-2">
                     <p className=" text-xs my-2 ">{getDate(item.regdate)}</p>
                     {/* <Link href={"/blog/"+item.blog_seq}> */}
+                    <div className="flex justify-end w-[50%] pt-2">
+                        <p className="text-[16px] me-1"><TiDocumentText /></p>
+                        <p className="text-xs me-2">{item.commentscnt}</p>
+                        <p className="text-[16px] me-1"><BiSolidLike /></p>
+                        <p className="text-xs">{item.likecnt}</p>
+                      </div>
+
                     <p className="hover:text-lg my-2 cursor-pointer"
                       onClick={(e)=>movetoblog(item.blog_seq)}>
                       <span><BiHomeAlt2 /></span> 
@@ -196,7 +206,7 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
                   </div> 
                   </Link>
                   <div className="border-t border-black ">
-                    <p className="mt-2">태그</p>
+                    {/* <p className="mt-2">태그</p> */}
                   </div>
                 </div>
               </div>   

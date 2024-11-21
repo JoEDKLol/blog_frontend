@@ -26,6 +26,10 @@ const SideBar = (props: any) => {
 
 	const [priSearchKeyword, setPriSearchKeyword] = useRecoilState(priSearchKeywordState);
 	const [priSearchRes, setPriSearchRes] = useRecoilState(priSearchResArrState);
+	const [majorIndex, setMajorIndex] = useState<any>(-1);
+
+	const [chooseMajor, setChooseMajor] = useState<any>("2");
+	const [chooseSub, setChooseSub] = useState<any>(0);
 
 	useEffect(()=>{
 		getblogInfo();
@@ -51,8 +55,6 @@ const SideBar = (props: any) => {
 
 	async function searchCategories(majorSeqP:any, subSeqP:any, majorNameP:any, subNameP:any){
     
-		
-
 		let obj = {
 			blog_seq:props.blog_seq,
 			keyword:priSearchKeyword.keyword, 
@@ -63,6 +65,14 @@ const SideBar = (props: any) => {
 			currentPage:1,
 			searchYn:true
 		}
+
+		console.log(obj);
+
+		setMajorIndex(majorSeqP);
+		setChooseMajor(majorSeqP);
+
+		// setChooseMajor(majorSeqP);
+		setChooseSub(subSeqP);
 		// console.log("side bar 조회", obj);
 		setPriSearchKeyword(obj);
 		
@@ -85,7 +95,67 @@ const SideBar = (props: any) => {
 
 	}
 
+	function changeMajorCategory(e:any){
+		
+		const majorSeq = Number(e.target.value);
+		// console.log(majorCategories.find((e:any)=>e.seq === majorSeq));
+		if(majorSeq > -1){
+			const selectedMajorcategory = majorCategories.find((e:any)=>e.seq === majorSeq);
+			searchCategories(majorSeq, -1, selectedMajorcategory.categoryNm, "");
+		}else{
+			searchCategories(-1, -1, "", "");
+		}
+	}
+	function changeSubCategory(e:any){
+		const subSeq = Number(e.target.value);
+		
+		if(subSeq > -1){
+			const selectedMajorcategory = majorCategories.find((e:any)=>e.seq === majorIndex);
+			const selectedSubcategory = subCategories.find((e:any)=>e.seq === subSeq);
+			searchCategories(majorIndex, subSeq, selectedMajorcategory.categoryNm, selectedSubcategory.categoryNm);
+		}else{
+			const selectedMajorcategory = majorCategories.find((e:any)=>e.seq === majorIndex);
+			searchCategories(majorIndex, -1, selectedMajorcategory.categoryNm, "");
+		}
+		// setChooseSub(Number(e.target.value));
+
+	}
+
 	return (
+		<>
+		<div className="visible w-[100%] 2xl:visible xl:visible lg:visible md:visible sm:visible ">
+			<div className="flex justify-start pt-6 ms-[0px] ps-16 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
+				<p className=" border-black w-[90%]
+				">
+				<select value={chooseMajor} id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[48%] px-3 py-2 outline-none"
+					onChange={(e)=>changeMajorCategory(e)}
+					>
+						<option value="-1">all</option>
+						{
+							majorCategories.map((item:any, index:any)=>{
+								return (
+									<option key={index} value={item.seq}>{item.categoryNm}</option>
+								)
+							})
+						}
+					</select>
+					<select value={chooseSub} id="subCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[48%] ms-2 px-3 py-2 outline-none"
+					onChange={(e)=>changeSubCategory(e)}
+					>
+						<option>Choose a SubCategory</option>
+						{
+							subCategories.map((item:any, index:any)=>{
+								return (item.m_category_seq===majorIndex)?												
+								(
+									<option key={index} value={item.seq}>{item.categoryNm}</option>
+								):""
+							})
+						}
+					</select>
+				</p>
+          </div>
+		</div>
+
 		<div className="absolute invisible  ms-4 w-[230px]
 		2xl:visible xl:visible lg:visible md:invisible sm:invisible mt-5 rounded-lg
 		p-2 border-2 border-black">
@@ -166,6 +236,7 @@ const SideBar = (props: any) => {
 				</div>
 			</div>
 		</div>
+		</>
 	);
 
 };

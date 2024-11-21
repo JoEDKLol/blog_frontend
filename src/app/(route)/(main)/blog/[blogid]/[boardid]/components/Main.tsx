@@ -71,6 +71,7 @@ const PriBlogListDetail = (props: any) => {
 
 	const [bottomCommentButton, setBottomCommentButton] = useState<boolean>(false);
 	const [bottomCommentBox, setBottomCommentBox] = useState<boolean>(false);
+	const [blogListLike , setBlogListLike] = useState<boolean>(false);
 
 	const focusComment = useRef<HTMLTextAreaElement>(null);
 	const commentRegRef = useRef<HTMLDivElement>(null);
@@ -106,7 +107,7 @@ const PriBlogListDetail = (props: any) => {
 	useEffect(()=>{
     if(user.id){
 			console.log("해당 블로그상세에서 해당 유저ID로 좋아요 있는지 조회 ");
-
+			searchLike();
 		}
 	},[user]);
 
@@ -257,6 +258,7 @@ const PriBlogListDetail = (props: any) => {
 		const obj = {
 			comment_id : comment_id,
 			user_email : user.email,
+			blog_list_seq:props.seq,
 		}
 		const blogDeleteRes = await transactionAuth("post", "blog/commentdelete", obj, "", false); 
 		
@@ -325,14 +327,48 @@ const PriBlogListDetail = (props: any) => {
 		}
 	}
 
-	function searchLike(){
+	async function searchLike(){
+
 		const obj ={
 			user_id : user.id,
-			blog_list_seq:props.seq
-		} 
+			blog_list_seq:props.seq,
+		}
+		const searchBlogListLikeUpdateRes = await transactionAuth("get", "blog/searchbloglistlike", obj, "", false);
+		console.log(searchBlogListLikeUpdateRes);
+
+		if(searchBlogListLikeUpdateRes.sendObj.success === 'y'){
+			setBlogListLike((searchBlogListLikeUpdateRes.sendObj.resObj.like_yn === 'y')?true:false);
+		}
+
+	}
+
+	async function blogListLikeUpdate(likeYn:any){
+		const obj ={
+			user_id : user.id,
+			blog_list_seq:props.seq,
+			like_yn : likeYn,
+			email : user.email
+		}
+		const blogListLikeUpdateRes = await transactionAuth("post", "blog/bloglistlikeupdate", obj, "", false);
+		console.log(blogListLikeUpdateRes.sendObj);
+
+		if(blogListLikeUpdateRes.sendObj.success === 'y'){
+			setBlogListLike((blogListLikeUpdateRes.sendObj.resObj.like_yn === 'y')?true:false);
+		}
+
 	}
 
 	function likeOnclickHandler(){
+		if(blogListLike){
+			blogListLikeUpdate("n"); 
+			// setBlogListLike(false);
+			
+			
+		}else{
+			blogListLikeUpdate("y");
+			// setBlogListLike(true);
+		}
+
 
 	}
 
@@ -396,7 +432,12 @@ const PriBlogListDetail = (props: any) => {
 								<div className="flex justify-normal ">
 									<p className="text-[20px] pt-2 ms-2 cursor-pointer"
 									onClick={()=>likeOnclickHandler()}
-									><BiLike /></p>
+									>
+										{
+											(blogListLike)?<BiSolidLike />:<BiLike />
+										}
+										
+									</p>
 								</div>
 							</div>
 							<div className="flex justify-end ">
@@ -500,20 +541,20 @@ const PriBlogListDetail = (props: any) => {
 					{/* <div className="h-[70px]"></div>  */}
 					{
 					((user.id.length > 0 && user.blog_seq+"" === props.blog_seq) && bottomCommentButton)?
-					<div className="sticky  bottom-10">
-						<div className="flex justify-end w-[98vw] ">
-							<button className="font-bold border border-yellow-600 text-[25px] 
-							rounded-full bg-yellow-200 px-3 cursor-pointer"
+					<div className="sticky z-60 bottom-10">
+						<div className="flex justify-end w-[97vw] ">
+							<button className="font-bold border border-yellow-600 text-[20px] 
+							rounded-full bg-yellow-200 px-2 cursor-pointer"
 							onClick={()=>bottomCommentClickHandler()}
-							>+</button>
+							>C</button>
 						</div>
 					</div> 
 					:""
 					}
 					{
 						((user.id.length > 0 && user.blog_seq+"" === props.blog_seq) && bottomCommentBox)?(
-							<div className="sticky items-center bottom-5 border border-black bg-slate-100 px-3"> 
-								<div className="w-[85vw] ">
+							<div className="sticky items-center bottom-5 z-50 border border-black bg-slate-100 px-3"> 
+								<div className="w-[77vw] ">
 									<p className="font-bold">comment</p> 
 									<div className="w-[100%] ">
 									<textarea  

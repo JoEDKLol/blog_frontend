@@ -12,7 +12,9 @@ import { priSearchKeywordState } from "@/app/store/priSearchkeyword";
 import { priSearchResArrState } from "@/app/store/priSearch";
 import { getDate } from "@/app/utils/common";
 import { usePathname, useSearchParams } from "next/navigation";
-
+import { TiDocumentText } from "react-icons/ti";
+import { BiLike } from "react-icons/bi"; //<BiLike />
+import { BiSolidLike } from "react-icons/bi"; //<BiSolidLike />
 let keywordG = "";
 let majorSeqG = -1;
 let subSeqG = -1;
@@ -145,7 +147,7 @@ const PriMain = (props: any) => {
         <SideBar user={user} blog_seq={props.blog_seq} getBlogLists={getBlogLists} priSearchKeyword={priSearchKeyword} setPriSearchKeyword={setPriSearchKeyword} />
          
         <div className="">
-          <div className="flex justify-start pt-6 ms-[0px] ps-24 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
+          <div className="flex justify-start pt-6 ms-[0px] ps-16 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
             <p className="text-3xl  px-2 py-2 border-b-2 border-b-black w-[90%]
             ">
               {
@@ -176,6 +178,12 @@ const PriMain = (props: any) => {
                     <div className="flex justify-between border-b border-black mb-2">
                       <p className=" text-xs my-2 ">{getDate(item.regdate)}</p>
                       
+                      <div className="flex justify-end w-[50%] pt-2">
+                        <p className="text-[16px] me-1"><TiDocumentText /></p>
+                        <p className="text-xs me-2">{item.commentscnt}</p>
+                        <p className="text-[16px] me-1"><BiSolidLike /></p>
+                        <p className="text-xs">{item.likecnt}</p>
+                      </div>
                     </div>
 
                     <Link  href={"/blog/"+item.blog_seq + "/" + item.seq}>
@@ -214,7 +222,7 @@ const PriMain = (props: any) => {
                     </div>
                     </Link>
                     <div className="border-t border-black ">
-                      <p className="mt-2">태그</p>
+                      {/* <p className="mt-2">태그</p> */}
                     </div>
                   </div>
                 </div>  
