@@ -20,7 +20,7 @@ let subIndex = -1;
 const BlogUpdateForm = (props: any) => {
 	
 	const [user, setUser] = useRecoilState(userState);
-	const [img, setImg] = useState<any>();
+	const [img, setImg] = useState<any>("");
 	const [majorCategories, setMajorCategories] = useState<any>([]);
 	const [majorCategoryCnt, setMajorCategoryCnt] = useState<any>(0);
 	const [subCategories, setSubCategories] = useState<any>([]);
@@ -32,11 +32,13 @@ const BlogUpdateForm = (props: any) => {
 	const [blogName, setBlogName] = useState<any>("");
 	const [introduction, setIntroduction] = useState<any>("");
 	const [blogInfo, setBlogInfo] = useState<any>();	
-	const [blogUpSuc, setBlogUpSuc]= useState<any>(false);
-	
+	const [blogUpSuc, setBlogUpSuc] = useState<any>(false);
+	const [imgDelete, setImgDelete] = useState<any>(false);
 	
 	const focusMajor = useRef<HTMLInputElement>(null);
   	const focusSub = useRef<HTMLInputElement>(null);
+
+
 
 	
 
@@ -45,6 +47,69 @@ const BlogUpdateForm = (props: any) => {
 	useEffect(()=>{
 		getblogInfo();
 	},[])
+
+	useEffect(()=>{
+		// getblogInfo();
+		let totalByte = 0;
+		if(userName){
+			for(let i =0; i < userName.length; i++) {
+				let currentByte = userName.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+	
+				if(totalByte > 80){
+					setUserName(userName.substring(0, i));
+					break;
+				}
+			}		
+		}
+		
+	},[userName])
+
+	useEffect(()=>{
+		// getblogInfo();
+		let totalByte = 0;
+		if(blogName){
+			for(let i =0; i < blogName.length; i++) {
+				let currentByte = blogName.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 80){
+					setBlogName(blogName.substring(0, i));
+					break;
+				}
+			}
+		}
+					
+	},[blogName])
+
+	useEffect(()=>{
+		// getblogInfo();
+		let totalByte = 0;
+		if(introduction){
+			for(let i =0; i < introduction.length; i++) {
+				let currentByte = introduction.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 500){
+					setIntroduction(introduction.substring(0, i));
+					break;
+				}
+			}
+		}
+					
+	},[introduction])
 
 	async function getblogInfo(){
 		const obj = {
@@ -63,18 +128,24 @@ const BlogUpdateForm = (props: any) => {
 		if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
 			setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
 			setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
+		}else{
+			setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
+			setMajorCategories([]);
 		}
 
 		if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
 			setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
 			setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
+		}else{
+			setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
+			setSubCategories([]);
 		}
 	}
 
 	async function fileUploadHandler(e:any){
 
 		// - 백앤드 이미지 저장 사용 temp 저장 후 url 반환 
-    // - 저장 누르면 해당 temp 삭제 및 실제 저장
+    	// - 저장 누르면 해당 temp 삭제 및 실제 저장
 		// - 새로운 이미지 선택시 기존 temp 삭제 및 새로 temp 저장 
 		// - 사이즈 조정 
 		const file = e.target.files[0]; 
@@ -95,14 +166,18 @@ const BlogUpdateForm = (props: any) => {
 			const obj = {
 				user_id : user.id,
 				email : user.email,
-				randomNum : randomNum
+				randomNum : randomNum, 
+				blog_seq : user.blog_seq
 			}
+
+			console.log(obj);
 	
 			const imgUploadRes = await transactionFile("blog/fileUpload", compressedFile, obj, "", false);
-			console.log(imgUploadRes.sendObj);
+			// console.log(imgUploadRes.sendObj);
 	
 			if(imgUploadRes.sendObj.success === 'y'){
 				setImg(imgUploadRes.sendObj.resObj.img_url);
+				setImgDelete(false);
 			}else{
 	
 			}
@@ -139,10 +214,13 @@ const BlogUpdateForm = (props: any) => {
 		// console.log(addMajorRes.sendObj.resObj);
 
 		const indexM = majorCategories.findIndex((val:any) => val.seq === addMajorRes.sendObj.resObj.seq);
-		// console.log(indexM);
-
+		
 		if(indexM < 0){
+			if(majorCategories.length === 0){
+				setMajorCategoryCnt(1);
+			}
 			setMajorCategories([...majorCategories, addMajorRes.sendObj.resObj]);
+			
 		}
 		
 		setMajorCategoryText("");
@@ -312,9 +390,12 @@ const BlogUpdateForm = (props: any) => {
 			blog_seq :user.blog_seq,
 			majorCategories:majorCategories,
 			subCategories:subCategories,
+			imgDelete:imgDelete
 			// randomNum : randomNum
 		}
 		
+		// console.log(obj);
+		// return;
 		const blogUpdateRes = await transactionAuth("post", "blog/blogUpdate", obj, "", false);
 		// console.log(blogUpdateRes.sendObj.success );
 
@@ -348,6 +429,11 @@ const BlogUpdateForm = (props: any) => {
 	const router = useRouter();
 	function movetoPriList(){
 		router.push('/blog/' + user.blog_seq)
+	}
+	
+	function deleteImg(){
+		setImg("");
+		setImgDelete(true);
 	}
 
 	return(
@@ -449,20 +535,30 @@ const BlogUpdateForm = (props: any) => {
 						</div>
 					</div>
 					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
-						<label className="w-[130px] border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200" htmlFor="file_input">
-								Upload File
-						</label>
-						<input className="w-[340px]
-						2xl:w-[440px] xl:w-[440px] lg:w-[440px] md:w-[440px] sm:w-[340px]
-						text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer
-						invisible
-						" id="file_input" type="file"
-						accept="image/*" 
-						onChange={(e)=>fileUploadHandler(e)}
-						
-						>
-						</input>
-						
+						<div className="me-1">
+							<label className="cursor-pointer w-[130px] border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200" htmlFor="file_input">
+									Upload File
+							</label>
+							<input className="w-[340px]
+							2xl:w-[440px] xl:w-[440px] lg:w-[440px] md:w-[440px] sm:w-[340px]
+							text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer
+							hidden
+							" id="file_input" type="file"
+							accept="image/*" 
+							onChange={(e)=>fileUploadHandler(e)}
+							
+							>
+							</input>
+
+						</div>
+						<div>
+							<label className="cursor-pointer w-[130px] border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200"
+							htmlFor="img_delete"
+							onClick={()=>deleteImg()}
+							>
+								Delete
+							</label>
+						</div>
 					</div>
 					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
 								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]

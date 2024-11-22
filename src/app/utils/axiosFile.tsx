@@ -22,7 +22,10 @@ const transactionFile = async (url:string, fileObj:any, obj:any, callback:any, c
 		formData.append('user_id', obj.user_id);
 		formData.append('temp_num', obj.randomNum);
 		formData.append('email', obj.email);
-		
+
+		if(obj.blog_seq){
+			formData.append('blog_seq', obj.blog_seq);
+		}
 		
         let resp:any, data:any;
 		

@@ -176,12 +176,12 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
                   <div className="group ">
                     <div className="">
                       {item.pic ? (
-                        <div className='ring-1 ring-gray-300 rounded-xl h-32 relative' >
+                        <div className='ring-1 ring-black rounded-xl h-36 relative' >
                             <Image 
                             src={item.pic}
                             quality={30}
                             layout="fill"
-                            style={{ objectFit: "cover" , borderRadius: '8px' }}
+                            style={{ objectFit: "cover" , borderRadius: '12px' }}
                             alt='' />
                         </div>) : ""
                       }
@@ -196,7 +196,7 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
                           {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
                         </div>  
                       ):(
-                        <div className=" m-1 h-[248px] my-4 break-all line-clamp-5">
+                        <div className=" m-1 h-[264px] my-4 break-all line-clamp-5">
                           {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
                         </div>
 

@@ -53,6 +53,23 @@ import { useRouter,usePathname } from "next/navigation";
 			getCategoryInfo();
 		},[])
 
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < title.length; i++) {
+				let currentByte = title.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 200){
+					setTitle(title.substring(0, i));
+					break;
+				}
+			}			
+		},[title]);
+
 		async function getCategoryInfo(){
 			const obj = {
 				user_id : user.id,
@@ -197,6 +214,7 @@ import { useRouter,usePathname } from "next/navigation";
 						</div>
 						<div className="w-[100%] ">
 						<input ref={focusTitle} 
+						value={title}
 						onChange={(e)=>title_onchangeHandler(e)}
 						autoComplete="off" id="title" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 						</div>

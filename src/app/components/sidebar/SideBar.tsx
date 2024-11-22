@@ -123,14 +123,17 @@ const SideBar = (props: any) => {
 
 	return (
 		<>
-		<div className="visible w-[100%] 2xl:visible xl:visible lg:visible md:visible sm:visible ">
-			<div className="flex justify-start pt-6 ms-[0px] ps-16 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
+		<div className="block w-[100%] 2xl:hidden xl:hidden lg:hidden md:block sm:block" >
+			<div className="flex justify-start pt-6  ps-16 ms-[0px] 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
+				<p className="font-bold border-b-2 border-b-black w-[90%]">Categories</p>
+			</div>
+			<div className="flex justify-start pt-6  ps-16 ms-[0px] 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
 				<p className=" border-black w-[90%]
 				">
 				<select value={chooseMajor} id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[48%] px-3 py-2 outline-none"
 					onChange={(e)=>changeMajorCategory(e)}
 					>
-						<option value="-1">all</option>
+						<option value="-1">Choose a MajorCategory</option>
 						{
 							majorCategories.map((item:any, index:any)=>{
 								return (
@@ -162,13 +165,13 @@ const SideBar = (props: any) => {
 			<div className="">
 				<div className="h-[100%] p-1 border-b">
 					<p className="mt-1 mb-1 font-bold truncate  ">{blogInfo.blogtitle}</p>
-					<div className='w-[100%] h-[200px] ring-1 ring-black rounded-xl relative' >
+					<div className='w-[100%] h-[200px] ring-2 ring-black rounded-xl relative' >
 						{blogInfo.blogimg?
 						(<Image 
 							src={blogInfo.blogimg}
 							quality={30}
 							layout="fill"
-							style={{ objectFit: "cover" , borderRadius: '8px' }}
+							style={{ objectFit: "cover" , borderRadius: '12px' }}
 							alt='' />):""
 						}
 						
