@@ -14,7 +14,9 @@ import { useRecoilState } from "recoil";
 import Link from "next/link";
 import { priSearchKeywordState } from "@/app/store/priSearchkeyword";
 import { priSearchResArrState } from "@/app/store/priSearch";
-import { transaction } from "@/app/utils/axios";
+
+import { transaction, transaction2 } from "@/app/utils/axios";
+import { loadingBarState } from "@/app/store/loadingBar";
 
 const SideBar = (props: any) => {
 	const [blogInfo, setblogInfo] = useState<any>({});
@@ -26,10 +28,17 @@ const SideBar = (props: any) => {
 
 	const [priSearchKeyword, setPriSearchKeyword] = useRecoilState(priSearchKeywordState);
 	const [priSearchRes, setPriSearchRes] = useRecoilState(priSearchResArrState);
+
 	const [majorIndex, setMajorIndex] = useState<any>(-1);
 
 	const [chooseMajor, setChooseMajor] = useState<any>("2");
 	const [chooseSub, setChooseSub] = useState<any>(0);
+
+
+
+	const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+
+
 
 	useEffect(()=>{
 		getblogInfo();
@@ -39,7 +48,7 @@ const SideBar = (props: any) => {
 		const obj = {
 			blog_seq :props.blog_seq,
 		}
-		const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false);
+		const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState);
 		
 		setblogInfo(blogInfoRes.sendObj.resObj.blogInfo);
 		if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
@@ -54,7 +63,7 @@ const SideBar = (props: any) => {
 	}
 
 	async function searchCategories(majorSeqP:any, subSeqP:any, majorNameP:any, subNameP:any){
-    
+		// console.log("여기~~~~~~~~~~~~~~~~~~~~~~~");
 		let obj = {
 			blog_seq:props.blog_seq,
 			keyword:priSearchKeyword.keyword, 
@@ -66,7 +75,7 @@ const SideBar = (props: any) => {
 			searchYn:true
 		}
 
-		console.log(obj);
+		// console.log(obj);
 
 		setMajorIndex(majorSeqP);
 		setChooseMajor(majorSeqP);
@@ -77,7 +86,9 @@ const SideBar = (props: any) => {
 		setPriSearchKeyword(obj);
 		
 		// return;
-		const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
+		// const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
+
+		const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false, true, setLoadingBarState);
 		
 
 		setPriSearchRes(bloglistObj.sendObj.resObj.list);
@@ -157,7 +168,7 @@ const SideBar = (props: any) => {
 					</select>
 				</p>
           </div>
-		</div>
+		</div> 
 
 		<div className="absolute invisible  ms-4 w-[230px]
 		2xl:visible xl:visible lg:visible md:invisible sm:invisible mt-5 rounded-lg

@@ -14,6 +14,7 @@ import { signOut } from "next-auth/react";
 import { transaction } from "@/app/utils/axios";
 import { searchResArrState } from "@/app/store/search";
 import { searchKeywordState } from "@/app/store/searchkeyword";
+import { loadingBarState } from "@/app/store/loadingBar";
 
 
 const MainHeader = (props: any) => {
@@ -29,7 +30,7 @@ const MainHeader = (props: any) => {
 
   const searchParams = useSearchParams()
   const search = searchParams.get('refresh')
-
+  const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     // setTheme(document.body.className as Theme);
@@ -84,7 +85,7 @@ const MainHeader = (props: any) => {
   async function logoutOnclickHandler(){
     signOut();
     sessionStorage.removeItem("myblog-accesstoken");
-    const retObj = await transaction("get", "logout", {}, "", false);
+    const retObj = await transaction("get", "logout", {}, "", false, true, setLoadingBarState);
   }
 
   function movetoMyBlogOnclickHandler(){
@@ -123,7 +124,7 @@ const MainHeader = (props: any) => {
     }
     setSearchKeyword(obj);
     
-    const bloglistObj = await transaction("get", "blog/bloglist", obj, "", false);
+    const bloglistObj = await transaction("get", "blog/bloglist", obj, "", false, true, setLoadingBarState);
     // console.log(bloglistObj);
 
     setSearchRes(bloglistObj.sendObj.resObj.list); 
@@ -141,7 +142,7 @@ const MainHeader = (props: any) => {
           {/* <head><title>Lola's Home</title></head> */}
           <header
             ref={headerRef}
-            className="sticky top-0 left-0 w-full z-50 h-30 font-mono transition duration-500 bg-white dark:bg-[#111111]"
+            className="sticky top-0 left-0 w-full z-40 h-30 font-mono transition duration-500 bg-white dark:bg-[#111111]"
           >
             <nav className="flex items-center justify-between flex-wrap p-3">
               <div className="flex items-center flex-shrink-0 text-dark mr-6">

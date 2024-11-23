@@ -10,6 +10,7 @@ import { RxUpdate } from "react-icons/rx";
 import { CiSquareMinus } from "react-icons/ci";
 import { transactionAuth } from "@/app/utils/axiosAuth";
 import { useRouter } from "next/navigation";
+import { loadingBarState } from "@/app/store/loadingBar";
 
 
 const randomNum = getRandomNumber(10);
@@ -38,7 +39,7 @@ const BlogUpdateForm = (props: any) => {
 	const focusMajor = useRef<HTMLInputElement>(null);
   	const focusSub = useRef<HTMLInputElement>(null);
 
-
+	const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 
 	
 
@@ -111,13 +112,55 @@ const BlogUpdateForm = (props: any) => {
 					
 	},[introduction])
 
+	useEffect(()=>{
+		// getblogInfo();
+		let totalByte = 0;
+		if(majorCategoryText){
+			for(let i =0; i < majorCategoryText.length; i++) {
+				let currentByte = majorCategoryText.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 20){
+					setMajorCategoryText(majorCategoryText.substring(0, i));
+					break;
+				}
+			}
+		}
+					
+	},[majorCategoryText])
+
+	useEffect(()=>{
+		// getblogInfo();
+		let totalByte = 0;
+		if(subCategoryText){
+			for(let i =0; i < subCategoryText.length; i++) {
+				let currentByte = subCategoryText.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 20){
+					setSubCategoryText(subCategoryText.substring(0, i));
+					break;
+				}
+			}
+		}
+					
+	},[subCategoryText])
+
 	async function getblogInfo(){
 		const obj = {
 			user_id : user.id,
 			email : user.email,
 			blog_seq :user.blog_seq,
 		}
-		const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false); 
+		const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState); 
 		
 		setUserName(blogInfoRes.sendObj.resObj.blogInfo.name);
 		setBlogName(blogInfoRes.sendObj.resObj.blogInfo.blogtitle);
@@ -172,7 +215,7 @@ const BlogUpdateForm = (props: any) => {
 
 			console.log(obj);
 	
-			const imgUploadRes = await transactionFile("blog/fileUpload", compressedFile, obj, "", false);
+			const imgUploadRes = await transactionFile("blog/fileUpload", compressedFile, obj, "", false, true, setLoadingBarState);
 			// console.log(imgUploadRes.sendObj);
 	
 			if(imgUploadRes.sendObj.success === 'y'){
@@ -210,7 +253,7 @@ const BlogUpdateForm = (props: any) => {
 			// majorIndex:majorIndexR
 		}
 
-		const addMajorRes = await transactionAuth("post", "blog/majorAdd", majorCategory, "", false); 
+		const addMajorRes = await transactionAuth("post", "blog/majorAdd", majorCategory, "", false, true, setLoadingBarState); 
 		// console.log(addMajorRes.sendObj.resObj);
 
 		const indexM = majorCategories.findIndex((val:any) => val.seq === addMajorRes.sendObj.resObj.seq);
@@ -245,7 +288,7 @@ const BlogUpdateForm = (props: any) => {
 			// majorIndex:majorIndexR
 		}
 
-		const deleteMajorRes = await transactionAuth("post", "blog/majorDelete", majorCategory, "", false); 
+		const deleteMajorRes = await transactionAuth("post", "blog/majorDelete", majorCategory, "", false, true, setLoadingBarState); 
 		// console.log(addMajorRes);
 
 		if(deleteMajorRes.sendObj.success === "y"){
@@ -326,7 +369,7 @@ const BlogUpdateForm = (props: any) => {
 			order:0,
 		}
 
-		const addSubRes = await transactionAuth("post", "blog/subAdd", subCategory, "", false);
+		const addSubRes = await transactionAuth("post", "blog/subAdd", subCategory, "", false, true, setLoadingBarState);
 
 		const indexS = subCategories.findIndex((val:any) => val.seq === addSubRes.sendObj.resObj.seq);
 		// console.log(indexM);
@@ -363,7 +406,7 @@ const BlogUpdateForm = (props: any) => {
 			order:0,
 		}
 
-		const deleteSubRes = await transactionAuth("post", "blog/subDelete", subCategory, "", false); 
+		const deleteSubRes = await transactionAuth("post", "blog/subDelete", subCategory, "", false, true, setLoadingBarState); 
 		// console.log(addMajorRes);
 
 		if(deleteSubRes.sendObj.success === "y"){
@@ -396,7 +439,7 @@ const BlogUpdateForm = (props: any) => {
 		
 		// console.log(obj);
 		// return;
-		const blogUpdateRes = await transactionAuth("post", "blog/blogUpdate", obj, "", false);
+		const blogUpdateRes = await transactionAuth("post", "blog/blogUpdate", obj, "", false, true, setLoadingBarState);
 		// console.log(blogUpdateRes.sendObj.success );
 
 		if(blogUpdateRes.sendObj.success === 'y'){

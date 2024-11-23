@@ -14,8 +14,8 @@ axiosFile.interceptors.request.use((config)=>{
 	return config;
 })
 
-const transactionFile = async (url:string, fileObj:any, obj:any, callback:any, callbackYn:boolean) => {
-	
+const transactionFile = async (url:string, fileObj:any, obj:any, callback:any, callbackYn:boolean, loadingScreenYn:any, setLoadingYn:any) => {
+	if(loadingScreenYn === true) setLoadingYn(true);
 	try{
 		const formData = new FormData();
 		formData.append('file', fileObj);
@@ -33,7 +33,7 @@ const transactionFile = async (url:string, fileObj:any, obj:any, callback:any, c
 		data = await resp.data;
 		
 		if(url===""){
-			
+			if(loadingScreenYn === true) setLoadingYn(false);
 			if(callbackYn){
 				callback(data);
 			}else{
@@ -68,7 +68,7 @@ const transactionFile = async (url:string, fileObj:any, obj:any, callback:any, c
 			}
 
 		}
-
+		if(loadingScreenYn === true) setLoadingYn(false);
 		if(callbackYn){
 			callback(data);
 		}else{

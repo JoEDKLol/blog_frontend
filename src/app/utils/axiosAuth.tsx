@@ -11,8 +11,8 @@ axiosAuth.interceptors.request.use((config)=>{
 	return config;
 })
 
-const transactionAuth = async (type:string, url:string, obj:any, callback:any, callbackYn:boolean) => {
-	
+const transactionAuth = async (type:string, url:string, obj:any, callback:any, callbackYn:boolean, loadingScreenYn:any, setLoadingYn:any) => {
+	if(loadingScreenYn === true) setLoadingYn(true);
 	try{
         let resp:any, data:any;
 		if(type === "get"){
@@ -25,6 +25,8 @@ const transactionAuth = async (type:string, url:string, obj:any, callback:any, c
 		}
 
 		if(url===""){
+
+			if(loadingScreenYn === true) setLoadingYn(false);
 			
 			if(callbackYn){
 				callback(data);
@@ -64,6 +66,8 @@ const transactionAuth = async (type:string, url:string, obj:any, callback:any, c
 			}
 
 		}
+
+		if(loadingScreenYn === true) setLoadingYn(false);
 
 		if(callbackYn){
 			callback(data);

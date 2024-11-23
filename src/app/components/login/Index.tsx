@@ -1,4 +1,5 @@
 'use client';
+import { loadingBarState } from "@/app/store/loadingBar";
 import { accesstokenState } from "@/app/store/token";
 import { userState } from "@/app/store/user";
 import { transaction } from "@/app/utils/axios";
@@ -16,7 +17,7 @@ const Login = (props: any) => {
   const [user, setUser] = useRecoilState(userState);
   const [resLoginStr, setResLoginStr] = useState<any>("");
   // const sessionTest = useSession();
-
+  const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
   useEffect(()=>{
     // console.log("여기");
     // console.log(sessionTest);
@@ -56,7 +57,7 @@ const Login = (props: any) => {
 
     }else{
       //resp.headers.accesstoken;
-      const retObj = await transaction("get", "getAccessToken", {}, "", false);
+      const retObj = await transaction("get", "getAccessToken", {}, "", false, true, setLoadingBarState);
       // console.log(retObj);
       if(retObj.sendObj.code === "2000"){
         //유저정보는 리코일에

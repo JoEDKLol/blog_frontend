@@ -9,6 +9,9 @@ import { useEffect, useRef, useState } from 'react';
 import SocialLoginFail from "@/app/(route)/(sociallogin)/socialloginfail/page";
 import PriHeader from "../priLayout/Header";
 import PriMain from "./PriMain";
+import LoadingScreen from "../loadingScreen/Index";
+import { useRecoilState } from "recoil";
+import { loadingBarState } from "@/app/store/loadingBar";
 
 const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
   type typeMainHome = boolean;
@@ -16,6 +19,8 @@ const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
   const path:any = usePathname();
   const path2:string = path.substr(0,5);
   const childRef = useRef(null);
+  // const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+  //loading bar
 
   useEffect(() => {
     // console.log(path2);
@@ -26,16 +31,16 @@ const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
     }    
   }, [path]);
 
-  function test(){
-    console.log("????");
-  }
-
   return (
     <>
     {/* {children} */}
     {
-      (path === "/")?<><MainHeader></MainHeader><MainContent>{children}</MainContent></>
-      :(path2 === "/blog")?<><PriHeader></PriHeader><PriMain>{children}</PriMain></>
+      (path === "/")?
+      <><LoadingScreen/><MainHeader></MainHeader><MainContent>{children}</MainContent></>
+      :(path2 === "/blog")?<>
+      <LoadingScreen/>
+      <PriHeader></PriHeader><PriMain>{children}</PriMain>
+      </>
       // :(path2 === "/blog")?<>{children}</>
       :(path === "/sociallogin")?<>{children}</>
       :(path === "/socialloginfail")?<>{children}</>

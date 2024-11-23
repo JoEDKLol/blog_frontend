@@ -15,6 +15,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { TiDocumentText } from "react-icons/ti";
 import { BiLike } from "react-icons/bi"; //<BiLike />
 import { BiSolidLike } from "react-icons/bi"; //<BiSolidLike />
+import { loadingBarState } from "@/app/store/loadingBar";
 let keywordG = "";
 let majorSeqG = -1;
 let subSeqG = -1;
@@ -35,6 +36,7 @@ const PriMain = (props: any) => {
 
   const searchParams = useSearchParams()
   const search = searchParams.get('refresh')
+  const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
   
   
   useEffect(()=>{
@@ -69,7 +71,7 @@ const PriMain = (props: any) => {
       searchYn:false
     }
 
-    const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
+    const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false, true, setLoadingBarState);
 
     if(cPage > 1){
       if(bloglistObj.sendObj.resObj.list.length > 0){

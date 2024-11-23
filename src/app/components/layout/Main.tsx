@@ -13,6 +13,7 @@ import { useRecoilState } from "recoil";
 import { TiDocumentText } from "react-icons/ti";
 import { BiLike } from "react-icons/bi"; //<BiLike />
 import { BiSolidLike } from "react-icons/bi"; //<BiSolidLike />
+import { loadingBarState } from "@/app/store/loadingBar";
 
 let keywordG = "";
 let searchYnG = true;
@@ -31,7 +32,7 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
 
   const searchParams = useSearchParams()
   const search = searchParams.get('refresh')
-
+  const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
   // let currentPage = 0;
   // let searchYn = true;
   // let blogListDB:any = [];
@@ -64,7 +65,7 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
     
     
     // console.log("조회전:::", currentPage);
-    const bloglistObj = await transaction("get", "blog/bloglist", obj, "", false);
+    const bloglistObj = await transaction("get", "blog/bloglist", obj, "", false, true, setLoadingBarState);
     // console.log("중간:::", currentPage);
     if(cPage > 1){
       // console.log("최초에는 안옴");

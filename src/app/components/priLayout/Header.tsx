@@ -17,6 +17,7 @@ import { FaPenToSquare } from "react-icons/fa6";
 import { FaHouse } from "react-icons/fa6";
 import { TbHome } from "react-icons/tb";
 import { TfiWrite } from "react-icons/tfi";
+import { loadingBarState } from "@/app/store/loadingBar";
 
 const PriHeader = (props: any) => {
 
@@ -30,7 +31,7 @@ const PriHeader = (props: any) => {
   const [searchText, setSearchText] = useState<any>();
   const [priSearchRes, setPriSearchRes] = useRecoilState(priSearchResArrState);
   const [priSearchKeyword, setPriSearchKeyword] = useRecoilState(priSearchKeywordState);
-
+  const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState); 
   const path:any = usePathname();
   const blog_seq = path.split("/")[2];
 
@@ -85,7 +86,7 @@ const PriHeader = (props: any) => {
   async function logoutOnclickHandler(){
     signOut();
     sessionStorage.removeItem("myblog-accesstoken");
-    const retObj = await transaction("get", "logout", {}, "", false);
+    const retObj = await transaction("get", "logout", {}, "", false, true, setLoadingBarState);
   }
 
   //blog_seq로 블로그 정보를 조회한다.
@@ -93,7 +94,7 @@ const PriHeader = (props: any) => {
     let obj = {
       blog_seq:blog_seq
     }
-    const blogInfoObj = await transaction("get", "blog/blogInfo", obj, "", false);
+    const blogInfoObj = await transaction("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState);
     setBlogInfo(blogInfoObj.sendObj.resObj.blogInfo);
   }
   
@@ -136,7 +137,7 @@ const PriHeader = (props: any) => {
     }
     setPriSearchKeyword(obj);
 
-    const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
+    const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false, true, setLoadingBarState);
 
     setPriSearchRes(bloglistObj.sendObj.resObj.list); 
     let obj2 = {
@@ -174,7 +175,7 @@ const PriHeader = (props: any) => {
       <>
           <header
             ref={headerRef}
-            className="sticky top-0 left-0 w-full z-50 h-30 font-mono transition duration-500 bg-white dark:bg-[#111111]"
+            className="sticky top-0 left-0 w-full z-40 h-30 font-mono transition duration-500 bg-white dark:bg-[#111111]"
           >
           <nav className="flex items-center justify-between flex-wrap p-3">
 

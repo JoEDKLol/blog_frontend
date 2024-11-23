@@ -10,6 +10,7 @@ import { transactionFile } from "@/app/utils/axiosFile";
 import { getRandomNumber } from "@/app/utils/common";
 import { transactionAuth } from "@/app/utils/axiosAuth";
 import { useRouter,usePathname } from "next/navigation";
+import { loadingBarState } from "@/app/store/loadingBar";
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
@@ -46,7 +47,7 @@ import { useRouter,usePathname } from "next/navigation";
 		const [majorIndex, setMajorIndex] = useState<any>(-1);
 		const [chooseMajor, setChooseMajor] = useState<any>();
 		const [chooseSub, setChooseSub] = useState<any>();
-		
+		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 
 		useEffect(()=>{
 			focusTitle.current?.focus();
@@ -76,7 +77,7 @@ import { useRouter,usePathname } from "next/navigation";
 				email : user.email,
 				blog_seq :user.blog_seq,
 			}
-			const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false); 
+			const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState); 
 			
 			if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
 				setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
@@ -97,7 +98,7 @@ import { useRouter,usePathname } from "next/navigation";
 				email : user.email,
 				randomNum : randomNum
 			}
-			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false);
+			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false, true, setLoadingBarState);
 			const range = editor.getSelection();
       		editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
 		}
@@ -149,7 +150,7 @@ import { useRouter,usePathname } from "next/navigation";
 				s_category_seq:chooseSub
 			}
 			
-			const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false);
+			const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false, true, setLoadingBarState);
 			// console.log(imgUploadRes.sendObj.success );
 
 			if(imgUploadRes.sendObj.success === 'y'){

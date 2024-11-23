@@ -11,6 +11,7 @@ import { getRandomNumber } from "@/app/utils/common";
 import { transactionAuth } from "@/app/utils/axiosAuth";
 import { transaction } from "@/app/utils/axios";
 import { useRouter } from "next/navigation";
+import { loadingBarState } from "@/app/store/loadingBar";
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
@@ -49,6 +50,7 @@ import { useRouter } from "next/navigation";
 		const [chooseSub, setChooseSub] = useState<any>();
 
 		const [blogDetail, setBlogDetail] = useState<any>({});
+		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 		
         useEffect(()=>{
             getBlogDetail();
@@ -61,7 +63,7 @@ import { useRouter } from "next/navigation";
 				seq:props.seq
 			}
 	
-			const bloglistObj = await transaction("get", "blog/blogDetail", obj, "", false);
+			const bloglistObj = await transaction("get", "blog/blogDetail", obj, "", false, true, setLoadingBarState);
 			
 			// console.log(bloglistObj.sendObj.resObj.blogDetail);
 			setContent(bloglistObj.sendObj.resObj.blogDetail.content);
@@ -80,7 +82,7 @@ import { useRouter } from "next/navigation";
 				email : user.email,
 				blog_seq :user.blog_seq,
 			}
-			const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false); 
+			const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState); 
 			
 			if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
 				setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
@@ -101,7 +103,7 @@ import { useRouter } from "next/navigation";
 				email : user.email,
 				randomNum : tempNum
 			}
-			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false);
+			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false, true, setLoadingBarState);
 			const range = editor.getSelection();
       		editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
 		}
@@ -153,7 +155,7 @@ import { useRouter } from "next/navigation";
 			
 			// console.log(obj);
 
-			const updateRes = await transactionAuth("post", "blog/update", obj, "", false);
+			const updateRes = await transactionAuth("post", "blog/update", obj, "", false, true, setLoadingBarState);
 			// console.log(imgUploadRes.sendObj.success );
 
 			if(updateRes.sendObj.success === 'y'){

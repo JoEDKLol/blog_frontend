@@ -8,6 +8,7 @@ import { transaction } from "@/app/utils/axios";
 import { userState } from "@/app/store/user";
 import { transactionAuth } from "@/app/utils/axiosAuth";
 import { getAccessToken, storeAccessToken } from "@/app/utils/common";
+import { loadingBarState } from "@/app/store/loadingBar";
 /*
     모든페이지에서 호출되는 공통 페이지
 */
@@ -18,7 +19,7 @@ const CommonTransaction = ({ children }: any) => {
     const [user, setUser] = useRecoilState<any>(userState);
     const path:any = usePathname();
     const router = useRouter();
-    
+    const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 
     //페이지이동감지
     // console.log("토큰검증");
@@ -38,7 +39,7 @@ const CommonTransaction = ({ children }: any) => {
     }, [path]);
     
     async function getAccessTokenApi(){
-        const retObj = await transaction("get", "getAccessToken", {}, "", false);
+        const retObj = await transaction("get", "getAccessToken", {}, "", false, true, setLoadingBarState);
         if(retObj.sendObj.code === "2000"){
             
             //유저정보는 리코일에
@@ -54,7 +55,7 @@ const CommonTransaction = ({ children }: any) => {
 
     async function getAccessTokenCheck(){
         
-        const retObj = await transactionAuth("post", "checkaccessToken", {}, "", false);
+        const retObj = await transactionAuth("post", "checkaccessToken", {}, "", false, true, setLoadingBarState);
         console.log(retObj);
         if(retObj.sendObj.success){
             setUser(retObj.sendObj.resObj);
@@ -77,9 +78,11 @@ const CommonTransaction = ({ children }: any) => {
         
     } else {
         return (
-            <div className='w-screen h-screen flex items-center justify-center text-2xl font-bold'>
-                로딩중...
-            </div>
+            <>
+            {/* <div className='w-screen h-screen flex items-center justify-center text-2xl font-bold'>
+                 로딩중...
+            </div> */}
+            </>
         );
     }
 

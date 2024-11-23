@@ -4,6 +4,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 import { checkInputData } from '../../utils/checkUserValidation';
 import { transaction } from '../../utils/axios';
+import { useRecoilState } from "recoil";
+import { loadingBarState } from "@/app/store/loadingBar";
 
 
 const SignUp = (props: any) => {
@@ -31,6 +33,9 @@ const SignUp = (props: any) => {
   const focusName = useRef<HTMLInputElement>(null);
   const focusPassword = useRef<HTMLInputElement>(null);
   const focusRepassword = useRef<HTMLInputElement>(null);
+
+
+  const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 
   //signupmodal 
   function clickSignInModal(){
@@ -95,7 +100,7 @@ const SignUp = (props: any) => {
   }
 
   function signupApi(obj:any){
-    transaction("post", "signup", obj, signupApiCallback, true);
+    transaction("post", "signup", obj, signupApiCallback, true, true, setLoadingBarState);
   }
 
   function signupApiCallback(obj:any){

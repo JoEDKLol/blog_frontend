@@ -15,6 +15,7 @@ import Link from "next/link";
 
 import { BiLike } from "react-icons/bi"; //<BiLike />
 import { BiSolidLike } from "react-icons/bi"; //<BiSolidLike />
+import { loadingBarState } from "@/app/store/loadingBar";
  
 
 interface ForwardedQuillComponent extends ReactQuillProps {
@@ -77,8 +78,10 @@ const PriBlogListDetail = (props: any) => {
 	const commentRegRef = useRef<HTMLDivElement>(null);
 	const focusBottomCommentBox = useRef<HTMLTextAreaElement>(null);
 
+	const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+
 	const path:any = usePathname();
-  const blog_seq = path.split("/")[2];
+  	const blog_seq = path.split("/")[2];
 
 	useEffect(()=>{
 		getBlogDetail();
@@ -122,7 +125,7 @@ const PriBlogListDetail = (props: any) => {
 			seq:props.seq
 		}
 
-		const bloglistObj = await transaction("get", "blog/blogDetail", obj, "", false);
+		const bloglistObj = await transaction("get", "blog/blogDetail", obj, "", false, true, setLoadingBarState);
 		
 		if(bloglistObj.sendObj.success === "y"){
 			setBlogDetailObj(bloglistObj.sendObj.resObj.blogDetail);
@@ -162,7 +165,7 @@ const PriBlogListDetail = (props: any) => {
 			blog_seq :user.blog_seq,
 			seq:props.seq
 		}
-		const blogDeleteRes = await transactionAuth("post", "blog/bloglistdelete", obj, "", false); 
+		const blogDeleteRes = await transactionAuth("post", "blog/bloglistdelete", obj, "", false, true, setLoadingBarState); 
 		
 		if(blogDeleteRes.sendObj.success === 'y'){
 			setDeleteSuc(true);
@@ -188,7 +191,7 @@ const PriBlogListDetail = (props: any) => {
 			comment : blogComment
 		}
 		// console.log(obj);
-		const blogCommentWriteRes = await transactionAuth("post", "blog/commentwrite", obj, "", false); 
+		const blogCommentWriteRes = await transactionAuth("post", "blog/commentwrite", obj, "", false, true, setLoadingBarState); 
 
 		if(blogCommentWriteRes.sendObj.success === 'y'){
 			setShowComment(false);
@@ -207,7 +210,7 @@ const PriBlogListDetail = (props: any) => {
 			blog_list_seq:props.seq,
 			currentSeq:seq
 		}
-		const blogCommentSearchSeqRes = await transactionAuth("get", "blog/commentsseq", obj, "", false); 
+		const blogCommentSearchSeqRes = await transactionAuth("get", "blog/commentsseq", obj, "", false, true, setLoadingBarState); 
 
 		if(blogCommentSearchSeqRes.sendObj.resObj.blogComments.length > 0){
 			
@@ -260,7 +263,7 @@ const PriBlogListDetail = (props: any) => {
 			user_email : user.email,
 			blog_list_seq:props.seq,
 		}
-		const blogDeleteRes = await transactionAuth("post", "blog/commentdelete", obj, "", false); 
+		const blogDeleteRes = await transactionAuth("post", "blog/commentdelete", obj, "", false, true, setLoadingBarState); 
 		
 		if(blogDeleteRes.sendObj.success === 'y'){
 			// console.log("삭제 성공");
@@ -333,7 +336,7 @@ const PriBlogListDetail = (props: any) => {
 			user_id : user.id,
 			blog_list_seq:props.seq,
 		}
-		const searchBlogListLikeUpdateRes = await transactionAuth("get", "blog/searchbloglistlike", obj, "", false);
+		const searchBlogListLikeUpdateRes = await transactionAuth("get", "blog/searchbloglistlike", obj, "", false, true, setLoadingBarState);
 		console.log(searchBlogListLikeUpdateRes);
 
 		if(searchBlogListLikeUpdateRes.sendObj.success === 'y'){
@@ -349,7 +352,7 @@ const PriBlogListDetail = (props: any) => {
 			like_yn : likeYn,
 			email : user.email
 		}
-		const blogListLikeUpdateRes = await transactionAuth("post", "blog/bloglistlikeupdate", obj, "", false);
+		const blogListLikeUpdateRes = await transactionAuth("post", "blog/bloglistlikeupdate", obj, "", false, true, setLoadingBarState);
 		console.log(blogListLikeUpdateRes.sendObj);
 
 		if(blogListLikeUpdateRes.sendObj.success === 'y'){

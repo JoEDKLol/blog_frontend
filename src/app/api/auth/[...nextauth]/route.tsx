@@ -23,7 +23,7 @@ const handler = NextAuth({
 			async authorize(credentials, req) {
 				let user = {id:"", email:"", refreshToken:""};
 				let success = 'n';
-				await transaction("post", "signin", credentials, signinCallback, true);
+				await transaction("post", "signin", credentials, signinCallback, true, true, "");
 				
 				function signinCallback(obj:any){
 					if(obj.sendObj.success === 'y'){
@@ -72,7 +72,7 @@ const handler = NextAuth({
 			if(account){
 				if(account.provider === "google"){
 					try{
-						const obj = await transaction("post", "googlesignin", user, "", false);
+						const obj = await transaction("post", "googlesignin", user, "", false, true, "");
 						// obj.refreshToken;
 						if(obj.refreshToken){
 						// 	const cookiesArray = backendCookies.toString().split(/[;,]/);
