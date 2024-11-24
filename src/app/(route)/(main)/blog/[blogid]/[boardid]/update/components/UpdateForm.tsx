@@ -251,24 +251,24 @@ import { loadingBarState } from "@/app/store/loadingBar";
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Category</div> 
 						<div className="w-[100%]">
-							<select id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] px-3 py-2 outline-none"
+							<select id="majorCategory" value="1" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] px-3 py-2 outline-none"
 							onChange={(e)=>changeMajorCategory(e)}
 							>
-								<option selected>Choose a MajorCategory</option>
+								<option >Choose a MajorCategory</option>
 								{
 									majorCategories.map((item:any, index:any)=>{
 										return (
 											(item.seq == blogDetail.m_category_seq)?<option selected value={item.seq}>{item.categoryNm}</option>
-											:<option value={item.seq}>{item.categoryNm}</option>
+											:<option key={index} value={item.seq}>{item.categoryNm}</option>
 											// <option value={item.seq}>{item.categoryNm}</option>
 										)
 									})
 								}
 							</select>
-							<select id="subCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] ms-2 px-3 py-2 outline-none"
+							<select id="subCategory" value="1" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] ms-2 px-3 py-2 outline-none"
 							onChange={(e)=>changeSubCategory(e)}
 							>
-								<option selected>Choose a SubCategory</option>
+								<option>Choose a SubCategory</option>
 								{
 									subCategories.map((item:any, index:any)=>{  
 										// return (
@@ -277,7 +277,7 @@ import { loadingBarState } from "@/app/store/loadingBar";
 										return (item.m_category_seq==majorIndex)?												
 										(
 											(item.seq == blogDetail.s_category_seq)?<option selected value={item.seq}>{item.categoryNm}</option>
-											:<option value={item.seq}>{item.categoryNm}</option>
+											:<option key={index} value={item.seq}>{item.categoryNm}</option>
 											// <option value={item.seq}>{item.categoryNm}</option>
 										):""
 									})

@@ -16,7 +16,7 @@ const transactionAuth = async (type:string, url:string, obj:any, callback:any, c
 	try{
         let resp:any, data:any;
 		if(type === "get"){
-			console.log(url);
+			// console.log(url);
 			resp = await axiosAuth.get(url, {params:obj});
 			data = await resp.data;
 		}else if(type === "post"){

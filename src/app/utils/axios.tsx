@@ -8,7 +8,6 @@ const axiosNoAuth = axios.create({
 const transaction = async (type:string, url:string, obj:any, callback:any, callbackYn:boolean, loadingScreenYn:any, setLoadingYn:any) => {
 	
 	if(loadingScreenYn === true) setLoadingYn(true);
-	
 	try{
 		let resp:any, data:any;
 		if(type === "get"){

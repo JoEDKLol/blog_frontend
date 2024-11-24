@@ -37,6 +37,7 @@ const Login = (props: any) => {
   }
 
   async function onSubmit(event: any) {
+    
     event.preventDefault();
     setResLoginStr("");
     const email = event.target.email.value;
@@ -58,10 +59,11 @@ const Login = (props: any) => {
     }else{
       //resp.headers.accesstoken;
       const retObj = await transaction("get", "getAccessToken", {}, "", false, true, setLoadingBarState);
-      // console.log(retObj);
+      console.log(retObj);
       if(retObj.sendObj.code === "2000"){
         //유저정보는 리코일에
         //access토큰 정보는 session storege클래스에 담아준다.
+        console.log("access토큰 정보는 session storege클래스에 담아준다");
         setUser(retObj.sendObj.resObj);
         // sessionStorage.setItem('myblog-accesstoken', retObj.accessToken);
         storeAccessToken(retObj.accessToken);

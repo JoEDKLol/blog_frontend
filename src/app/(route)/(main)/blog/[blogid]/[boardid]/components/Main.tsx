@@ -15,7 +15,7 @@ import Link from "next/link";
 
 import { BiLike } from "react-icons/bi"; //<BiLike />
 import { BiSolidLike } from "react-icons/bi"; //<BiSolidLike />
-import { loadingBarState } from "@/app/store/loadingBar";
+import { loadingBarState } from "@/app/store/loadingBar"; 
  
 
 interface ForwardedQuillComponent extends ReactQuillProps {
@@ -46,7 +46,8 @@ export interface commentListsArr {
     reguser:string,
     upddate:string,
     upduser:string,
-	
+		readOnly:boolean,
+		style:string
 }
 
 let currentPageG = 0;
@@ -78,7 +79,11 @@ const PriBlogListDetail = (props: any) => {
 	const commentRegRef = useRef<HTMLDivElement>(null);
 	const focusBottomCommentBox = useRef<HTMLTextAreaElement>(null);
 
+	const focusCommentListRef = useRef<null[] | HTMLTextAreaElement[]>([]);
+
 	const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+	
+	const [updateCommnetIndex, setUpdateCommentIndex] = useState<any>(-1);
 
 	const path:any = usePathname();
   	const blog_seq = path.split("/")[2];
@@ -104,12 +109,18 @@ const PriBlogListDetail = (props: any) => {
 			focusBottomCommentBox.current?.focus();
 
 		}
-		// showCommentG = showComment;
 	},[bottomCommentBox])
+
+	// focusCommentListRef
+	useEffect(()=>{
+		if(updateCommnetIndex > -1){
+			focusCommentListRef.current[updateCommnetIndex]?.focus();
+		}
+	},[updateCommnetIndex])
 
 	useEffect(()=>{
     if(user.id){
-			console.log("해당 블로그상세에서 해당 유저ID로 좋아요 있는지 조회 ");
+			// console.log("해당 블로그상세에서 해당 유저ID로 좋아요 있는지 조회 ");
 			searchLike();
 		}
 	},[user]);
@@ -211,9 +222,16 @@ const PriBlogListDetail = (props: any) => {
 			currentSeq:seq
 		}
 		const blogCommentSearchSeqRes = await transactionAuth("get", "blog/commentsseq", obj, "", false, true, setLoadingBarState); 
-
 		if(blogCommentSearchSeqRes.sendObj.resObj.blogComments.length > 0){
 			
+			for(let i = 0; i < blogCommentSearchSeqRes.sendObj.resObj.blogComments.length; i++){
+				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].readOnly = true;
+				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].style = " border-none outline-none bg-slate-50 ";
+			}
+
+			// console.log(blogCommentSearchSeqRes.sendObj.resObj.blogComments);
+		
+
 			if(seq > 0){
 				setCommentLists(blogCommentArr.concat(blogCommentSearchSeqRes.sendObj.resObj.blogComments));
 			}else{
@@ -375,6 +393,20 @@ const PriBlogListDetail = (props: any) => {
 
 	}
 
+	function commentUpdateYn(id:any, index:any){
+		const choosenIndex = commentLists.findIndex((val) => val._id === id)
+		commentLists[choosenIndex].readOnly = false;
+		commentLists[choosenIndex].style = "";
+		setCommentLists([...commentLists]);
+		setUpdateCommentIndex(index);
+	}
+
+	function blogCommentListOnchangeHandler(e:any, id:any){
+		const choosenIndex = commentLists.findIndex((val) => val._id === id)
+		commentLists[choosenIndex].comment = e.target.value;
+		setCommentLists([...commentLists]);
+	}
+
 	return(
 		<>
 			<div className="" >
@@ -506,13 +538,39 @@ const PriBlogListDetail = (props: any) => {
 													<p className="mx-2 my-2 text-[12px] w-[49%]">
 														<Link href={"/blog/"+item.blog_seq}>
 														<span className="font-bold">{item.bloginfo.name}</span>
+
+														
+
 														</Link>
 														{` (`+getDate(item.regdate) + `)`}
+
+														{
+															(item.blog_seq === item.bloginfo.seq)?
+															<span className="ms-2 font-bold tracking-tight p-1 border-yellow-300 rounded bg-yellow-100">owner</span>
+															:""
+														}
+
 													</p>
 
+													
 													<div className="w-[49%]">
 														{/* <button>asdf</button> */}
-														<div className="justify-items-end ">
+														<div className="flex justify-end ">
+														<p className="me-2">
+															{
+																(user.email === item.email)?(
+																	<button className="
+																	tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
+																	onClick={()=>commentUpdateYn(item._id, index)}
+																	>
+																		update
+																	</button>
+																):""
+															}
+															
+															
+															</p>
+															
 															<p className="me-2">
 															{
 																(user.email === item.email)?(
@@ -531,9 +589,18 @@ const PriBlogListDetail = (props: any) => {
 													</div>
 												</div>
 												
-												<textarea className="mx-2 mt-1 text-sm break-all  bg-slate-50 w-[98%] h-[65%] p-1
-												resize-none border-none outline-none" spellCheck={false} readOnly
-												value={item.comment}/>
+												<textarea className={`mx-2 mt-1 text-sm break-all w-[98%] h-[65%] p-1
+												resize-none ` + item.style} spellCheck={false} 
+
+												ref={(element) => {
+													focusCommentListRef.current[index] = element;
+												}}
+												
+												readOnly={item.readOnly}
+												
+												onChange={(e)=>blogCommentListOnchangeHandler(e, item._id)}
+												value={item.comment}
+												/>
 									</div>)
 									)
 								})

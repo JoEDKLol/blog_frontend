@@ -24,9 +24,9 @@ const CommonTransaction = ({ children }: any) => {
     //페이지이동감지
     // console.log("토큰검증");
     useEffect(() => {
-        console.log("getAccessToken()::", getAccessToken());
+        setInitializing(false);
+        // console.log("여기 확인 됨??");
         if(!getAccessToken()){
-            // console.log("getAccessToken:");
             getAccessTokenApi();
             // console.log(retObj);
         }else{
@@ -36,6 +36,9 @@ const CommonTransaction = ({ children }: any) => {
             // transactionAuth("get", "checkaccessToken", {}, "");
 
         }
+
+        setInitializing(true);
+
     }, [path]);
     
     async function getAccessTokenApi(){
@@ -56,7 +59,7 @@ const CommonTransaction = ({ children }: any) => {
     async function getAccessTokenCheck(){
         
         const retObj = await transactionAuth("post", "checkaccessToken", {}, "", false, true, setLoadingBarState);
-        console.log(retObj);
+        
         if(retObj.sendObj.success){
             setUser(retObj.sendObj.resObj);
         }else{
@@ -64,27 +67,28 @@ const CommonTransaction = ({ children }: any) => {
         }
     }
 
-    useEffect(() => {
-        
-        setInitializing(true);
-        //페이지 이동 시 토큰 검증 처리
-        /*
-            권한 확인
-        */
-    }, [initializing])
+    // useEffect(() => {
+    //     // console.log("페이지 이동시 체크 됨??");
+    //     // setInitializing(true);
+    //     //페이지 이동 시 토큰 검증 처리
+    //     /*
+    //         권한 확인
+    //     */
+    // }, [initializing])
 
-    if (initializing) {
-        return <div>{children}</div>;
+    return <>{children}</>;
+    // if (initializing) {
+    //     return <>{children}</>;
         
-    } else {
-        return (
-            <>
-            {/* <div className='w-screen h-screen flex items-center justify-center text-2xl font-bold'>
-                 로딩중...
-            </div> */}
-            </>
-        );
-    }
+    // } else {
+    //     return (
+    //         <>
+    //         {/* <div className='w-screen h-screen flex items-center justify-center text-2xl font-bold'>
+    //              checking authorize...
+    //         </div> */}
+    //         </>
+    //     );
+    // }
 
 };
 
