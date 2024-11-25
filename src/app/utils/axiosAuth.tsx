@@ -77,6 +77,7 @@ const transactionAuth = async (type:string, url:string, obj:any, callback:any, c
 		}
 	}
 	catch(error:any){
+		if(loadingScreenYn === true) setLoadingYn(false);
 		if(error){
 			if(callbackYn){
 				callback("", error.response.data);

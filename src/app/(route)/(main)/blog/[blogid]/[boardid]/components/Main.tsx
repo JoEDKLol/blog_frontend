@@ -12,10 +12,14 @@ import 'react-quill/dist/quill.snow.css';
 import { useRecoilState } from "recoil";
 import { BiHomeAlt2 } from "react-icons/bi";
 import Link from "next/link";
+import { loadingBarState } from "@/app/store/loadingBar"; 
+
 
 import { BiLike } from "react-icons/bi"; //<BiLike />
 import { BiSolidLike } from "react-icons/bi"; //<BiSolidLike />
-import { loadingBarState } from "@/app/store/loadingBar"; 
+import { MdSubdirectoryArrowRight } from "react-icons/md"; //<MdSubdirectoryArrowRight />
+
+
  
 
 interface ForwardedQuillComponent extends ReactQuillProps {
@@ -47,7 +51,11 @@ export interface commentListsArr {
     upddate:string,
     upduser:string,
 		readOnly:boolean,
-		style:string
+		style:string, 
+		updateYn:boolean,
+		applies:[],
+		replyYn:boolean,
+		reply:string,
 }
 
 let currentPageG = 0;
@@ -80,13 +88,15 @@ const PriBlogListDetail = (props: any) => {
 	const focusBottomCommentBox = useRef<HTMLTextAreaElement>(null);
 
 	const focusCommentListRef = useRef<null[] | HTMLTextAreaElement[]>([]);
-
+	const focusCommentReplyListRef = useRef<null[] | HTMLTextAreaElement[]>([]);
+	const focusCommentReplyRegRef = useRef<null[] | HTMLTextAreaElement[]>([]);
 	const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 	
 	const [updateCommnetIndex, setUpdateCommentIndex] = useState<any>(-1);
+	const [replyRegCommnetIndex, setReplyRegCommnetIndex] = useState<any>(-1);
 
 	const path:any = usePathname();
-  	const blog_seq = path.split("/")[2];
+  const blog_seq = path.split("/")[2];
 
 	useEffect(()=>{
 		getBlogDetail();
@@ -117,6 +127,14 @@ const PriBlogListDetail = (props: any) => {
 			focusCommentListRef.current[updateCommnetIndex]?.focus();
 		}
 	},[updateCommnetIndex])
+
+	useEffect(()=>{
+		if(replyRegCommnetIndex > -1){
+			focusCommentReplyRegRef.current[replyRegCommnetIndex]?.focus();
+		}
+	},[replyRegCommnetIndex])
+
+	
 
 	useEffect(()=>{
     if(user.id){
@@ -173,7 +191,7 @@ const PriBlogListDetail = (props: any) => {
 		const obj = {
 			user_id : user.id,
 			email : user.email,
-			blog_seq :user.blog_seq,
+			blog_seq :props.blog_seq,
 			seq:props.seq
 		}
 		const blogDeleteRes = await transactionAuth("post", "blog/bloglistdelete", obj, "", false, true, setLoadingBarState); 
@@ -197,7 +215,7 @@ const PriBlogListDetail = (props: any) => {
 		const obj = {
 			blog_id : user.blog_id,
 			email : user.email,
-			blog_seq :user.blog_seq,
+			blog_seq :props.blog_seq,
 			blog_list_seq:props.seq,
 			comment : blogComment
 		}
@@ -227,7 +245,10 @@ const PriBlogListDetail = (props: any) => {
 			for(let i = 0; i < blogCommentSearchSeqRes.sendObj.resObj.blogComments.length; i++){
 				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].readOnly = true;
 				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].style = " border-none outline-none bg-slate-50 ";
+				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].updateYn = false;
+				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].replyYn = false;
 			}
+
 
 			// console.log(blogCommentSearchSeqRes.sendObj.resObj.blogComments);
 		
@@ -355,7 +376,7 @@ const PriBlogListDetail = (props: any) => {
 			blog_list_seq:props.seq,
 		}
 		const searchBlogListLikeUpdateRes = await transactionAuth("get", "blog/searchbloglistlike", obj, "", false, true, setLoadingBarState);
-		console.log(searchBlogListLikeUpdateRes);
+		// console.log(searchBlogListLikeUpdateRes);
 
 		if(searchBlogListLikeUpdateRes.sendObj.success === 'y'){
 			setBlogListLike((searchBlogListLikeUpdateRes.sendObj.resObj.like_yn === 'y')?true:false);
@@ -371,7 +392,7 @@ const PriBlogListDetail = (props: any) => {
 			email : user.email
 		}
 		const blogListLikeUpdateRes = await transactionAuth("post", "blog/bloglistlikeupdate", obj, "", false, true, setLoadingBarState);
-		console.log(blogListLikeUpdateRes.sendObj);
+		// console.log(blogListLikeUpdateRes.sendObj);
 
 		if(blogListLikeUpdateRes.sendObj.success === 'y'){
 			setBlogListLike((blogListLikeUpdateRes.sendObj.resObj.like_yn === 'y')?true:false);
@@ -393,18 +414,91 @@ const PriBlogListDetail = (props: any) => {
 
 	}
 
-	function commentUpdateYn(id:any, index:any){
+	async function commentUpdateYn(id:any, index:any, updateYn:boolean){
+		
 		const choosenIndex = commentLists.findIndex((val) => val._id === id)
-		commentLists[choosenIndex].readOnly = false;
-		commentLists[choosenIndex].style = "";
-		setCommentLists([...commentLists]);
-		setUpdateCommentIndex(index);
+
+		if(updateYn === false){
+			commentLists[choosenIndex].readOnly = false;
+			commentLists[choosenIndex].style = "";
+			commentLists[choosenIndex].updateYn = true;	
+			setCommentLists([...commentLists]);
+			setUpdateCommentIndex(index); //textarea focus
+		}else{
+			const obj ={
+				comment_id : id,
+				comment :commentLists[choosenIndex].comment, 
+				email : user.email
+			}
+		
+			const blogCommentUpdateRes = await transactionAuth("post", "blog/commentupdate", obj, "", false, true, setLoadingBarState);
+			// console.log(blogListLikeUpdateRes.sendObj);
+	
+			if(blogCommentUpdateRes.sendObj.success === 'y'){
+				
+				commentLists[choosenIndex].readOnly = true;
+				commentLists[choosenIndex].style = " border-none outline-none bg-slate-50 ";
+				commentLists[choosenIndex].updateYn = false;
+				setCommentLists([...commentLists]);
+				setUpdateCommentIndex(-1);
+			}
+		}
+
+		
 	}
 
 	function blogCommentListOnchangeHandler(e:any, id:any){
 		const choosenIndex = commentLists.findIndex((val) => val._id === id)
-		commentLists[choosenIndex].comment = e.target.value;
+		commentLists[choosenIndex].reply = e.target.value;
 		setCommentLists([...commentLists]);
+	}
+
+	function blogReplyListOnchangeHandler(e:any, id:any){
+		const choosenIndex = commentLists.findIndex((val) => val._id === id)
+		commentLists[choosenIndex].reply = e.target.value;
+		setCommentLists([...commentLists]);
+	}
+
+	async function showReplyClickHandler(id:any, index:any, replyYn:boolean, seq:any){
+		
+		const choosenIndex = commentLists.findIndex((val) => val._id === id)
+		
+		if(replyYn){
+		
+			const obj ={
+				blog_seq :props.blog_seq,
+				blog_list_seq:props.seq,
+				blog_comment_seq : seq,
+				blog_comment_id : id,
+				//writer info
+				email : user.email,
+				blog_id : user.blog_id, 
+				reply : commentLists[choosenIndex].reply,
+				
+			}
+
+			const blogReplyWriteRes = await transactionAuth("post", "blog/replywrite", obj, "", false, true, setLoadingBarState);	
+		
+			// console.log(blogReplyWriteRes);
+
+			commentLists[choosenIndex].replyYn = false;
+			commentLists[choosenIndex].reply="";
+			setCommentLists([...commentLists]);
+			setReplyRegCommnetIndex(-1);
+		
+		
+		}else{
+			commentLists[choosenIndex].replyYn = true;
+			setCommentLists([...commentLists]);
+			setReplyRegCommnetIndex(choosenIndex);
+		}
+	}
+
+	function showReplyCancleClickHandler(id:any, index:any, replyYn:boolean, seq:any){
+		const choosenIndex = commentLists.findIndex((val) => val._id === id)
+		commentLists[choosenIndex].replyYn = false;
+		setCommentLists([...commentLists]);
+		setReplyRegCommnetIndex(-1);
 	}
 
 	return(
@@ -453,9 +547,11 @@ const PriBlogListDetail = (props: any) => {
 							}/>
 						</div>
 					</div>
-					{
-						(user.id.length > 0 && user.blog_seq+"" === props.blog_seq)?
+					
+						
 						<div className="flex justify-between w-[90vw] ">
+							{
+							(user.id.length > 0)?
 							<div className="flex justify-start">
 								<div>
 									<button className="tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
@@ -475,6 +571,12 @@ const PriBlogListDetail = (props: any) => {
 									</p>
 								</div>
 							</div>
+							:""
+							}
+
+							{
+							(user.id.length > 0 && user.blog_seq+"" === props.blog_seq)?
+							
 							<div className="flex justify-end ">
 								<button className="tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
 								onClick={()=>updatePageMove()}
@@ -487,9 +589,11 @@ const PriBlogListDetail = (props: any) => {
 									Delete
 								</button>
 							</div>
+							:""
+							}
 						</div>
-						:""
-					}
+						
+					
 					<div ref={commentRegRef}></div>
 					{
 						(showComment)?(
@@ -497,7 +601,7 @@ const PriBlogListDetail = (props: any) => {
 								<div className="w-[90vw] ">
 									{/* <p className="font-bold">comment</p>  */}
 									<div className="w-[100%] ">
-									<textarea  
+									<textarea   
 									ref={focusComment} 
 									onChange={(e)=>blogCommentOnchangeHandler(e)}
 									id="introduction" rows={4}  className="resize-none border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
@@ -531,43 +635,77 @@ const PriBlogListDetail = (props: any) => {
 													<p className="font-bold" >deleted</p> 
 												</div>
 											</div>
-											
 										)
-										:(<div key={index} className="mt-1 p-1 w-[90vw] h-[150px] border ">
-												<div className="flex justify-start">
-													<p className="mx-2 my-2 text-[12px] w-[49%]">
+										:(<div key={index} className="mt-1 p-1 w-[90vw] border ">
+												<div className="flex justify-start h-[30px]">
+													<p className="mx-2 my-2 text-[12px] w-[70%]">
 														<Link href={"/blog/"+item.blog_seq}>
 														<span className="font-bold">{item.bloginfo.name}</span>
+														{
+															(item.blog_seq === item.bloginfo.seq)?
+															<span className="mx-1 font-bold tracking-tight p-1 border-yellow-300 rounded bg-yellow-100">
+															writer
+															</span>
+															:""
+														}
+														</Link>
+														
+														<span className=" hidden
+														2xl:inline-block xl:inline-block lg:inline-block md:inline-block sm:hidden
+														">
+														{` (`+getDate(item.regdate) + `)`}
+														</span>
+														
 
 														
 
-														</Link>
-														{` (`+getDate(item.regdate) + `)`}
-
 														{
-															(item.blog_seq === item.bloginfo.seq)?
-															<span className="ms-2 font-bold tracking-tight p-1 border-yellow-300 rounded bg-yellow-100">owner</span>
+															(user.id.length > 0)?
+															<>
+																<button className=" ms-1 
+																	tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
+																	onClick={()=>showReplyClickHandler(item._id, index, item.replyYn, item.seq)}
+																	>
+																	{
+																		(item.replyYn)?"reply-write":"reply"
+																	}
+																</button>
+
+																{
+																	(item.replyYn)?
+																	<button className=" ms-1 
+																	tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
+																	onClick={()=>showReplyCancleClickHandler(item._id, index, item.replyYn, item.seq)}
+																	>
+																	X
+																</button>
+																	:""
+																}
+
+																
+															</>
 															:""
 														}
 
 													</p>
-
 													
 													<div className="w-[49%]">
-														{/* <button>asdf</button> */}
+
 														<div className="flex justify-end ">
-														<p className="me-2">
+															<p className="me-2">
 															{
 																(user.email === item.email)?(
 																	<button className="
 																	tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
-																	onClick={()=>commentUpdateYn(item._id, index)}
+																	onClick={()=>commentUpdateYn(item._id, index, item.updateYn)}
 																	>
-																		update
+																		{
+																			(item.updateYn)?"update-save":"update"
+																		}
+
 																	</button>
 																):""
 															}
-															
 															
 															</p>
 															
@@ -588,19 +726,44 @@ const PriBlogListDetail = (props: any) => {
 														</div>
 													</div>
 												</div>
+												{
+													(item.replyYn)?
+													<textarea className={`mx-2 mt-1 text-sm break-all w-[98%] h-[105px] p-1 
+													resize-none border  `} spellCheck={false} 
+													ref={(element) => {focusCommentReplyRegRef.current[index] = element;}}
+													onChange={(e)=>blogReplyListOnchangeHandler(e, item._id)}
+													value={item.reply}
+													/>
+													:""
+												}
 												
-												<textarea className={`mx-2 mt-1 text-sm break-all w-[98%] h-[65%] p-1
-												resize-none ` + item.style} spellCheck={false} 
 
-												ref={(element) => {
-													focusCommentListRef.current[index] = element;
-												}}
-												
+												<textarea className={`mx-2 mt-1 text-sm break-all w-[98%] h-[105px] p-1 
+												resize-none border ` + item.style} spellCheck={false} 
+												ref={(element) => {focusCommentListRef.current[index] = element;}}
 												readOnly={item.readOnly}
-												
 												onChange={(e)=>blogCommentListOnchangeHandler(e, item._id)}
 												value={item.comment}
 												/>
+
+												{/* <div className="ms-2 flex justify-start w-[98%]">
+													<p className=" flex items-center w-[40px]">
+														<span className="text-[25px]">
+														<MdSubdirectoryArrowRight />
+														</span>
+														
+													</p>
+													<div className=" w-[100%]">
+														<textarea className={`text-sm break-all w-[100%] h-[105px] p-1 
+														resize-none border ` + item.style} spellCheck={false} 
+														ref={(element) => {focusCommentApplyListRef.current[index] = element;}}
+														readOnly={item.readOnly}
+														onChange={(e)=>blogCommentListOnchangeHandler(e, item._id)}
+														value={item.comment}
+														/>
+													</div>
+												</div> */}
+
 									</div>)
 									)
 								})

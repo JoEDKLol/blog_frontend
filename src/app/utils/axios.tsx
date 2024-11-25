@@ -51,6 +51,7 @@ const transaction = async (type:string, url:string, obj:any, callback:any, callb
 		
 	}
 	catch(error:any){
+		if(loadingScreenYn === true) setLoadingYn(false);
 		// console.log(error);
 		if(error){
 			if(callbackYn){

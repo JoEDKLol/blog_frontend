@@ -251,7 +251,7 @@ import { loadingBarState } from "@/app/store/loadingBar";
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Category</div> 
 						<div className="w-[100%]">
-							<select id="majorCategory" value="1" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] px-3 py-2 outline-none"
+							<select id="majorCategory" value={majorIndex} className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] px-3 py-2 outline-none"
 							onChange={(e)=>changeMajorCategory(e)}
 							>
 								<option >Choose a MajorCategory</option>
@@ -265,7 +265,7 @@ import { loadingBarState } from "@/app/store/loadingBar";
 									})
 								}
 							</select>
-							<select id="subCategory" value="1" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] ms-2 px-3 py-2 outline-none"
+							<select id="subCategory" value={chooseSub} className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] ms-2 px-3 py-2 outline-none"
 							onChange={(e)=>changeSubCategory(e)}
 							>
 								<option>Choose a SubCategory</option>
