@@ -53,9 +53,13 @@ export interface commentListsArr {
 		readOnly:boolean,
 		style:string, 
 		updateYn:boolean,
-		applies:[],
+		replies:[
+			_id:any,
+		],
 		replyYn:boolean,
 		reply:string,
+		repliescnt:number,
+		currentReplaySeq:number,
 }
 
 let currentPageG = 0;
@@ -90,10 +94,12 @@ const PriBlogListDetail = (props: any) => {
 	const focusCommentListRef = useRef<null[] | HTMLTextAreaElement[]>([]);
 	const focusCommentReplyListRef = useRef<null[] | HTMLTextAreaElement[]>([]);
 	const focusCommentReplyRegRef = useRef<null[] | HTMLTextAreaElement[]>([]);
+	const focusCommentReplyRef = useRef<null[] | HTMLTextAreaElement[]>([]);
 	const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 	
 	const [updateCommnetIndex, setUpdateCommentIndex] = useState<any>(-1);
 	const [replyRegCommnetIndex, setReplyRegCommnetIndex] = useState<any>(-1);
+	const [replyCommnetIndex, setReplyCommnetIndex] = useState<any>(-1);
 
 	const path:any = usePathname();
   const blog_seq = path.split("/")[2];
@@ -133,6 +139,14 @@ const PriBlogListDetail = (props: any) => {
 			focusCommentReplyRegRef.current[replyRegCommnetIndex]?.focus();
 		}
 	},[replyRegCommnetIndex])
+
+	useEffect(()=>{
+		console.log("여기 포커스 찍히나?");
+		if(replyCommnetIndex > -1){
+			
+			focusCommentReplyRef.current[replyCommnetIndex]?.focus();
+		}
+	},[replyCommnetIndex])
 
 	
 
@@ -247,6 +261,10 @@ const PriBlogListDetail = (props: any) => {
 				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].style = " border-none outline-none bg-slate-50 ";
 				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].updateYn = false;
 				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].replyYn = false;
+				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].currentReplaySeq = 0;
+				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].replies = [];
+
+				
 			}
 
 
@@ -495,11 +513,70 @@ const PriBlogListDetail = (props: any) => {
 	}
 
 	function showReplyCancleClickHandler(id:any, index:any, replyYn:boolean, seq:any){
-		const choosenIndex = commentLists.findIndex((val) => val._id === id)
+		const choosenIndex = commentLists.findIndex((val) => val._id === id);
 		commentLists[choosenIndex].replyYn = false;
 		setCommentLists([...commentLists]);
 		setReplyRegCommnetIndex(-1);
 	}
+
+	async function showRepliest(id:any, seq:any, currentReplaySeq:any){
+		const obj = {
+			blog_comment_seq : seq,
+			currentReplaySeq:currentReplaySeq
+		}
+		
+		const blogCommentSearchSeqRes = await transactionAuth("get", "blog/replayseq", obj, "", false, true, setLoadingBarState); 
+		// console.log(blogCommentSearchSeqRes);
+		if(blogCommentSearchSeqRes.sendObj.resObj.blogReplies.length > 0){
+
+			const replies = blogCommentSearchSeqRes.sendObj.resObj;
+			const choosenIndex = commentLists.findIndex((val) => val._id === id);
+			let preReplies:any = commentLists[choosenIndex].replies;
+			
+			
+			
+			for(let i = 0; i < replies.blogReplies.length; i++){
+				replies.blogReplies[i].readOnly = true;
+				replies.blogReplies[i].style = " border-none outline-none bg-slate-50 ";
+				replies.blogReplies[i].updateYn = false;
+			}
+
+			preReplies = preReplies.concat(replies.blogReplies);
+			// console.log(preReplies);
+			commentLists[choosenIndex].replies = preReplies;
+			commentLists[choosenIndex].currentReplaySeq = replies.lastCommentSeq;
+			
+			// console.log([...commentLists[choosenIndex].replies]);
+			
+			// setCommentLists([...commentLists[choosenIndex].replies, preReplies]);
+			setCommentLists([...commentLists]);  
+			// console.log(commentLists);
+		}
+
+	}
+
+	function replyUpdateYn(commentId:any, replayId:any, replayIndex:any, replayUpdateYn:any){
+		const choosenIndex = commentLists.findIndex((val) => val._id === commentId);
+		const choosenReplyIndex = commentLists[choosenIndex].replies.findIndex((value) => value._id === replayId);
+		
+		if(replayUpdateYn === false){
+			commentLists[choosenIndex].replies[choosenReplyIndex].readOnly = false;
+			commentLists[choosenIndex].replies[choosenReplyIndex].style = "";
+			commentLists[choosenIndex].replies[choosenReplyIndex].updateYn = true;	
+			setCommentLists([...commentLists]);  
+			setReplyCommnetIndex(replayIndex); //textarea focus
+		}else{
+			commentLists[choosenIndex].replies[choosenReplyIndex].readOnly = true;
+			commentLists[choosenIndex].replies[choosenReplyIndex].style = " border-none outline-none bg-slate-50 ";
+			commentLists[choosenIndex].replies[choosenReplyIndex].updateYn = false;
+			setCommentLists([...commentLists]);
+			setReplyCommnetIndex(-1); //textarea focus
+		}
+		
+		
+
+	}
+	 
 
 	return(
 		<>
@@ -681,8 +758,16 @@ const PriBlogListDetail = (props: any) => {
 																</button>
 																	:""
 																}
-
-																
+																{
+																(item.repliescnt)?
+																	<button className=" ms-1 
+																		tracking-tight border bg-green-200 hover:bg-green-400 text-black font-bold text-[12px]  px-1 rounded"
+																		onClick={()=>showRepliest(item._id, item.seq, item.currentReplaySeq)}
+																		>
+																		{item.repliescnt}
+																	</button>
+																:""	
+																}
 															</>
 															:""
 														}
@@ -692,7 +777,7 @@ const PriBlogListDetail = (props: any) => {
 													<div className="w-[49%]">
 
 														<div className="flex justify-end ">
-															<p className="me-2">
+															<p className="me-1">
 															{
 																(user.email === item.email)?(
 																	<button className="
@@ -709,7 +794,7 @@ const PriBlogListDetail = (props: any) => {
 															
 															</p>
 															
-															<p className="me-2">
+															<p className="me-1">
 															{
 																(user.email === item.email)?(
 																	<button className="
@@ -746,23 +831,107 @@ const PriBlogListDetail = (props: any) => {
 												value={item.comment}
 												/>
 
-												{/* <div className="ms-2 flex justify-start w-[98%]">
-													<p className=" flex items-center w-[40px]">
-														<span className="text-[25px]">
-														<MdSubdirectoryArrowRight />
-														</span>
-														
-													</p>
-													<div className=" w-[100%]">
-														<textarea className={`text-sm break-all w-[100%] h-[105px] p-1 
-														resize-none border ` + item.style} spellCheck={false} 
-														ref={(element) => {focusCommentApplyListRef.current[index] = element;}}
-														readOnly={item.readOnly}
-														onChange={(e)=>blogCommentListOnchangeHandler(e, item._id)}
-														value={item.comment}
-														/>
-													</div>
-												</div> */}
+												{
+													(item.replies.length > 0)?
+														item.replies.map((replayItem:any, replayIndex:any)=>
+														{
+															return  (
+
+
+																(replayItem.deleteyn === 'y')?
+																(
+																	<div key={index} className="mt-1 p-1 w-[90vw] h-[150px] border ">
+																		<div className="flex justify-center items-center w-[100%] h-[100%] bg-slate-50">
+																			<p className="font-bold" >deleted</p> 
+																		</div>
+																	</div>
+																)
+																:
+
+																
+
+																<div key={replayIndex} className="ms-2 flex justify-start w-[98%]">
+																	<p className=" flex items-center w-[40px] ">
+																		<span className="text-[20px]">
+																		<MdSubdirectoryArrowRight />
+																		</span>
+																		
+																	</p>
+																	<div className=" w-[100%]">
+
+																		<div className="flex justify-start">
+																			<p className="my-2 text-[12px] w-[50%]">
+																				<Link href={"/blog/"+replayItem.bloginfo.seq}>
+																				<span className="font-bold">{replayItem.bloginfo.name}</span>
+																				{
+																					(item.email === replayItem.email)?
+																					<span className="mx-1 font-bold tracking-tight p-1 border-yellow-300 rounded bg-yellow-100">
+																					writer
+																					</span>
+																					:""
+																				}
+																				</Link>
+																				
+																				<span className=" hidden
+																				2xl:inline-block xl:inline-block lg:inline-block md:inline-block sm:hidden
+																				">
+																				{` (`+getDate(replayItem.regdate) + `)`}
+																				</span>
+																			</p>
+																			<p className="flex justify-end my-2 w-[50%]">
+																				
+																				
+																				{
+																					(user.email === replayItem.email)?(
+																						
+																							<button className="me-1
+																							tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
+																							onClick={()=>replyUpdateYn(item._id, replayItem._id, replayIndex, replayItem.updateYn)}
+																							>
+																								{
+																									(replayItem.updateYn)?"update-save":"update"
+																								}
+
+																							</button>
+																							
+																					):""
+																				}
+																				
+																				
+																				{
+																					(user.email === replayItem.email)?( 
+																						
+																							<button className="me-1
+																							tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
+																							onClick={()=>deleteComment(item._id)}
+																							>
+																								Delete
+																							</button>
+																						
+																					):""
+																				}
+																				
+																				
+																				
+
+																			</p>
+																		</div> 
+																		<textarea className={`text-sm break-all w-[100%] h-[105px] p-1 
+																		resize-none border ` + replayItem.style} spellCheck={false} 
+																		ref={(element) => {focusCommentReplyRef.current[replayIndex] = element;}}
+																		readOnly={replayItem.readOnly}
+																		// onChange={(e)=>blogCommentListOnchangeHandler(e, item._id)}
+																		value={replayItem.reply}
+																		/>
+																	</div>
+																</div>
+															)
+														})
+
+													:""
+												}
+
+												
 
 									</div>)
 									)
