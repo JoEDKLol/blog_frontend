@@ -11,6 +11,7 @@ import { CiSquareMinus } from "react-icons/ci";
 import { transactionAuth } from "@/app/utils/axiosAuth";
 import { useRouter } from "next/navigation";
 import { loadingBarState } from "@/app/store/loadingBar";
+import Confirm from "@/app/components/confirmModal";
 
 
 const randomNum = getRandomNumber(10);
@@ -41,7 +42,10 @@ const BlogUpdateForm = (props: any) => {
 
 	const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 
-	
+	//confirm
+	const [showConfirm, setShowConfirm] = useState(false);
+	const [confirmStr, setConfirmStr] = useState({showText:"", exeFunction:"", obj:null as any});
+	const [confirmRes, setConfirmRes] = useState(false);
 
 	// const [majo, setSubCategories] = useState<any>([]);
 
@@ -153,6 +157,20 @@ const BlogUpdateForm = (props: any) => {
 		}
 					
 	},[subCategoryText])
+
+	useEffect(()=>{
+		if(confirmRes){ 
+			// focusCommentReplyRef.current[replyCommnetIndex]?.focus();
+			if(confirmStr.exeFunction === "saveBlogInfo") saveBlogInfo();
+			setConfirmRes(false);
+		}
+	},[confirmRes])
+
+	function confirmScreen(showText:string, exeFunction:string, obj:any){
+		setShowConfirm(!showConfirm);
+		setConfirmStr({showText:"", exeFunction:"", obj:null}); 
+		setConfirmStr({showText:showText, exeFunction:exeFunction, obj:obj});
+	}
 
 	async function getblogInfo(){
 		const obj = {
@@ -761,7 +779,8 @@ const BlogUpdateForm = (props: any) => {
 						<button className="
 						border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200
 						"
-						onClick={()=>saveBlogInfo()}
+						// onClick={()=>saveBlogInfo()}
+						onClick={()=>confirmScreen("Would you like to save?", "saveBlogInfo", null)}
 						>save
 						</button>
 					</div>
@@ -769,7 +788,8 @@ const BlogUpdateForm = (props: any) => {
 				)
 			}
 			 
-
+			{showConfirm && <Confirm confirmStr={confirmStr} setShowConfirm={setShowConfirm} setConfirmRes={setConfirmRes}/>}
+    
 		</>
 	)
 };

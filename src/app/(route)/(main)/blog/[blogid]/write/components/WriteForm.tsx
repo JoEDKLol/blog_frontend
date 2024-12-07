@@ -11,6 +11,7 @@ import { getRandomNumber } from "@/app/utils/common";
 import { transactionAuth } from "@/app/utils/axiosAuth";
 import { useRouter,usePathname } from "next/navigation";
 import { loadingBarState } from "@/app/store/loadingBar";
+import Confirm from "@/app/components/confirmModal";
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
@@ -48,6 +49,26 @@ import { loadingBarState } from "@/app/store/loadingBar";
 		const [chooseMajor, setChooseMajor] = useState<any>();
 		const [chooseSub, setChooseSub] = useState<any>();
 		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+
+
+		//confirm
+		const [showConfirm, setShowConfirm] = useState(false);
+		const [confirmStr, setConfirmStr] = useState({showText:"", exeFunction:"", obj:null as any});
+		const [confirmRes, setConfirmRes] = useState(false);
+
+		useEffect(()=>{
+			if(confirmRes){ 
+				// focusCommentReplyRef.current[replyCommnetIndex]?.focus();
+				if(confirmStr.exeFunction === "writeButtenHandler") writeButtenHandler();
+				setConfirmRes(false);
+			}
+		},[confirmRes])
+	
+		function confirmScreen(showText:string, exeFunction:string, obj:any){
+			setShowConfirm(!showConfirm);
+			setConfirmStr({showText:"", exeFunction:"", obj:null}); 
+			setConfirmStr({showText:showText, exeFunction:exeFunction, obj:obj});
+		}
 
 		useEffect(()=>{
 			focusTitle.current?.focus();
@@ -290,7 +311,8 @@ import { loadingBarState } from "@/app/store/loadingBar";
 							<div className="flex justify-end">
 								<button className=" mt-20 border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5
 								2xl:mt-14 xl:mt-14 lg:mt-14 md:mt-20 sm:mt-14"
-								onClick={()=>writeButtenHandler()}
+								// onClick={()=>writeButtenHandler()}
+								onClick={()=>confirmScreen("Would you like to write?", "writeButtenHandler", null)}
 								>
 									Write
 								</button>
@@ -310,7 +332,7 @@ import { loadingBarState } from "@/app/store/loadingBar";
 					{/* </div> */}
 				</div>)
 			}
-
+			{showConfirm && <Confirm confirmStr={confirmStr} setShowConfirm={setShowConfirm} setConfirmRes={setConfirmRes}/>}
 			</>	
 			
 		)

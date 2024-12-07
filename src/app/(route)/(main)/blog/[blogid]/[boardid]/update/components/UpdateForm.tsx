@@ -12,6 +12,7 @@ import { transactionAuth } from "@/app/utils/axiosAuth";
 import { transaction } from "@/app/utils/axios";
 import { useRouter } from "next/navigation";
 import { loadingBarState } from "@/app/store/loadingBar";
+import Confirm from "@/app/components/confirmModal";
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
@@ -51,6 +52,43 @@ import { loadingBarState } from "@/app/store/loadingBar";
 
 		const [blogDetail, setBlogDetail] = useState<any>({});
 		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+		
+
+		//confirm
+		const [showConfirm, setShowConfirm] = useState(false);
+		const [confirmStr, setConfirmStr] = useState({showText:"", exeFunction:"", obj:null as any});
+		const [confirmRes, setConfirmRes] = useState(false);
+
+		useEffect(()=>{
+			if(confirmRes){ 
+				// focusCommentReplyRef.current[replyCommnetIndex]?.focus();
+				if(confirmStr.exeFunction === "updateButtenHandler") updateButtenHandler();
+				setConfirmRes(false);
+			}
+		},[confirmRes])
+	
+		function confirmScreen(showText:string, exeFunction:string, obj:any){
+			setShowConfirm(!showConfirm);
+			setConfirmStr({showText:"", exeFunction:"", obj:null}); 
+			setConfirmStr({showText:showText, exeFunction:exeFunction, obj:obj});
+		}
+
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < title.length; i++) {
+				let currentByte = title.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 200){
+					setTitle(title.substring(0, i));
+					break;
+				}
+			}			
+		},[title]);
 		
         useEffect(()=>{
             getBlogDetail();
@@ -311,7 +349,9 @@ import { loadingBarState } from "@/app/store/loadingBar";
 							<div className="flex justify-end">
 								<button className=" mt-20 border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5
 								2xl:mt-14 xl:mt-14 lg:mt-14 md:mt-20 sm:mt-14"
-								onClick={()=>updateButtenHandler()}
+								// onClick={()=>updateButtenHandler()}
+								onClick={()=>confirmScreen("Would you like to update?", "updateButtenHandler", null)}
+								
 								>
 									Update
 								</button>
@@ -329,7 +369,7 @@ import { loadingBarState } from "@/app/store/loadingBar";
 					</div> */}
 				</div>)
 			}
-
+			{showConfirm && <Confirm confirmStr={confirmStr} setShowConfirm={setShowConfirm} setConfirmRes={setConfirmRes}/>}
 			</>	
 			
 		)

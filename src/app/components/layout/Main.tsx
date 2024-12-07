@@ -216,32 +216,6 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
         })
         }
         
-
-        {/* <div className="2xl:columns-3 xl:columns-3 lg:columns-2 md:columns-2 sm:columns-1 columns-1 w-3/4 " >
-          
-          {
-            blogList.map((item:any, index:any)=>{
-              return (
-                <Link key={index} href={"blog/"+item.title}>
-                <div className="group flex justify-center pt-3 h-[500px] ">
-                  <div className="max-w-sm rounded overflow-hidden shadow-lg hover:bg-[#eaedee]">
-                    <div className="px-6 pt-4 pb-2">
-                      <div className="font-bold text-xl mb-2 truncate w-96">{item.title}</div>
-                      <p className="text-gray-700 text-base h-72 text-ellipsis overflow-hidden">
-                        {item.content}
-                      </p>
-                    </div>
-                    <div className="px-6 h-8 pb-2">
-                      <div>{item.regdate}</div>
-                    </div>
-                  </div>
-                </div>
-                </Link>
-              )
-            })
-          }
-          
-        </div> */}
       
       </div>
       <div ref={observerEl} className="h-1"/>

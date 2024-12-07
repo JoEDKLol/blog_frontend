@@ -18,6 +18,7 @@ import { loadingBarState } from "@/app/store/loadingBar";
 import { BiLike } from "react-icons/bi"; //<BiLike />
 import { BiSolidLike } from "react-icons/bi"; //<BiSolidLike />
 import { MdSubdirectoryArrowRight } from "react-icons/md"; //<MdSubdirectoryArrowRight />
+import Confirm from "@/app/components/confirmModal";
 
 
  
@@ -101,6 +102,11 @@ const PriBlogListDetail = (props: any) => {
 	const [replyRegCommnetIndex, setReplyRegCommnetIndex] = useState<any>(-1);
 	const [replyCommnetIndex, setReplyCommnetIndex] = useState<any>(-1);
 
+	//confirm
+	const [showConfirm, setShowConfirm] = useState(false);
+	const [confirmStr, setConfirmStr] = useState({showText:"", exeFunction:"", obj:null as any});
+	const [confirmRes, setConfirmRes] = useState(false);
+
 	const path:any = usePathname();
   const blog_seq = path.split("/")[2];
 
@@ -141,14 +147,10 @@ const PriBlogListDetail = (props: any) => {
 	},[replyRegCommnetIndex])
 
 	useEffect(()=>{
-		console.log("여기 포커스 찍히나?");
 		if(replyCommnetIndex > -1){
-			
 			focusCommentReplyRef.current[replyCommnetIndex]?.focus();
 		}
 	},[replyCommnetIndex])
-
-	
 
 	useEffect(()=>{
     if(user.id){
@@ -157,9 +159,47 @@ const PriBlogListDetail = (props: any) => {
 		}
 	},[user]);
 
-	// useEffect(() => {
-  //   currentSeqG = 0;
-  // }, [path]);
+	useEffect(()=>{
+		
+		let totalByte = 0;
+		for(let i =0; i < blogComment.length; i++) {
+			let currentByte = blogComment.charCodeAt(i);
+			if(currentByte > 128){
+				totalByte += 2;
+			}else {
+				totalByte++;
+			}
+
+			if(totalByte > 1000){
+				setBlogComment(blogComment.substring(0, i));
+				break;
+			}
+		}
+	},[blogComment]);
+
+	
+
+	useEffect(()=>{
+		if(confirmRes){ 
+			// focusCommentReplyRef.current[replyCommnetIndex]?.focus();
+			if(confirmStr.exeFunction === "deleteHandler") deleteHandler();
+			if(confirmStr.exeFunction === "commentWriteHandler") commentWriteHandler();
+			if(confirmStr.exeFunction === "showReplyClickHandler")
+				showReplyClickHandler(confirmStr.obj.id, confirmStr.obj.index, confirmStr.obj.replyYn, confirmStr.obj.seq);
+			if(confirmStr.exeFunction === "commentUpdateYn")
+				commentUpdateYn(confirmStr.obj.id, confirmStr.obj.index, confirmStr.obj.updateYn);
+			if(confirmStr.exeFunction === "deleteComment")
+				deleteComment(confirmStr.obj.id);
+			if(confirmStr.exeFunction === "replyUpdateYn")
+				replyUpdateYn(confirmStr.obj.id, confirmStr.obj.replyId, confirmStr.obj.replyIndex, confirmStr.obj.replyUpdateYn);
+			if(confirmStr.exeFunction === "deleteReply")
+				deleteReply(confirmStr.obj.id, confirmStr.obj.replyId);
+
+			
+			
+			setConfirmRes(false);
+		}
+	},[confirmRes])
 
 	async function getBlogDetail(){
 		
@@ -201,7 +241,26 @@ const PriBlogListDetail = (props: any) => {
 		router.push('/blog/' + props.blog_seq + '/' + props.seq + '/update');
 	}
 
+
+	function confirmScreen(showText:string, exeFunction:string, obj:any){
+
+		if(exeFunction === "showReplyClickHandler" && !obj.replyYn){
+			//id:item._id, index:index, replyYn:item.replyYn, seq:item.seq
+			showReplyClickHandler(obj.id, obj.index, obj.replyYn, obj.seq);
+		}else if(exeFunction === "commentUpdateYn" && !obj.updateYn){
+			commentUpdateYn(obj.id, obj.index, obj.updateYn);
+		}else if(exeFunction === "replyUpdateYn" && !obj.replyUpdateYn){
+			replyUpdateYn(obj.id, obj.replyId, obj.replyIndex, obj.replyUpdateYn);
+		}else{
+			setShowConfirm(!showConfirm);
+			setConfirmStr({showText:"", exeFunction:"", obj:null}); 
+			setConfirmStr({showText:showText, exeFunction:exeFunction, obj:obj});
+		}
+		
+	}
+
 	async function deleteHandler(){
+
 		const obj = {
 			user_id : user.id,
 			email : user.email,
@@ -238,9 +297,18 @@ const PriBlogListDetail = (props: any) => {
 
 		if(blogCommentWriteRes.sendObj.success === 'y'){
 			setShowComment(false);
+
+			blogCommentWriteRes.sendObj.resObj.readOnly = true;
+			blogCommentWriteRes.sendObj.resObj.style = " border-none outline-none bg-slate-50 ";
+			blogCommentWriteRes.sendObj.resObj.updateYn = false;
+			blogCommentWriteRes.sendObj.resObj.replyYn = false;
+			blogCommentWriteRes.sendObj.resObj.currentReplaySeq = 0;
+			blogCommentWriteRes.sendObj.resObj.replies = [];
+
 			blogCommentArr.unshift(blogCommentWriteRes.sendObj.resObj)
 			setCommentLists(blogCommentArr);
 			setBottomCommentBox(false);
+			setBlogComment("");
 
 		}else{
 			
@@ -320,9 +388,9 @@ const PriBlogListDetail = (props: any) => {
 			user_email : user.email,
 			blog_list_seq:props.seq,
 		}
-		const blogDeleteRes = await transactionAuth("post", "blog/commentdelete", obj, "", false, true, setLoadingBarState); 
+		const commentDeleteRes = await transactionAuth("post", "blog/commentdelete", obj, "", false, true, setLoadingBarState); 
 		
-		if(blogDeleteRes.sendObj.success === 'y'){
+		if(commentDeleteRes.sendObj.success === 'y'){
 			// console.log("삭제 성공");
 			const deleteComentIndex = commentLists.findIndex(element => element._id === comment_id);
 			// console.log(commentLists[deleteComentIndex]);
@@ -467,14 +535,56 @@ const PriBlogListDetail = (props: any) => {
 
 	function blogCommentListOnchangeHandler(e:any, id:any){
 		const choosenIndex = commentLists.findIndex((val) => val._id === id)
-		commentLists[choosenIndex].reply = e.target.value;
-		setCommentLists([...commentLists]);
+		
+		let totalByte = 0;
+		for(let i =0; i < e.target.value.length; i++) {
+			let currentByte = e.target.value.charCodeAt(i);
+			if(currentByte > 128){
+				totalByte += 2;
+			}else {
+				totalByte++;
+			}
+
+			if(totalByte > 1000){
+				// setBlogComment(e.target.value.substring(0, i));
+				// commentLists[choosenIndex].comment = e.target.value.substring(0, i);
+				// setCommentLists([...commentLists]);
+				commentLists[choosenIndex].comment = e.target.value.substring(0, i);
+				setCommentLists([...commentLists]);
+				break;
+			}else{
+				commentLists[choosenIndex].comment = e.target.value;
+				setCommentLists([...commentLists]);	
+			}
+		}
+
+		// commentLists[choosenIndex].comment = e.target.value;
+		// setCommentLists([...commentLists]);
+				
 	}
 
 	function blogReplyListOnchangeHandler(e:any, id:any){
 		const choosenIndex = commentLists.findIndex((val) => val._id === id)
-		commentLists[choosenIndex].reply = e.target.value;
-		setCommentLists([...commentLists]);
+		// commentLists[choosenIndex].reply = e.target.value;
+		// setCommentLists([...commentLists]);
+		let totalByte = 0;
+		for(let i =0; i < e.target.value.length; i++) {
+			let currentByte = e.target.value.charCodeAt(i);
+			if(currentByte > 128){
+				totalByte += 2;
+			}else {
+				totalByte++;
+			}
+
+			if(totalByte > 1000){
+				commentLists[choosenIndex].reply = e.target.value.substring(0, i);;
+				setCommentLists([...commentLists]);
+				break;
+			}else{
+				commentLists[choosenIndex].reply = e.target.value;
+				setCommentLists([...commentLists]);	
+			}
+		}
 	}
 
 	async function showReplyClickHandler(id:any, index:any, replyYn:boolean, seq:any){
@@ -497,12 +607,29 @@ const PriBlogListDetail = (props: any) => {
 
 			const blogReplyWriteRes = await transactionAuth("post", "blog/replywrite", obj, "", false, true, setLoadingBarState);	
 		
-			// console.log(blogReplyWriteRes);
+			
 
-			commentLists[choosenIndex].replyYn = false;
-			commentLists[choosenIndex].reply="";
-			setCommentLists([...commentLists]);
-			setReplyRegCommnetIndex(-1);
+			if(blogReplyWriteRes.sendObj.success === 'y'){
+
+				commentLists[choosenIndex].repliescnt = blogReplyWriteRes.sendObj.resObj.repliescnt;
+				commentLists[choosenIndex].replyYn = false;
+				commentLists[choosenIndex].reply="";
+				setReplyRegCommnetIndex(-1);
+
+				if(commentLists[choosenIndex].currentReplaySeq > 0){
+
+
+					blogReplyWriteRes.sendObj.resObj.blogApplies.readOnly = true;
+					blogReplyWriteRes.sendObj.resObj.blogApplies.style = " border-none outline-none bg-slate-50 ";
+					blogReplyWriteRes.sendObj.resObj.blogApplies.updateYn = false;
+
+					commentLists[choosenIndex].replies.unshift(blogReplyWriteRes.sendObj.resObj.blogApplies);
+				}
+
+				setCommentLists([...commentLists]);
+			}
+
+			
 		
 		
 		}else{
@@ -525,7 +652,7 @@ const PriBlogListDetail = (props: any) => {
 			currentReplaySeq:currentReplaySeq
 		}
 		
-		const blogCommentSearchSeqRes = await transactionAuth("get", "blog/replayseq", obj, "", false, true, setLoadingBarState); 
+		const blogCommentSearchSeqRes = await transactionAuth("get", "blog/replyseq", obj, "", false, true, setLoadingBarState); 
 		// console.log(blogCommentSearchSeqRes);
 		if(blogCommentSearchSeqRes.sendObj.resObj.blogReplies.length > 0){
 
@@ -544,7 +671,7 @@ const PriBlogListDetail = (props: any) => {
 			preReplies = preReplies.concat(replies.blogReplies);
 			// console.log(preReplies);
 			commentLists[choosenIndex].replies = preReplies;
-			commentLists[choosenIndex].currentReplaySeq = replies.lastCommentSeq;
+			commentLists[choosenIndex].currentReplaySeq = replies.lastReplySeq;
 			
 			// console.log([...commentLists[choosenIndex].replies]);
 			
@@ -555,26 +682,85 @@ const PriBlogListDetail = (props: any) => {
 
 	}
 
-	function replyUpdateYn(commentId:any, replayId:any, replayIndex:any, replayUpdateYn:any){
+	async function replyUpdateYn(commentId:any, reply_id:any, replyIndex:any, replyUpdateYn:any){
 		const choosenIndex = commentLists.findIndex((val) => val._id === commentId);
-		const choosenReplyIndex = commentLists[choosenIndex].replies.findIndex((value) => value._id === replayId);
+		const choosenReplyIndex = commentLists[choosenIndex].replies.findIndex((value) => value._id === reply_id);
 		
-		if(replayUpdateYn === false){
+		if(replyUpdateYn === false){
 			commentLists[choosenIndex].replies[choosenReplyIndex].readOnly = false;
 			commentLists[choosenIndex].replies[choosenReplyIndex].style = "";
 			commentLists[choosenIndex].replies[choosenReplyIndex].updateYn = true;	
 			setCommentLists([...commentLists]);  
-			setReplyCommnetIndex(replayIndex); //textarea focus
+			setReplyCommnetIndex(replyIndex); //textarea focus
 		}else{
-			commentLists[choosenIndex].replies[choosenReplyIndex].readOnly = true;
-			commentLists[choosenIndex].replies[choosenReplyIndex].style = " border-none outline-none bg-slate-50 ";
-			commentLists[choosenIndex].replies[choosenReplyIndex].updateYn = false;
-			setCommentLists([...commentLists]);
-			setReplyCommnetIndex(-1); //textarea focus
-		}
-		
-		
 
+			const obj ={
+				reply_id : reply_id,
+				reply :commentLists[choosenIndex].replies[choosenReplyIndex].reply, 
+				email : user.email
+			}
+
+			const blogReplyUpdateRes = await transactionAuth("post", "blog/replyupdate", obj, "", false, true, setLoadingBarState);
+			
+			if(blogReplyUpdateRes.sendObj.success === 'y'){
+				
+				commentLists[choosenIndex].replies[choosenReplyIndex].readOnly = true;
+				commentLists[choosenIndex].replies[choosenReplyIndex].style = " border-none outline-none bg-slate-50 ";
+				commentLists[choosenIndex].replies[choosenReplyIndex].updateYn = false;
+				setCommentLists([...commentLists]);
+				setReplyCommnetIndex(-1); //textarea focus
+			}
+		}
+	}
+	
+	function blogReplyUpdateOnchangeHandler(e:any, commentId:any, reply_id:any){
+		const choosenIndex = commentLists.findIndex((val) => val._id === commentId);
+		const choosenReplyIndex = commentLists[choosenIndex].replies.findIndex((value) => value._id === reply_id);
+		commentLists[choosenIndex].replies[choosenReplyIndex].reply = e.target.value;
+		setCommentLists([...commentLists]);
+
+		let totalByte = 0;
+		for(let i =0; i < e.target.value.length; i++) {
+			let currentByte = e.target.value.charCodeAt(i);
+			if(currentByte > 128){
+				totalByte += 2;
+			}else {
+				totalByte++;
+			}
+
+			if(totalByte > 1000){
+				commentLists[choosenIndex].replies[choosenReplyIndex].reply = e.target.value.substring(0, i);
+				setCommentLists([...commentLists]);
+				break;
+			}else{
+				commentLists[choosenIndex].replies[choosenReplyIndex].reply = e.target.value;
+				setCommentLists([...commentLists]);
+			}
+		}
+
+
+
+	}
+
+	async function deleteReply(comment_id:any, reply_id:any){
+		const obj = {
+			comment_id : comment_id,
+			reply_id : reply_id,
+			email : user.email,
+		}
+
+		const replyDeleteRes = await transactionAuth("post", "blog/replydelete", obj, "", false, true, setLoadingBarState); 
+		
+		if(replyDeleteRes.sendObj.success === 'y'){
+
+			const deleteComentIndex = commentLists.findIndex(element => element._id === comment_id);
+			const choosenReplyIndex = commentLists[deleteComentIndex].replies.findIndex((value) => value._id === reply_id);
+			
+			commentLists[deleteComentIndex].replies[choosenReplyIndex].deleteyn = "y";
+			commentLists[deleteComentIndex].repliescnt = replyDeleteRes.sendObj.resObj.repliescnt;
+			setCommentLists([...commentLists]);
+
+		}
 	}
 	 
 
@@ -661,7 +847,8 @@ const PriBlogListDetail = (props: any) => {
 									Update page
 								</button>
 								<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
-								onClick={()=>deleteHandler()}
+								// onClick={()=>deleteHandler()}
+								onClick={()=>confirmScreen("Would you like to delete?", "deleteHandler", null)}
 								>
 									Delete
 								</button>
@@ -681,11 +868,15 @@ const PriBlogListDetail = (props: any) => {
 									<textarea   
 									ref={focusComment} 
 									onChange={(e)=>blogCommentOnchangeHandler(e)}
-									id="introduction" rows={4}  className="resize-none border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+									value={blogComment}
+									id="introduction" rows={4}  className="resize-none border w-full px-3 py-1 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 									</div>
 									<div className="flex justify-end">
 									<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
-										onClick={()=>commentWriteHandler()}
+										// onClick={()=>commentWriteHandler()}
+										onClick={()=>confirmScreen("Would you like to comment-write?", "commentWriteHandler", null)}
+										
+
 									>
 									Comment Write
 									</button>
@@ -705,7 +896,7 @@ const PriBlogListDetail = (props: any) => {
 								commentLists.map((item:any, index:any)=>{
 									return(
 										
-										(item.deleteyn === 'y')?
+										(item.deleteyn === 'y' && item.repliescnt === 0)?
 										(
 											<div key={index} className="mt-1 p-1 w-[90vw] h-[150px] border ">
 												<div className="flex justify-center items-center w-[100%] h-[100%] bg-slate-50">
@@ -739,14 +930,21 @@ const PriBlogListDetail = (props: any) => {
 														{
 															(user.id.length > 0)?
 															<>
-																<button className=" ms-1 
+																{
+																	(item.deleteyn === 'y' && item.repliescnt > 0)?
+																	""
+																	:
+																	<button className=" ms-1 
 																	tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
-																	onClick={()=>showReplyClickHandler(item._id, index, item.replyYn, item.seq)}
+																	// onClick={()=>showReplyClickHandler(item._id, index, item.replyYn, item.seq)}
+																	onClick={()=>confirmScreen("Would you like to reply-write?", "showReplyClickHandler", {id:item._id, index:index, replyYn:item.replyYn, seq:item.seq})}
 																	>
 																	{
 																		(item.replyYn)?"reply-write":"reply"
 																	}
 																</button>
+																}
+																
 
 																{
 																	(item.replyYn)?
@@ -759,17 +957,22 @@ const PriBlogListDetail = (props: any) => {
 																	:""
 																}
 																{
-																(item.repliescnt)?
-																	<button className=" ms-1 
-																		tracking-tight border bg-green-200 hover:bg-green-400 text-black font-bold text-[12px]  px-1 rounded"
-																		onClick={()=>showRepliest(item._id, item.seq, item.currentReplaySeq)}
-																		>
-																		{item.repliescnt}
-																	</button>
-																:""	
+																
 																}
 															</>
 															:""
+															
+														}
+
+														{
+															(item.repliescnt > 0)?
+															<button className=" ms-1 
+																tracking-tight border bg-green-200 hover:bg-green-400 text-black font-bold text-[12px]  px-1 rounded"
+																onClick={()=>showRepliest(item._id, item.seq, item.currentReplaySeq)}
+																>
+																{item.repliescnt}
+															</button>
+														:""	
 														}
 
 													</p>
@@ -778,11 +981,15 @@ const PriBlogListDetail = (props: any) => {
 
 														<div className="flex justify-end ">
 															<p className="me-1">
+															
+															
 															{
-																(user.email === item.email)?(
+																(item.deleteyn === 'y' && item.repliescnt > 0)?""
+																:(user.email === item.email)?(
 																	<button className="
 																	tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
-																	onClick={()=>commentUpdateYn(item._id, index, item.updateYn)}
+																	// onClick={()=>commentUpdateYn(item._id, index, item.updateYn)}
+																	onClick={()=>confirmScreen("Would you like to comment-update?", "commentUpdateYn", {id:item._id, index:index, updateYn:item.updateYn})}
 																	>
 																		{
 																			(item.updateYn)?"update-save":"update"
@@ -790,21 +997,36 @@ const PriBlogListDetail = (props: any) => {
 
 																	</button>
 																):""
+
 															}
 															
 															</p>
 															
 															<p className="me-1">
-															{
+
+																{
+																(item.deleteyn === 'y' && item.repliescnt > 0)?""
+																:(user.email === item.email)?(
+																	<button className="
+																	tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
+																	// onClick={()=>deleteComment(item._id)}
+																	onClick={()=>confirmScreen("Would you like to delete?", "deleteComment", {id:item._id})}
+																	>
+																		delete
+																	</button>
+																):""
+																}
+
+															{/* {
 																(user.email === item.email)?(
 																	<button className="
 																	tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
 																	onClick={()=>deleteComment(item._id)}
 																	>
-																		Delete
+																		delete
 																	</button>
 																):""
-															}
+															} */}
 															
 															
 															</p>
@@ -822,35 +1044,57 @@ const PriBlogListDetail = (props: any) => {
 													:""
 												}
 												
+												{
+													(item.deleteyn === 'y' && item.repliescnt > 0)?
 
-												<textarea className={`mx-2 mt-1 text-sm break-all w-[98%] h-[105px] p-1 
-												resize-none border ` + item.style} spellCheck={false} 
-												ref={(element) => {focusCommentListRef.current[index] = element;}}
-												readOnly={item.readOnly}
-												onChange={(e)=>blogCommentListOnchangeHandler(e, item._id)}
-												value={item.comment}
-												/>
+													<div>
+														<div className="mt-1 p-1 w-[98%] h-[105px] border ">
+															<div className="flex justify-center items-center w-[100%] h-[100%] bg-slate-50">
+																<p className="font-bold" >deleted</p> 
+															</div>
+														</div>
+													</div>
 
+													:<textarea className={`mx-2 mt-1 text-sm break-all w-[98%] h-[105px] p-1 
+														resize-none border ` + item.style} spellCheck={false} 
+														ref={(element) => {focusCommentListRef.current[index] = element;}}
+														readOnly={item.readOnly}
+														onChange={(e)=>blogCommentListOnchangeHandler(e, item._id)}
+														value={item.comment}
+														/>
+
+												}
+
+												
+												
 												{
 													(item.replies.length > 0)?
-														item.replies.map((replayItem:any, replayIndex:any)=>
+														item.replies.map((replyItem:any, replyIndex:any)=>
 														{
 															return  (
 
 
-																(replayItem.deleteyn === 'y')?
+																(replyItem.deleteyn === 'y')?
 																(
-																	<div key={index} className="mt-1 p-1 w-[90vw] h-[150px] border ">
-																		<div className="flex justify-center items-center w-[100%] h-[100%] bg-slate-50">
-																			<p className="font-bold" >deleted</p> 
+																	<div key={replyIndex} className="mt-1 p-1 w-[90vw] h-[140px] ">
+																		<div className="ms-2 flex justify-start w-[98%] h-[100%]">
+																			<p className=" flex items-center w-[40px] ">
+																				<span className="text-[20px]">
+																				<MdSubdirectoryArrowRight />
+																				</span>
+																			</p>
+																			<div className="flex justify-center items-center w-[100%] h-[100%] bg-slate-50">
+																				<p className="font-bold" >deleted</p> 
+																			</div>
 																		</div>
+																		
 																	</div>
 																)
 																:
 
 																
 
-																<div key={replayIndex} className="ms-2 flex justify-start w-[98%]">
+																<div key={replyIndex} className="ms-2 flex justify-start w-[98%]">
 																	<p className=" flex items-center w-[40px] ">
 																		<span className="text-[20px]">
 																		<MdSubdirectoryArrowRight />
@@ -861,10 +1105,10 @@ const PriBlogListDetail = (props: any) => {
 
 																		<div className="flex justify-start">
 																			<p className="my-2 text-[12px] w-[50%]">
-																				<Link href={"/blog/"+replayItem.bloginfo.seq}>
-																				<span className="font-bold">{replayItem.bloginfo.name}</span>
+																				<Link href={"/blog/"+replyItem.bloginfo.seq}>
+																				<span className="font-bold">{replyItem.bloginfo.name}</span>
 																				{
-																					(item.email === replayItem.email)?
+																					(item.email === replyItem.email)?
 																					<span className="mx-1 font-bold tracking-tight p-1 border-yellow-300 rounded bg-yellow-100">
 																					writer
 																					</span>
@@ -875,21 +1119,22 @@ const PriBlogListDetail = (props: any) => {
 																				<span className=" hidden
 																				2xl:inline-block xl:inline-block lg:inline-block md:inline-block sm:hidden
 																				">
-																				{` (`+getDate(replayItem.regdate) + `)`}
+																				{` (`+getDate(replyItem.regdate) + `)`}
 																				</span>
 																			</p>
 																			<p className="flex justify-end my-2 w-[50%]">
 																				
 																				
 																				{
-																					(user.email === replayItem.email)?(
+																					(user.email === replyItem.email)?(
 																						
 																							<button className="me-1
 																							tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
-																							onClick={()=>replyUpdateYn(item._id, replayItem._id, replayIndex, replayItem.updateYn)}
+																							// onClick={()=>replyUpdateYn(item._id, replyItem._id, replyIndex, replyItem.updateYn)}
+																							onClick={()=>confirmScreen("Would you like to reply-update?", "replyUpdateYn", {id:item._id, replyId:replyItem._id, replyIndex:replyIndex, replyUpdateYn:replyItem.updateYn})}
 																							>
 																								{
-																									(replayItem.updateYn)?"update-save":"update"
+																									(replyItem.updateYn)?"update-save":"update"
 																								}
 
 																							</button>
@@ -899,13 +1144,14 @@ const PriBlogListDetail = (props: any) => {
 																				
 																				
 																				{
-																					(user.email === replayItem.email)?( 
+																					(user.email === replyItem.email)?( 
 																						
 																							<button className="me-1
 																							tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
-																							onClick={()=>deleteComment(item._id)}
+																							// onClick={()=>deleteReply(item._id, replyItem._id,)}
+																							onClick={()=>confirmScreen("Would you like to delete?", "deleteReply", {id:item._id, replyId:replyItem._id})}
 																							>
-																								Delete
+																								delete
 																							</button>
 																						
 																					):""
@@ -917,11 +1163,11 @@ const PriBlogListDetail = (props: any) => {
 																			</p>
 																		</div> 
 																		<textarea className={`text-sm break-all w-[100%] h-[105px] p-1 
-																		resize-none border ` + replayItem.style} spellCheck={false} 
-																		ref={(element) => {focusCommentReplyRef.current[replayIndex] = element;}}
-																		readOnly={replayItem.readOnly}
-																		// onChange={(e)=>blogCommentListOnchangeHandler(e, item._id)}
-																		value={replayItem.reply}
+																		resize-none border ` + replyItem.style} spellCheck={false} 
+																		ref={(element) => {focusCommentReplyRef.current[replyIndex] = element;}}
+																		readOnly={replyItem.readOnly}
+																		onChange={(e)=>blogReplyUpdateOnchangeHandler(e, item._id, replyItem._id)}
+																		value={replyItem.reply}
 																		/>
 																	</div>
 																</div>
@@ -931,7 +1177,18 @@ const PriBlogListDetail = (props: any) => {
 													:""
 												}
 
-												
+												{
+												(item.repliescnt > 0)?
+												<div className="flex justify-end">
+													<button className=" ms-1 me-3 mt-2
+														tracking-tight border bg-green-200 hover:bg-green-400 text-black font-bold text-[12px]  px-1 rounded"
+														onClick={()=>showRepliest(item._id, item.seq, item.currentReplaySeq)}
+														>
+														view replies
+													</button>
+												</div>	
+												:""	
+												}
 
 									</div>)
 									)
@@ -943,7 +1200,7 @@ const PriBlogListDetail = (props: any) => {
 					{/* <div className="h-[70px]"></div>  */}
 					{
 					((user.id.length > 0 && user.blog_seq+"" === props.blog_seq) && bottomCommentButton)?
-					<div className="sticky z-60 bottom-10">
+					<div className="sticky z-60 bottom-3 ">
 						<div className="flex justify-end w-[97vw] ">
 							<button className="font-bold border border-yellow-600 text-[20px] 
 							rounded-full bg-yellow-200 px-2 cursor-pointer"
@@ -962,7 +1219,8 @@ const PriBlogListDetail = (props: any) => {
 									<textarea  
 									ref={focusBottomCommentBox} 
 									onChange={(e)=>blogCommentOnchangeHandler(e)}
-									id="introduction" rows={4}  className="resize-none border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+									value={blogComment}
+									id="introduction" rows={4}  className="resize-none border w-full px-3 py-1 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 									</div>
 									<div className="flex justify-end">
 									<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
@@ -1003,6 +1261,10 @@ const PriBlogListDetail = (props: any) => {
 			{/* <div ref={scrollRef} className="bg-slate-600">test</div>  */}
 			<div ref={observerEl} className="h-1"/>
 		</div>
+
+		{showConfirm && <Confirm confirmStr={confirmStr} setShowConfirm={setShowConfirm} setConfirmRes={setConfirmRes}/>}
+              
+
 		</>
 	)
 };
