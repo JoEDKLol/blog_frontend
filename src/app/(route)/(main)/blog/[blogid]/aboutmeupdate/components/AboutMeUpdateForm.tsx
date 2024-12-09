@@ -32,7 +32,7 @@ import Confirm from "@/app/components/confirmModal";
 	// let majorIndex = -1;
 	// let subIndex = -1;
 	// export default function QuillEditor(){
-	const QuillEditor = (props: any) => {
+	const AboutMeUpdateForm = (props: any) => {
 		const focusTitle = useRef<HTMLInputElement>(null);
 		const quillRef = useRef<any>(ReactQuill);
 		const [content, setContent] = useState("");
@@ -346,6 +346,6 @@ import Confirm from "@/app/components/confirmModal";
 		)
 
 	};
-	export default QuillEditor;
+	export default AboutMeUpdateForm;
 
 

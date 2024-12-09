@@ -231,10 +231,8 @@ const BlogUpdateForm = (props: any) => {
 				blog_seq : user.blog_seq
 			}
 
-			console.log(obj);
-	
+			
 			const imgUploadRes = await transactionFile("blog/fileUpload", compressedFile, obj, "", false, true, setLoadingBarState);
-			// console.log(imgUploadRes.sendObj);
 	
 			if(imgUploadRes.sendObj.success === 'y'){
 				setImg(imgUploadRes.sendObj.resObj.img_url);

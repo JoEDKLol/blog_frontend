@@ -142,8 +142,16 @@ import Confirm from "@/app/components/confirmModal";
 				randomNum : tempNum
 			}
 			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false, true, setLoadingBarState);
-			const range = editor.getSelection();
-      		editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
+			
+			if(imgUploadRes.sendObj.success === "y"){
+				const range = editor.getSelection();
+      			editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
+			}else{
+				console.log(imgUploadRes.sendObj.message);
+			}
+			
+			// const range = editor.getSelection();
+      		// editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
 		}
 
 		const modules = useMemo( 
