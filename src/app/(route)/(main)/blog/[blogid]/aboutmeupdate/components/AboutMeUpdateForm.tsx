@@ -12,6 +12,9 @@ import { transactionAuth } from "@/app/utils/axiosAuth";
 import { useRouter,usePathname } from "next/navigation";
 import { loadingBarState } from "@/app/store/loadingBar";
 import Confirm from "@/app/components/confirmModal";
+
+import imageCompression from "browser-image-compression";
+import Image from "next/image";
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
@@ -33,21 +36,23 @@ import Confirm from "@/app/components/confirmModal";
 	// let subIndex = -1;
 	// export default function QuillEditor(){
 	const AboutMeUpdateForm = (props: any) => {
-		const focusTitle = useRef<HTMLInputElement>(null);
+		// const focusTitle = useRef<HTMLInputElement>(null);
 		const quillRef = useRef<any>(ReactQuill);
 		const [content, setContent] = useState("");
 		const [user, setUser] = useRecoilState(userState);
 		
-		const [title, setTitle] = useState("");
+		// const [title, setTitle] = useState("");
 		const [writeSuc, setWriteSuc] = useState(false);
+		const [img, setImg] = useState<any>("");
+		const [imgDelete, setImgDelete] = useState<any>(false);
 
-		const [majorCategories, setMajorCategories] = useState<any>([]);
-		const [majorCategoryCnt, setMajorCategoryCnt] = useState<any>(0);
-		const [subCategories, setSubCategories] = useState<any>([]);
-		const [subCategoryCnt, setSubCategoryCnt] = useState<any>(0);
-		const [majorIndex, setMajorIndex] = useState<any>(-1);
-		const [chooseMajor, setChooseMajor] = useState<any>();
-		const [chooseSub, setChooseSub] = useState<any>();
+		// const [majorCategories, setMajorCategories] = useState<any>([]);
+		// const [majorCategoryCnt, setMajorCategoryCnt] = useState<any>(0);
+		// const [subCategories, setSubCategories] = useState<any>([]);
+		// const [subCategoryCnt, setSubCategoryCnt] = useState<any>(0);
+		// // const [majorIndex, setMajorIndex] = useState<any>(-1);
+		// const [chooseMajor, setChooseMajor] = useState<any>();
+		// const [chooseSub, setChooseSub] = useState<any>();
 		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 
 
@@ -70,66 +75,54 @@ import Confirm from "@/app/components/confirmModal";
 			setConfirmStr({showText:showText, exeFunction:exeFunction, obj:obj});
 		}
 
-		useEffect(()=>{
-			focusTitle.current?.focus();
-			getCategoryInfo();
-		},[])
+		async function fileUploadHandler(e:any){
 
-		useEffect(()=>{
-			let totalByte = 0;
-			for(let i =0; i < title.length; i++) {
-				let currentByte = title.charCodeAt(i);
-				if(currentByte > 128){
-					totalByte += 2;
-				}else {
-					totalByte++;
-				}
-
-				if(totalByte > 200){
-					setTitle(title.substring(0, i));
-					break;
-				}
-			}			
-		},[title]);
-
-		async function getCategoryInfo(){
-			const obj = {
-				user_id : user.id,
-				email : user.email,
-				blog_seq :user.blog_seq,
-			}
-			const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState); 
+			// - 백앤드 이미지 저장 사용 temp 저장 후 url 반환 
+				// - 저장 누르면 해당 temp 삭제 및 실제 저장
+			// - 새로운 이미지 선택시 기존 temp 삭제 및 새로 temp 저장 
+			// - 사이즈 조정 
+			const file = e.target.files[0]; 
 			
-			if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
-				setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
-				setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
-			}
+			if(!file) return;
 	
-			if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
-				setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
-				setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
+	
+			const options = {
+				maxSizeMB: 0.2, // 이미지 최대 용량
+				maxWidthOrHeight: 1920, // 최대 넓이(혹은 높이)
+				useWebWorker: true,
+			};
+	
+			try {
+	
+				const compressedFile = await imageCompression(file, options);
+				
+				const obj = {
+					user_id : user.id,
+					email : user.email,
+					randomNum : randomNum, 
+					blog_seq : user.blog_seq
+				}
+	
+				
+				const imgUploadRes = await transactionFile("blog/fileUpload", compressedFile, obj, "", false, true, setLoadingBarState);
+		
+				if(imgUploadRes.sendObj.success === 'y'){
+					setImg(imgUploadRes.sendObj.resObj.img_url);
+					setImgDelete(false);
+				}else{
+					
+				}
+	
+	
+			} catch (error) {
+				console.log(error)
 			}
+
 		}
 
-		
-
-		const imageHandler = async (imageBase64URL:any, imageBlob:any, editor:any) => {
-			const obj = {
-				user_id : user.id,
-				email : user.email,
-				randomNum : randomNum
-			}
-			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false, true, setLoadingBarState);
-
-
-			if(imgUploadRes.sendObj.success === "y"){
-				const range = editor.getSelection();
-      		editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
-			}else{
-				console.log(imgUploadRes.sendObj.message);
-			}
-			
-			
+		function deleteImg(){
+			setImg("");
+			setImgDelete(true);
 		}
 
 		const modules = useMemo( 
@@ -139,67 +132,67 @@ import Confirm from "@/app/components/confirmModal";
 						[{ header: [1, 2, false] }],
 						['bold', 'italic', 'underline', 'strike', 'blockquote'],
 						[{ list: 'ordered' }, { list: 'bullet' }],
-						["link", "image", "video"],
+						// ["link", "image", "video"],
 						['clean'],
 						[{ color: [] }, { background: [] }],
 						[{ align: [] }],
 					],
 				},
-				imageCompress: {
-					quality: 0.7,
-					maxWidth: 1000, 
-					maxHeight: 1000, 
-					debug: false, // default
-					suppressErrorLogging: false, 
-					// insertIntoEditor : undefined
-					insertIntoEditor: (imageBase64URL:any, imageBlob:any, editor:any) => {
-						imageHandler(imageBase64URL, imageBlob, editor)
-					}
-				},
+				// imageCompress: {
+				// 	quality: 0.7,
+				// 	maxWidth: 1000, 
+				// 	maxHeight: 1000, 
+				// 	debug: false, // default
+				// 	suppressErrorLogging: false, 
+				// 	// insertIntoEditor : undefined
+				// 	insertIntoEditor: (imageBase64URL:any, imageBlob:any, editor:any) => {
+				// 		imageHandler(imageBase64URL, imageBlob, editor)
+				// 	}
+				// },
 			}),
 			[],
 		);
 
-		function title_onchangeHandler(e:any){
-			setTitle(e.target.value);
-		}
+		// function title_onchangeHandler(e:any){
+		// 	setTitle(e.target.value);
+		// }
 
 		async function writeButtenHandler(){
 			// const title = event.target.title.value;
 			// console.log(chooseMajor, chooseSub);
 			// return; 
-			const obj = {
-				user_id : user.id,
-				email : user.email,
-				title:title,
-				content:content,
-				blog_seq:user.blog_seq,
-				randomNum : randomNum,
-				m_category_seq:chooseMajor,
-				s_category_seq:chooseSub
-			}
+			// const obj = {
+			// 	user_id : user.id,
+			// 	email : user.email,
+			// 	title:title,
+			// 	content:content,
+			// 	blog_seq:user.blog_seq,
+			// 	randomNum : randomNum,
+			// 	m_category_seq:chooseMajor,
+			// 	s_category_seq:chooseSub
+			// }
 			
-			const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false, true, setLoadingBarState);
-			// console.log(imgUploadRes.sendObj.success );
+			// const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false, true, setLoadingBarState);
+			// // console.log(imgUploadRes.sendObj.success );
 
-			if(imgUploadRes.sendObj.success === 'y'){
-				setWriteSuc(true);
-			}else{
+			// if(imgUploadRes.sendObj.success === 'y'){
+			// 	setWriteSuc(true);
+			// }else{
 				
-			}
+			// }
 		}
 		const router = useRouter();
 		function movetoblog(){
 			router.push('/blog/' + user.blog_seq + "?refresh=refresh")
 		} 
 
-		function changeMajorCategory(e:any){
-			setMajorIndex(Number(e.target.value));
-			setChooseMajor(Number(e.target.value));
-		}
-		function changeSubCategory(e:any){
-			setChooseSub(Number(e.target.value));
-		}
+		// function changeMajorCategory(e:any){
+		// 	setMajorIndex(Number(e.target.value));
+		// 	setChooseMajor(Number(e.target.value));
+		// }
+		// function changeSubCategory(e:any){
+		// 	setChooseSub(Number(e.target.value));
+		// }
 
 
 		return (
@@ -227,8 +220,49 @@ import Confirm from "@/app/components/confirmModal";
 			
 			
 				(<div className="grid place-items-center grid-cols-1">
+
+					<div className="my-5">
+						<div className='ring-1 w-[230px] h-[225px] ring-gray-300 rounded-xl relative ' >
+							{img ? (
+								
+										<Image 
+										src={img}
+										quality={30}
+										layout="fill"
+										style={{ objectFit: "cover" , borderRadius: '8px' }}
+										alt='' />
+								) : ""
+							}
+						</div>
+					</div>
+					<div className="flex justify-center border-gray-200 pb-2 mb-2">
+						<div className="me-1">
+							<label className="cursor-pointer w-[130px] border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200" htmlFor="file_input">
+									Upload Img
+							</label>
+							<input className="w-[340px]
+							2xl:w-[440px] xl:w-[440px] lg:w-[440px] md:w-[440px] sm:w-[340px]
+							text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer
+							hidden
+							" id="file_input" type="file"
+							accept="image/*" 
+							onChange={(e)=>fileUploadHandler(e)}
+							
+							>
+							</input>
+
+						</div>
+						<div>
+							<label className="cursor-pointer w-[130px] border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200"
+							htmlFor="img_delete"
+							onClick={()=>deleteImg()}
+							>
+								Delete
+							</label>
+						</div>
+					</div>
 					
-					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
+					{/* <div className="font-bold w-[100%] h-[30px] text-start visible ps-2
 						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
 						">
@@ -248,9 +282,9 @@ import Confirm from "@/app/components/confirmModal";
 						onChange={(e)=>title_onchangeHandler(e)}
 						autoComplete="off" id="title" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 						</div>
-					</div>
+					</div> */}
 
-					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
+					{/* <div className="font-bold w-[100%] h-[30px] text-start visible ps-2
 						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
 						">
@@ -294,19 +328,19 @@ import Confirm from "@/app/components/confirmModal";
 								}
 							</select>
 						</div>
-					</div>
+					</div> */}
 					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
 						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
 						">
-					Content</div>
+					AboutMe</div>
 					<div className="flex justify-center pb-2 border-b mb-2 w-[100%]
 					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
 					">	
 						<div className="font-bold w-[0px] invisible
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
-						">Content</div>	 
+						">AboutMe</div>	 
 						<div className="h-[400px] w-[100%]">  
 							<QuillNoSSRWrapper 
 							theme="snow" 
