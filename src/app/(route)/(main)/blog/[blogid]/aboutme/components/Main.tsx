@@ -3,7 +3,7 @@
 import { userState } from "@/app/store/user";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
-import WriteForm from "./WriteForm";
+import AboutMeForm from "./AboutMeForm";
 
 
 

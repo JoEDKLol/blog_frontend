@@ -15,11 +15,14 @@ import Confirm from "@/app/components/confirmModal";
 
 import imageCompression from "browser-image-compression";
 import Image from "next/image";
+
+import { InputMask } from '@react-input/mask';
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
 	}
-	const randomNum = getRandomNumber(10);
+	// const randomNum = getRandomNumber(10);
+	let randomNum:any; //aboutme 정보가 없으면 새롭게 번호를 가져옴.
 	const QuillNoSSRWrapper = dynamic(
 		async () => {
 			const { default: QuillComponent } = await import('react-quill')
@@ -41,18 +44,9 @@ import Image from "next/image";
 		const [content, setContent] = useState("");
 		const [user, setUser] = useRecoilState(userState);
 		
-		// const [title, setTitle] = useState("");
 		const [writeSuc, setWriteSuc] = useState(false);
-		const [img, setImg] = useState<any>("");
-		const [imgDelete, setImgDelete] = useState<any>(false);
+		
 
-		// const [majorCategories, setMajorCategories] = useState<any>([]);
-		// const [majorCategoryCnt, setMajorCategoryCnt] = useState<any>(0);
-		// const [subCategories, setSubCategories] = useState<any>([]);
-		// const [subCategoryCnt, setSubCategoryCnt] = useState<any>(0);
-		// // const [majorIndex, setMajorIndex] = useState<any>(-1);
-		// const [chooseMajor, setChooseMajor] = useState<any>();
-		// const [chooseSub, setChooseSub] = useState<any>();
 		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 
 
@@ -61,10 +55,23 @@ import Image from "next/image";
 		const [confirmStr, setConfirmStr] = useState({showText:"", exeFunction:"", obj:null as any});
 		const [confirmRes, setConfirmRes] = useState(false);
 
+		const [img, setImg] = useState<any>("");
+		const [imgDelete, setImgDelete] = useState<any>(false);
+		const [thumbImg, setThumbImg] = useState<any>("");
+		const [name, setName] = useState("");
+		const [jobTitle, setJobTitle] = useState("");
+		const [email, setEmail] = useState("");
+		const [phone, setPhone] = useState("");
+		const [linkedIn, setLinkedIn] = useState("");
+		const [address, setAddress] = useState("");
+		const [summary, setSummary] = useState("");
+		const [aboutme, setAboutme] = useState<any>({});
+
+
 		useEffect(()=>{
 			if(confirmRes){ 
 				// focusCommentReplyRef.current[replyCommnetIndex]?.focus();
-				if(confirmStr.exeFunction === "writeButtenHandler") writeButtenHandler();
+				if(confirmStr.exeFunction === "updateButtenHandler") updateButtenHandler();
 				setConfirmRes(false);
 			}
 		},[confirmRes])
@@ -74,6 +81,128 @@ import Image from "next/image";
 			setConfirmStr({showText:"", exeFunction:"", obj:null}); 
 			setConfirmStr({showText:showText, exeFunction:exeFunction, obj:obj});
 		}
+
+		//validation
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < name.length; i++) {
+				let currentByte = name.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 100){
+					setName(name.substring(0, i));
+					break;
+				}
+			}			
+		},[name]);
+
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < jobTitle.length; i++) {
+				let currentByte = jobTitle.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 100){
+					setJobTitle(jobTitle.substring(0, i));
+					break;
+				}
+			}			
+		},[jobTitle]);
+
+
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < email.length; i++) {
+				let currentByte = email.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 100){
+					setEmail(email.substring(0, i));
+					break;
+				}
+			}			
+		},[email]);
+		
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < phone.length; i++) {
+				let currentByte = phone.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 20){
+					setPhone(phone.substring(0, i));
+					break;
+				}
+			}
+		},[phone]);
+
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < linkedIn.length; i++) {
+				let currentByte = linkedIn.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 100){
+					setLinkedIn(linkedIn.substring(0, i));
+					break;
+				}
+			}
+		},[linkedIn]);
+
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < address.length; i++) {
+				let currentByte = address.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 100){
+					setAddress(address.substring(0, i));
+					break;
+				}
+			}
+		},[address]);
+
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < summary.length; i++) {
+				let currentByte = summary.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 1000){
+					setSummary(summary.substring(0, i));
+					break;
+				}
+			}
+		},[summary]);
+
 
 		async function fileUploadHandler(e:any){
 
@@ -107,8 +236,11 @@ import Image from "next/image";
 				const imgUploadRes = await transactionFile("blog/fileUpload", compressedFile, obj, "", false, true, setLoadingBarState);
 		
 				if(imgUploadRes.sendObj.success === 'y'){
+					// console.log(imgUploadRes.sendObj.resObj);
 					setImg(imgUploadRes.sendObj.resObj.img_url);
 					setImgDelete(false);
+					setThumbImg(imgUploadRes.sendObj.resObj.thumbImg_url);
+					
 				}else{
 					
 				}
@@ -138,42 +270,36 @@ import Image from "next/image";
 						[{ align: [] }],
 					],
 				},
-				// imageCompress: {
-				// 	quality: 0.7,
-				// 	maxWidth: 1000, 
-				// 	maxHeight: 1000, 
-				// 	debug: false, // default
-				// 	suppressErrorLogging: false, 
-				// 	// insertIntoEditor : undefined
-				// 	insertIntoEditor: (imageBase64URL:any, imageBlob:any, editor:any) => {
-				// 		imageHandler(imageBase64URL, imageBlob, editor)
-				// 	}
-				// },
 			}),
 			[],
 		);
 
-		// function title_onchangeHandler(e:any){
-		// 	setTitle(e.target.value);
-		// }
-
-		async function writeButtenHandler(){
-			// const title = event.target.title.value;
-			// console.log(chooseMajor, chooseSub);
-			// return; 
-			// const obj = {
-			// 	user_id : user.id,
-			// 	email : user.email,
-			// 	title:title,
-			// 	content:content,
-			// 	blog_seq:user.blog_seq,
-			// 	randomNum : randomNum,
-			// 	m_category_seq:chooseMajor,
-			// 	s_category_seq:chooseSub
-			// }
+		async function updateButtenHandler(){
 			
-			// const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false, true, setLoadingBarState);
-			// // console.log(imgUploadRes.sendObj.success );
+			const obj = {
+				aboutme_id : aboutme.id as any,
+				user_id : user.id,
+				user_email : user.email,
+				blog_id:user.blog_id,
+				blog_seq:user.blog_seq,
+				temp_num:randomNum,
+				aboutme_thumbnailimg:thumbImg,
+				aboutme_img:img,
+				name:name,
+				jobTitle:jobTitle,
+				email:email,
+				phone:phone,
+				linkedIn:linkedIn,
+				address:address,
+				summary:summary,
+				content:content
+
+			}
+
+			console.log(obj);
+			
+			const aboutmeUpdateRes = await transactionAuth("post", "blog/aboutmeupdate", obj, "", false, true, setLoadingBarState);
+			console.log(aboutmeUpdateRes.sendObj.success );
 
 			// if(imgUploadRes.sendObj.success === 'y'){
 			// 	setWriteSuc(true);
@@ -195,6 +321,37 @@ import Image from "next/image";
 		// }
 
 
+		
+		function nameOnchangeHandler(e:any){
+			setName(e.target.value);
+		}
+
+		function jobTitleOnchangeHandler(e:any){
+			setJobTitle(e.target.value);
+		}
+		
+		function emailOnchangeHandler(e:any){
+			setEmail(e.target.value);
+		}
+
+		function phoneOnchangeHandler(e:any){
+			setPhone(e.target.value);
+		}
+
+		function linkedInOnchangeHandler(e:any){
+			setLinkedIn(e.target.value);
+		}
+
+		function addressOnchangeHandler(e:any){
+			setAddress(e.target.value);
+		}
+
+		function summaryOnchangeHandler(e:any){
+			setSummary(e.target.value);
+		}
+
+	
+
 		return (
 			
 			<>
@@ -212,7 +369,7 @@ import Image from "next/image";
 						<button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded"
 						onClick={()=>movetoblog()}
 						>
-							Board Lists
+							About me
 						</button>
 					</div>
 					
@@ -261,74 +418,176 @@ import Image from "next/image";
 							</label>
 						</div>
 					</div>
+
+					{/* <div className="grid place-items-center grid-cols-1"> */}
+						<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
+									2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+									2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+									">
+						Name</div>
+						<div className="flex justify-center border-b border-gray-200 pb-2 mb-2
+						w-[100%] 2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]">
+							<div className="font-bold w-[0px] invisible
+							2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+							2xl:visible xl:visible lg:visible md:visible sm:invisible
+							">Name
+							</div>
+							<div className="w-[100%] ">
+								<input 
+								// ref={focusTitle} 
+								onChange={(e)=>nameOnchangeHandler(e)}
+								value={name}
+								autoComplete="off" id="name" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+							</div>
+						</div>
+
+						<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
+								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+								">
+						Job Title</div>
+						<div className="flex justify-center border-b border-gray-200 pb-2 mb-2
+						w-[100%] 2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]">
+							<div className="font-bold w-[0px] invisible
+							2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+							2xl:visible xl:visible lg:visible md:visible sm:invisible
+							">Job Title
+							</div>
+							<div className="w-[100%] ">
+								<input 
+								// ref={focusTitle} 
+								onChange={(e)=>jobTitleOnchangeHandler(e)}
+								value={jobTitle}
+								autoComplete="off" id="jobTitle" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+							</div>
+						</div>
+
+						<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
+								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+								">
+						Email</div>
+						<div className="flex justify-center border-b border-gray-200 pb-2 mb-2
+						w-[100%] 2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]">
+							<div className="font-bold w-[0px] invisible
+							2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+							2xl:visible xl:visible lg:visible md:visible sm:invisible
+							">Email
+							</div>
+							<div className="w-[100%] ">
+								<input 
+								// ref={focusTitle} 
+								onChange={(e)=>emailOnchangeHandler(e)}
+								value={email}
+								autoComplete="off" id="email" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+							</div>
+						</div>
+
+						<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
+								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+								">
+						Phone</div>
+						<div className="flex justify-center border-b border-gray-200 pb-2 mb-2
+						w-[100%] 2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]">
+							<div className="font-bold w-[0px] invisible
+							2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+							2xl:visible xl:visible lg:visible md:visible sm:invisible
+							">Phone
+							</div>
+							<div className="w-[100%] ">
+							<InputMask 
+							mask="(___) ___-____" replacement={{ _: /\d/ }} 
+							style={
+								{width: "100%", height:"38px", 
+									border:"1px solid ",
+									borderRadius: "0.25rem",
+									borderColor: "rgb(229 231 235)",
+									outline: "2px solid transparent",
+									padding: "10px",
+									fontSize: "0.875rem",
+
+								}}
+								
+							onChange={(e)=>phoneOnchangeHandler(e)}
+							onFocus={(e) => e.target.style.border = '1px solid black'}
+							onBlur={(e) => e.target.style.border = '1px solid rgb(229 231 235)'} 
+							value={phone}
+							/>
+								{/* <input 
+								// ref={focusTitle} 
+								onChange={(e)=>phoneOnchangeHandler(e)}
+								value={phone}
+								autoComplete="off" id="phone" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/> */}
+							</div>
+						</div>
+
+						<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
+								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+								">
+						LinkedIn</div>
+						<div className="flex justify-center border-b border-gray-200 pb-2 mb-2
+						w-[100%] 2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]">
+							<div className="font-bold w-[0px] invisible
+							2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px] 
+							2xl:visible xl:visible lg:visible md:visible sm:invisible
+							">LinkedIn
+							</div>
+							<div className="w-[100%] ">
+								<input 
+								// ref={focusTitle} 
+								onChange={(e)=>linkedInOnchangeHandler(e)}
+								value={linkedIn}
+								autoComplete="off" id="linkedIn" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+							</div>
+						</div>
+
+						<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
+								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+								">
+						Address</div>
+						<div className="flex justify-center border-b border-gray-200 pb-2 mb-2
+						w-[100%] 2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]">
+							<div className="font-bold w-[0px] invisible
+							2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+							2xl:visible xl:visible lg:visible md:visible sm:invisible
+							">Address
+							</div>
+							<div className="w-[100%] ">
+								<input 
+								// ref={focusTitle} 
+								onChange={(e)=>addressOnchangeHandler(e)}
+								value={address}
+								autoComplete="off" id="address" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+							</div>
+						</div>
+
+						<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
+								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+								">
+						Summary</div>
+						<div className="flex justify-center border-b border-gray-200 pb-2 mb-2
+						 w-[100%] 2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]">
+
+							<div className="font-bold w-[0px] invisible
+							2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+							2xl:visible xl:visible lg:visible md:visible sm:invisible
+							">Summary
+							</div>
+							<div className="w-[100%] ">
+								<textarea  
+								// ref={focusTitle} 
+								onChange={(e)=>summaryOnchangeHandler(e)}
+								value={summary}
+								id="summary" rows={5}  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+							</div>
+						</div>
+						
 					
-					{/* <div className="font-bold w-[100%] h-[30px] text-start visible ps-2
-						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
-						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
-						">
-					Title</div>
-					<div className="flex justify-center 
-					border-b border-gray-200 pb-2 mb-2 w-[100%]
-					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
-					">
-						<div className="font-bold w-[0px]
-						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
-						2xl:visible xl:visible lg:visible md:visible sm:invisible
-						">Title
-						</div>
-						<div className="w-[100%] ">
-						<input ref={focusTitle} 
-						value={title}
-						onChange={(e)=>title_onchangeHandler(e)}
-						autoComplete="off" id="title" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
-						</div>
-					</div> */}
 
-					{/* <div className="font-bold w-[100%] h-[30px] text-start visible ps-2
-						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
-						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
-						">
-					Category</div>
-
-					<div className="flex justify-center 
-					border-b border-gray-200 pb-2 mb-2 w-[100%]
-					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
-					">
-						<div className="font-bold w-[0%]
-						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
-						2xl:visible xl:visible lg:visible md:visible sm:invisible
-						">Category</div>
-						<div className="w-[100%]">
-							<select id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] px-3 py-2 outline-none"
-							onChange={(e)=>changeMajorCategory(e)}
-							>
-								<option>Choose a MajorCategory</option>
-								{
-									majorCategories.map((item:any, index:any)=>{
-										return (
-											<option key={index} value={item.seq}>{item.categoryNm}</option>
-										)
-									})
-								}
-							</select>
-							<select id="subCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] ms-2 px-3 py-2 outline-none"
-							onChange={(e)=>changeSubCategory(e)}
-							>
-								<option>Choose a SubCategory</option>
-								{
-									subCategories.map((item:any, index:any)=>{
-										// return (
-										// 	<option value={item.seq}>{item.m_category_seq}{majorIndex}</option>
-										// )
-										return (item.m_category_seq===majorIndex)?												
-										(
-											<option key={index} value={item.seq}>{item.categoryNm}</option>
-										):""
-									})
-								}
-							</select>
-						</div>
-					</div> */}
 					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
 						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
@@ -354,9 +613,9 @@ import Image from "next/image";
 								<button className=" mt-20 border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5
 								2xl:mt-14 xl:mt-14 lg:mt-14 md:mt-20 sm:mt-14"
 								// onClick={()=>writeButtenHandler()}
-								onClick={()=>confirmScreen("Would you like to write?", "writeButtenHandler", null)}
+								onClick={()=>confirmScreen("Would you like to update?", "updateButtenHandler", null)}
 								>
-									Write
+									Update
 								</button>
 							</div>	
 						</div>
