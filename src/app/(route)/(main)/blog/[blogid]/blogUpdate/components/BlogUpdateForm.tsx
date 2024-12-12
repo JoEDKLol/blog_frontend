@@ -580,14 +580,14 @@ const BlogUpdateForm = (props: any) => {
 						</div>
 					</div>
 					<div className="mb-2">
-						<div className='ring-1 w-[230px] h-[225px] ring-gray-300 rounded-xl relative ' >
+						<div className='ring-1 w-[230px] h-[225px] ring-gray-300 rounded-xl relative border' >
 							{img ? (
 								
 										<Image 
 										src={img}
 										quality={30}
 										layout="fill"
-										style={{ objectFit: "cover" , borderRadius: '8px' }}
+										style={{ objectFit: "cover" , borderRadius: '10px' }}
 										alt='' />
 								) : ""
 							}

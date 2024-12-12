@@ -26,7 +26,7 @@ const AboutMeUpdateMain = (props: any) => {
 			
 			{
 				(writeYn)?
-				<><AboutMeUpdateForm></AboutMeUpdateForm></>:
+				<><AboutMeUpdateForm blog_seq={props.blog_seq}></AboutMeUpdateForm></>:
 				<>You need to Login.</>
 			}
 			

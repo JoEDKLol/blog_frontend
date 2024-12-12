@@ -12,11 +12,22 @@ import { transactionAuth } from "@/app/utils/axiosAuth";
 import { useRouter,usePathname } from "next/navigation";
 import { loadingBarState } from "@/app/store/loadingBar";
 import Confirm from "@/app/components/confirmModal";
+
+import imageCompression from "browser-image-compression";
+import Image from "next/image";
+
+import { InputMask } from '@react-input/mask';
+
+import { MdEmail } from "react-icons/md"; //<MdEmail />
+import { FaLinkedin } from "react-icons/fa"; //<FaLinkedin />
+import { FaPhoneSquare } from "react-icons/fa";  //<FaPhoneSquare />
+import { FaAddressCard } from "react-icons/fa6";  //<FaAddressCard />
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
 	}
-	const randomNum = getRandomNumber(10);
+	// const randomNum = getRandomNumber(10);
+	let randomNum:any; //aboutme 정보가 없으면 새롭게 번호를 가져옴.
 	const QuillNoSSRWrapper = dynamic(
 		async () => {
 			const { default: QuillComponent } = await import('react-quill')
@@ -33,21 +44,14 @@ import Confirm from "@/app/components/confirmModal";
 	// let subIndex = -1;
 	// export default function QuillEditor(){
 	const AboutMeForm = (props: any) => {
-		const focusTitle = useRef<HTMLInputElement>(null);
+		// const focusTitle = useRef<HTMLInputElement>(null);
 		const quillRef = useRef<any>(ReactQuill);
 		const [content, setContent] = useState("");
 		const [user, setUser] = useRecoilState(userState);
 		
-		const [title, setTitle] = useState("");
-		const [writeSuc, setWriteSuc] = useState(false);
+		const [updateSuc, setUpdateSuc] = useState(false);
+		
 
-		const [majorCategories, setMajorCategories] = useState<any>([]);
-		const [majorCategoryCnt, setMajorCategoryCnt] = useState<any>(0);
-		const [subCategories, setSubCategories] = useState<any>([]);
-		const [subCategoryCnt, setSubCategoryCnt] = useState<any>(0);
-		const [majorIndex, setMajorIndex] = useState<any>(-1);
-		const [chooseMajor, setChooseMajor] = useState<any>();
-		const [chooseSub, setChooseSub] = useState<any>();
 		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 
 
@@ -56,10 +60,27 @@ import Confirm from "@/app/components/confirmModal";
 		const [confirmStr, setConfirmStr] = useState({showText:"", exeFunction:"", obj:null as any});
 		const [confirmRes, setConfirmRes] = useState(false);
 
+		const [img, setImg] = useState<any>("");
+		const [imgDelete, setImgDelete] = useState<any>(false);
+		const [thumbImg, setThumbImg] = useState<any>("");
+		const [name, setName] = useState("");
+		const [jobTitle, setJobTitle] = useState("");
+		const [email, setEmail] = useState("");
+		const [phone, setPhone] = useState("");
+		const [linkedIn, setLinkedIn] = useState("");
+		const [address, setAddress] = useState("");
+		const [summary, setSummary] = useState("");
+		const [aboutMeId, setAboutMeId] = useState<any>("");
+		const [contact, setContact] = useState("");
+		const [contactShow, setContactShow] = useState("hidden");
+		const [goShow, setGoshow] = useState(false);
+
+		const focusContact = useRef<HTMLInputElement>(null);
+
 		useEffect(()=>{
 			if(confirmRes){ 
 				// focusCommentReplyRef.current[replyCommnetIndex]?.focus();
-				if(confirmStr.exeFunction === "writeButtenHandler") writeButtenHandler();
+				if(confirmStr.exeFunction === "updateButtenHandler") updateButtenHandler();
 				setConfirmRes(false);
 			}
 		},[confirmRes])
@@ -70,261 +91,390 @@ import Confirm from "@/app/components/confirmModal";
 			setConfirmStr({showText:showText, exeFunction:exeFunction, obj:obj});
 		}
 
-		useEffect(()=>{
-			focusTitle.current?.focus();
-			getCategoryInfo();
-		},[])
-
+		//validation
 		useEffect(()=>{
 			let totalByte = 0;
-			for(let i =0; i < title.length; i++) {
-				let currentByte = title.charCodeAt(i);
+			for(let i =0; i < name.length; i++) {
+				let currentByte = name.charCodeAt(i);
 				if(currentByte > 128){
 					totalByte += 2;
 				}else {
 					totalByte++;
 				}
 
-				if(totalByte > 200){
-					setTitle(title.substring(0, i));
+				if(totalByte > 100){
+					setName(name.substring(0, i));
 					break;
 				}
 			}			
-		},[title]);
+		},[name]);
 
-		async function getCategoryInfo(){
-			const obj = {
-				user_id : user.id,
-				email : user.email,
-				blog_seq :user.blog_seq,
-			}
-			const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState); 
-			
-			if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
-				setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
-				setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
-			}
-	
-			if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
-				setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
-				setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
-			}
-		}
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < jobTitle.length; i++) {
+				let currentByte = jobTitle.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
 
+				if(totalByte > 100){
+					setJobTitle(jobTitle.substring(0, i));
+					break;
+				}
+			}			
+		},[jobTitle]);
+
+
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < email.length; i++) {
+				let currentByte = email.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 100){
+					setEmail(email.substring(0, i));
+					break;
+				}
+			}			
+		},[email]);
 		
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < phone.length; i++) {
+				let currentByte = phone.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
 
-		const imageHandler = async (imageBase64URL:any, imageBlob:any, editor:any) => {
+				if(totalByte > 20){
+					setPhone(phone.substring(0, i));
+					break;
+				}
+			}
+		},[phone]);
+
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < linkedIn.length; i++) {
+				let currentByte = linkedIn.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 100){
+					setLinkedIn(linkedIn.substring(0, i));
+					break;
+				}
+			}
+		},[linkedIn]);
+
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < address.length; i++) {
+				let currentByte = address.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 100){
+					setAddress(address.substring(0, i));
+					break;
+				}
+			}
+		},[address]);
+
+		useEffect(()=>{
+			let totalByte = 0;
+			for(let i =0; i < summary.length; i++) {
+				let currentByte = summary.charCodeAt(i);
+				if(currentByte > 128){
+					totalByte += 2;
+				}else {
+					totalByte++;
+				}
+
+				if(totalByte > 1000){
+					setSummary(summary.substring(0, i));
+					break;
+				}
+			}
+		},[summary]);
+
+		useEffect(()=>{
+			
+			if(contact){
+				focusContact.current?.focus();
+			}
+
+		},[contact]);
+
+
+		useEffect(()=>{
+			getAboutme();
+		}, [])
+
+		async function getAboutme(){
 			const obj = {
-				user_id : user.id,
-				email : user.email,
-				randomNum : randomNum
+				blog_seq:props.blog_seq,
 			}
-			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false, true, setLoadingBarState);
 
+			const aboutmeRes = await transactionAuth("get", "blog/aboutme", obj, "", false, true, setLoadingBarState);
+			// console.log(aboutmeRes.sendObj);
 
-			if(imgUploadRes.sendObj.success === "y"){
-				const range = editor.getSelection();
-      		editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
-			}else{
-				console.log(imgUploadRes.sendObj.message);
+			if(aboutmeRes.sendObj.success === "y"){
+				const resObj = aboutmeRes.sendObj.resObj;
+				setImg(resObj.aboutme_img)
+				setThumbImg(resObj.aboutme_thumbnailimg)
+				setName(resObj.aboutme_name)
+				setJobTitle(resObj.jobtitle)
+				setEmail(resObj.aboutme_email)
+				setPhone(resObj.aboutme_phone)
+				setLinkedIn(resObj.aboutme_linkedin)
+				setAddress(resObj.aboutme_address)
+				setSummary(resObj.summary)
+				setContent(resObj.content)
+				setAboutMeId(resObj._id)
 			}
-			
-			
 		}
+
 
 		const modules = useMemo( 
-			() => ({
-				toolbar: {
-					container: [
-						[{ header: [1, 2, false] }],
-						['bold', 'italic', 'underline', 'strike', 'blockquote'],
-						[{ list: 'ordered' }, { list: 'bullet' }],
-						["link", "image", "video"],
-						['clean'],
-						[{ color: [] }, { background: [] }],
-						[{ align: [] }],
-					],
-				},
-				imageCompress: {
-					quality: 0.7,
-					maxWidth: 1000, 
-					maxHeight: 1000, 
-					debug: false, // default
-					suppressErrorLogging: false, 
-					// insertIntoEditor : undefined
-					insertIntoEditor: (imageBase64URL:any, imageBlob:any, editor:any) => {
-						imageHandler(imageBase64URL, imageBlob, editor)
-					}
-				},
+			() => (
+				{
+				toolbar: null,
+				
 			}),
 			[],
 		);
 
-		function title_onchangeHandler(e:any){
-			setTitle(e.target.value);
-		}
-
-		async function writeButtenHandler(){
-			// const title = event.target.title.value;
-			// console.log(chooseMajor, chooseSub);
-			// return; 
-			const obj = {
-				user_id : user.id,
-				email : user.email,
-				title:title,
-				content:content,
-				blog_seq:user.blog_seq,
-				randomNum : randomNum,
-				m_category_seq:chooseMajor,
-				s_category_seq:chooseSub
-			}
+		async function updateButtenHandler(){
 			
-			const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false, true, setLoadingBarState);
-			// console.log(imgUploadRes.sendObj.success );
+			const obj = {
+				aboutme_id : aboutMeId,
+				user_id : user.id,
+				user_email : user.email,
+				blog_id:user.blog_id,
+				blog_seq:user.blog_seq,
+				temp_num:randomNum,
+				aboutme_thumbnailimg:thumbImg,
+				aboutme_img:img,
+				name:name,
+				jobTitle:jobTitle,
+				email:email,
+				phone:phone,
+				linkedIn:linkedIn,
+				address:address,
+				summary:summary,
+				content:content
 
-			if(imgUploadRes.sendObj.success === 'y'){
-				setWriteSuc(true);
+			}
+
+			// console.log(obj);
+			
+			const aboutmeUpdateRes = await transactionAuth("post", "blog/aboutmeupdate", obj, "", false, true, setLoadingBarState);
+			// console.log(aboutmeUpdateRes.sendObj.success );
+
+			if(aboutmeUpdateRes.sendObj.success === 'y'){
+				setUpdateSuc(true);
 			}else{
 				
 			}
 		}
 		const router = useRouter();
-		function movetoblog(){
-			router.push('/blog/' + user.blog_seq + "?refresh=refresh")
+		function movetoAboutMe(){
+			router.push('/blog/' + props.blog_seq + "/aboutme")
 		} 
 
-		function changeMajorCategory(e:any){
-			setMajorIndex(Number(e.target.value));
-			setChooseMajor(Number(e.target.value));
-		}
-		function changeSubCategory(e:any){
-			setChooseSub(Number(e.target.value));
+		// function changeMajorCategory(e:any){
+		// 	setMajorIndex(Number(e.target.value));
+		// 	setChooseMajor(Number(e.target.value));
+		// }
+		// function changeSubCategory(e:any){
+		// 	setChooseSub(Number(e.target.value));
+		// }
+
+
+		
+		function nameOnchangeHandler(e:any){
+			setName(e.target.value);
 		}
 
+		function jobTitleOnchangeHandler(e:any){
+			setJobTitle(e.target.value);
+		}
+		
+		function emailOnchangeHandler(e:any){
+			setEmail(e.target.value);
+		}
+
+		function phoneOnchangeHandler(e:any){
+			setPhone(e.target.value);
+		}
+
+		function linkedInOnchangeHandler(e:any){
+			setLinkedIn(e.target.value);
+		}
+
+		function addressOnchangeHandler(e:any){
+			setAddress(e.target.value);
+		}
+
+		function summaryOnchangeHandler(e:any){
+			setSummary(e.target.value);
+		}
+
+		function contactsClickHandler(sel:any){
+			setGoshow(false);
+			if(sel==="email") setContact(email);
+			if(sel==="linkedIn"){
+				setContact(linkedIn); 
+				setGoshow(true);
+			} 
+			if(sel==="phone") setContact(phone);
+			if(sel==="address") setContact(address);
+			// await navigator.clipboard.writeText(email);
+			// const clipboardData = e.clipboardData || window.Clipboard;
+			setContactShow("block");
+			focusContact.current?.focus();
+		}
+
+		async function copyOnclickHandler(){
+			await navigator.clipboard.writeText(contact);
+			setContactShow("hidden");
+			setGoshow(false);
+		}
+
+		async function goOnclickHandler(){
+			window.open(linkedIn)
+			setContactShow("hidden");
+			setGoshow(false);
+		}
+
+	
 
 		return (
 			
 			<>
 
-			{writeSuc ? 
-				(<div className="grid place-items-center grid-cols-1">
-					<div className="flex justify-center  w-[470px]
-					2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px] mt-40 mb-4
-					">
-						<p className="text-xl font-bold">write successed</p>
-					</div>
-					<div className="flex justify-center  w-[470px]
-					2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px] 
-					">
-						<button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded"
-						onClick={()=>movetoblog()}
-						>
-							Board Lists
-						</button>
-					</div>
-					
-				</div>):
-			
-			
-				(<div className="grid place-items-center grid-cols-1">
-					
-					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
-						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
-						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
-						">
-					Title</div>
-					<div className="flex justify-center 
-					border-b border-gray-200 pb-2 mb-2 w-[100%]
-					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
-					">
-						<div className="font-bold w-[0px]
-						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
-						2xl:visible xl:visible lg:visible md:visible sm:invisible
-						">Title
-						</div>
-						<div className="w-[100%] ">
-						<input ref={focusTitle} 
-						value={title}
-						onChange={(e)=>title_onchangeHandler(e)}
-						autoComplete="off" id="title" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
-						</div>
-					</div>
+				<div className="grid place-items-center grid-cols-1">
 
-					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
-						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
-						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
-						">
-					Category</div>
-
-					<div className="flex justify-center 
-					border-b border-gray-200 pb-2 mb-2 w-[100%]
-					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
+					<div className="flex-none justify-center my-5 w-[100%] mb-10  
+					2xl:justify-start xl:justify-start lg:justify-start md:justify-start sm:justify-center
+					2xl:flex xl:flex lg:flex md:flex sm:flex-none
 					">
-						<div className="font-bold w-[0%]
-						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
-						2xl:visible xl:visible lg:visible md:visible sm:invisible
-						">Category</div>
-						<div className="w-[100%]">
-							<select id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] px-3 py-2 outline-none"
-							onChange={(e)=>changeMajorCategory(e)}
-							>
-								<option>Choose a MajorCategory</option>
+						<div className="flex justify-center mb-5
+						2xl:w-[250px] xl:w-[250px] lg:w-[250px] md:w-[250px]
+						2xl:ms-5 xl:ms-5 lg:ms-5 md:ms-5 
+						">
+							<div className="h-[255px]">
+								<div className=' ring-1 w-[230px] h-[225px] ring-gray-300 rounded-xl relative border ' >
+									{img ? (
+										
+												<Image 
+												src={img}
+												quality={30}
+												layout="fill"
+												style={{ objectFit: "cover" , borderRadius: '10px' }}
+												alt='' />
+										) : ""
+									}
+								</div>
+								<div className=" flex justify-center justify-items-start px-3 mt-1">
+									<p className="text-[32px] me-3 hover:text-[37px] cursor-pointer"
+									onClick={(e)=>contactsClickHandler("email")}
+									><MdEmail /></p>
+									<p className="text-[25px] me-3 hover:text-[30px] cursor-pointer pt-1" 
+									onClick={(e)=>contactsClickHandler("phone")}
+									>< FaPhoneSquare/></p>
+									<p className="text-[25px] me-3 hover:text-[30px] cursor-pointer pt-1"
+									onClick={(e)=>contactsClickHandler("linkedIn")}
+									><FaLinkedin /></p>
+									<p className="text-[28px] hover:text-[33px] cursor-pointer pt-0.5 "
+									onClick={(e)=>contactsClickHandler("address")}
+									><FaAddressCard /></p>
+								</div>
+
 								{
-									majorCategories.map((item:any, index:any)=>{
-										return (
-											<option key={index} value={item.seq}>{item.categoryNm}</option>
-										)
-									})
+									// (contactShow)?(
+										<div className={`mt-1 bg-slate-400 p-0.5 rounded ` + contactShow}>
+											
+											<div className="flex justify-center ">
+												<input 
+												value={contact}
+												ref={focusContact}
+												// onBlur={()=>setContactShow(false)}
+												readOnly={true}
+												autoComplete="off" id="content" type="text"  className="me-0.5 border w-full p-0.5 text-xs bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>									
+												<button className="border bg-gray-200 hover:bg-gray-400 text-[10px] font-bold p-0.5 rounded"
+												onClick={(e)=>copyOnclickHandler()}
+												>
+													copy
+												</button>
+												{
+													(goShow)?
+													<button className="border bg-gray-200 hover:bg-gray-400 text-[10px] font-bold p-0.5 ms-0.5 rounded"
+													onClick={(e)=>goOnclickHandler()}
+													>
+														go
+													</button>:""
+												}
+											</div>
+											
+										</div>
+									// ):""
 								}
-							</select>
-							<select id="subCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] ms-2 px-3 py-2 outline-none"
-							onChange={(e)=>changeSubCategory(e)}
-							>
-								<option>Choose a SubCategory</option>
-								{
-									subCategories.map((item:any, index:any)=>{
-										// return (
-										// 	<option value={item.seq}>{item.m_category_seq}{majorIndex}</option>
-										// )
-										return (item.m_category_seq===majorIndex)?												
-										(
-											<option key={index} value={item.seq}>{item.categoryNm}</option>
-										):""
-									})
-								}
-							</select>
+									
+
+							</div>
+							
+						</div>
+
+
+						
+						<div className="w-[95%] mx-5 mt-10
+						2xl:mt-0 xl:mt-0 lg:mt-0 md:mt-0 sm:mt-10
+						">
+							<p className="mb-2 text-3xl font-bold truncate">{name}</p>
+							<p className="mb-2 text-xl font-bold truncate">{jobTitle}</p>
+							<div className="w-[100%] ">
+								<textarea  
+								value={summary}
+								id="summary" rows={9}
+								readOnly={true}
+								className="block w-full resize-none text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded
+								"/>
+							</div>
 						</div>
 					</div>
-					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
-						2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
-						2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
-						">
-					Content</div>
-					<div className="flex justify-center pb-2 border-b mb-2 w-[100%]
+						
+					<div className="flex justify-center pb-2  mb-2 w-[100%]
 					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
 					">	
-						<div className="font-bold w-[0px] invisible
-						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
-						2xl:visible xl:visible lg:visible md:visible sm:invisible
-						">Content</div>	 
-						<div className="h-[400px] w-[100%]">  
+						<div className="">  
 							<QuillNoSSRWrapper 
 							theme="snow" 
-							style={{height: "100%"}}
+							style={{
+								height: "100vh"
+								, width: "95vw"
+							}}
 							forwardedRef={quillRef}
-							onChange={setContent}
+							readOnly
+							value={content}
 							modules={
 								modules
 							}/>
-							<div className="flex justify-end">
-								<button className=" mt-20 border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5
-								2xl:mt-14 xl:mt-14 lg:mt-14 md:mt-20 sm:mt-14"
-								// onClick={()=>writeButtenHandler()}
-								onClick={()=>confirmScreen("Would you like to write?", "writeButtenHandler", null)}
-								>
-									Write
-								</button>
-							</div>	
 						</div>
 						
 					</div>
@@ -338,8 +488,8 @@ import Confirm from "@/app/components/confirmModal";
 							Write
 						</button> */}
 					{/* </div> */}
-				</div>)
-			}
+				</div>
+			
 			{showConfirm && <Confirm confirmStr={confirmStr} setShowConfirm={setShowConfirm} setConfirmRes={setConfirmRes}/>}
 			</>	
 			

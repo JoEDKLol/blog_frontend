@@ -629,9 +629,6 @@ const PriBlogListDetail = (props: any) => {
 				setCommentLists([...commentLists]);
 			}
 
-			
-		
-		
 		}else{
 			commentLists[choosenIndex].replyYn = true;
 			setCommentLists([...commentLists]);

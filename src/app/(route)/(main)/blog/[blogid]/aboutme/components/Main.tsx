@@ -8,23 +8,11 @@ import AboutMeForm from "./AboutMeForm";
 
 
 const PriBlogWrite = (props: any) => {
-	const [user, setUser] = useRecoilState(userState);
-	const [writeYn, setWriteYn] = useState(false);
-	
 
-	useEffect(()=>{
-		if(user.id.length > 0 && user.blog_seq+"" === props.blog_seq){
-			setWriteYn(true);
-		}else{
-			setWriteYn(false);
-		}
-	}, [user])
-	
-	
 	return(
 		<>
 			{
-				<>about me</>
+				<><AboutMeForm blog_seq={props.blog_seq}/></>
 			}
 		</>
 	)

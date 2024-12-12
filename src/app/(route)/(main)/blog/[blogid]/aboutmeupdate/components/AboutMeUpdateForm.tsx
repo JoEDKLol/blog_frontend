@@ -44,7 +44,7 @@ import { InputMask } from '@react-input/mask';
 		const [content, setContent] = useState("");
 		const [user, setUser] = useRecoilState(userState);
 		
-		const [writeSuc, setWriteSuc] = useState(false);
+		const [updateSuc, setUpdateSuc] = useState(false);
 		
 
 		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
@@ -65,7 +65,7 @@ import { InputMask } from '@react-input/mask';
 		const [linkedIn, setLinkedIn] = useState("");
 		const [address, setAddress] = useState("");
 		const [summary, setSummary] = useState("");
-		const [aboutme, setAboutme] = useState<any>({});
+		const [aboutMeId, setAboutMeId] = useState<any>("");
 
 
 		useEffect(()=>{
@@ -204,6 +204,33 @@ import { InputMask } from '@react-input/mask';
 		},[summary]);
 
 
+		useEffect(()=>{
+			getAboutme();
+		}, [])
+
+		async function getAboutme(){
+			const obj = {
+				blog_seq:props.blog_seq,
+			}
+
+			const aboutmeRes = await transactionAuth("get", "blog/aboutme", obj, "", false, true, setLoadingBarState);
+			// console.log(aboutmeRes.sendObj);
+
+			if(aboutmeRes.sendObj.success === "y"){
+				const resObj = aboutmeRes.sendObj.resObj;
+				setImg(resObj.aboutme_img)
+				setThumbImg(resObj.aboutme_thumbnailimg)
+				setName(resObj.aboutme_name)
+				setJobTitle(resObj.jobtitle)
+				setEmail(resObj.aboutme_email)
+				setPhone(resObj.aboutme_phone)
+				setLinkedIn(resObj.aboutme_linkedin)
+				setAddress(resObj.aboutme_address)
+				setSummary(resObj.summary)
+				setContent(resObj.content)
+				setAboutMeId(resObj._id)
+			}
+		}
 		async function fileUploadHandler(e:any){
 
 			// - 백앤드 이미지 저장 사용 temp 저장 후 url 반환 
@@ -277,7 +304,7 @@ import { InputMask } from '@react-input/mask';
 		async function updateButtenHandler(){
 			
 			const obj = {
-				aboutme_id : aboutme.id as any,
+				aboutme_id : aboutMeId,
 				user_id : user.id,
 				user_email : user.email,
 				blog_id:user.blog_id,
@@ -296,20 +323,20 @@ import { InputMask } from '@react-input/mask';
 
 			}
 
-			console.log(obj);
+			// console.log(obj);
 			
 			const aboutmeUpdateRes = await transactionAuth("post", "blog/aboutmeupdate", obj, "", false, true, setLoadingBarState);
-			console.log(aboutmeUpdateRes.sendObj.success );
+			// console.log(aboutmeUpdateRes.sendObj.success );
 
-			// if(imgUploadRes.sendObj.success === 'y'){
-			// 	setWriteSuc(true);
-			// }else{
+			if(aboutmeUpdateRes.sendObj.success === 'y'){
+				setUpdateSuc(true);
+			}else{
 				
-			// }
+			}
 		}
 		const router = useRouter();
-		function movetoblog(){
-			router.push('/blog/' + user.blog_seq + "?refresh=refresh")
+		function movetoAboutMe(){
+			router.push('/blog/' + props.blog_seq + "/aboutme")
 		} 
 
 		// function changeMajorCategory(e:any){
@@ -356,7 +383,7 @@ import { InputMask } from '@react-input/mask';
 			
 			<>
 
-			{writeSuc ? 
+			{updateSuc ? 
 				(<div className="grid place-items-center grid-cols-1">
 					<div className="flex justify-center  w-[470px]
 					2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px] mt-40 mb-4
@@ -367,7 +394,7 @@ import { InputMask } from '@react-input/mask';
 					2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px] 
 					">
 						<button className="border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded"
-						onClick={()=>movetoblog()}
+						onClick={()=>movetoAboutMe()}
 						>
 							About me
 						</button>
@@ -379,14 +406,14 @@ import { InputMask } from '@react-input/mask';
 				(<div className="grid place-items-center grid-cols-1">
 
 					<div className="my-5">
-						<div className='ring-1 w-[230px] h-[225px] ring-gray-300 rounded-xl relative ' >
+						<div className='ring-1 w-[230px] h-[225px] ring-gray-300 rounded-xl relative border ' >
 							{img ? (
 								
 										<Image 
 										src={img}
 										quality={30}
 										layout="fill"
-										style={{ objectFit: "cover" , borderRadius: '8px' }}
+										style={{ objectFit: "cover" , borderRadius: '10px' }}
 										alt='' />
 								) : ""
 							}
@@ -605,6 +632,7 @@ import { InputMask } from '@react-input/mask';
 							theme="snow" 
 							style={{height: "100%"}}
 							forwardedRef={quillRef}
+							value={content}
 							onChange={setContent}
 							modules={
 								modules
