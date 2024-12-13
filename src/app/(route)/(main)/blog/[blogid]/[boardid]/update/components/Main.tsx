@@ -4,6 +4,7 @@ import { userState } from "@/app/store/user";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import UpdateForm from "./UpdateForm";
+import LoginMove from "@/app/components/common/LoginMove";
 
 
 const PriBlogUpdate = (props: any) => {
@@ -25,7 +26,7 @@ const PriBlogUpdate = (props: any) => {
 			{
 				(updateYn)?
 				<><UpdateForm blog_seq={props.blog_seq} seq={props.seq}></UpdateForm></>:
-				<>You need to Login.</>
+				<><LoginMove></LoginMove></>
 			}
 		</>
 	)

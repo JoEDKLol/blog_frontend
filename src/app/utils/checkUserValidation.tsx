@@ -50,7 +50,7 @@ const checkInputData = (userObj:any) => {
         return retObj;
     }
 
-    if(!regExp.test(userObj.name)){
+    if(!regExp.test(userObj.name.replaceAll(" ", ""))){
         retObj.yn = false;
         retObj.field = "name";
         retObj.str = "Please enter 6 to 12 digits (alphabet, numbers)";

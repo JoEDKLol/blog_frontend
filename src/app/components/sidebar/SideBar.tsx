@@ -50,6 +50,8 @@ const SideBar = (props: any) => {
 		}
 		const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState);
 		
+		console.log(blogInfoRes);
+
 		setblogInfo(blogInfoRes.sendObj.resObj.blogInfo);
 		if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
 			setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
@@ -109,7 +111,7 @@ const SideBar = (props: any) => {
 	function changeMajorCategory(e:any){
 		
 		const majorSeq = Number(e.target.value);
-		// console.log(majorCategories.find((e:any)=>e.seq === majorSeq));
+
 		if(majorSeq > -1){
 			const selectedMajorcategory = majorCategories.find((e:any)=>e.seq === majorSeq);
 			searchCategories(majorSeq, -1, selectedMajorcategory.categoryNm, "");
@@ -135,6 +137,108 @@ const SideBar = (props: any) => {
 	return (
 		<>
 		<div className="block w-[100%] 2xl:hidden xl:hidden lg:hidden md:block sm:block" >
+
+			<div className="pt-6  ps-16 ms-[0px] 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
+				
+				
+				
+				<div className="flex justify-center
+				 2xl:justify-start xl:justify-start lg:justify-start md:justify-start sm:justify-center
+				">
+					<div className="w-[230px]">
+						<div className='w-[200px] h-[200px] me-4 ring-2 ring-black rounded-xl relative' >
+								{blogInfo.blogimg?
+								(<Image 
+									src={blogInfo.blogimg}
+									quality={30}
+									layout="fill"
+									style={{ objectFit: "cover" , borderRadius: '12px' }}
+									alt='' />):""
+								}		
+						</div> 
+					</div>
+					<div className="w-[90%] hidden 
+					2xl:hidden xl:hidden lg:block md:block sm:hidden
+					
+
+					">
+						<div className="flex justify-start mb-2 w-[90%]">
+							<p className="font-bold truncate me-2 ">{blogInfo.blogtitle+"asdfsasdfsasdfsasdfsasdfsasdfs"}</p>
+							
+						</div>
+						<div className="">
+							<p className="mb-1 font-bold truncate  ">{blogInfo.name}</p>
+						</div>
+						{/* <div className=" mt-2 text-xs line-clamp-7 break-all">{blogInfo.introduction}</div> */}
+						<div className="w-[90%] ">
+								{/* <textarea  
+								value={blogInfo.introduction}
+								readOnly={true}
+								className="overflow-hidden block w-full p-1 h-[150px] resize-none text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded
+								"/> */}
+
+							<div className="whitespace-pre-line mt-2 text-sm break-all">{blogInfo.introduction}</div>
+
+						</div>
+
+					</div>
+				</div>
+
+				<div className="w-[100%] mt-5
+					block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block
+					">
+					<div className="flex justify-start mb-2 w-[90%]">
+						<p className="font-bold truncate me-2 ">{blogInfo.blogtitle+"asdfsasdfsasdfsasdfsasdfsasdfs"}</p>
+						
+					</div>
+					<div className="">
+						<p className="mb-1 font-bold truncate  ">{blogInfo.name}</p>
+					</div>
+					{/* <div className=" mt-2 text-xs line-clamp-7 break-all">{blogInfo.introduction}</div> */}
+					<div className="w-[90%]">
+						{/* <textarea  
+						value={blogInfo.introduction + ""}
+						
+						readOnly={true}
+						className="block w-full h-[150px] p-1 resize-none text-xs bg-grey-200 focus:border-black text-gray-900 outline-none rounded
+						"/> */}
+						<div className="whitespace-pre-line mt-2 text-sm break-all">{blogInfo.introduction}</div>
+					</div>
+
+				</div>
+
+				<div className="flex justify-center mt-2 p-1">
+						<Link href={"/blog/"+props.blog_seq + "/aboutme"}>
+						<button className="border me-2 bg-gray-200 hover:bg-gray-400 text-black text-xs font-bold py-0.5 px-1 my-1 rounded"
+						>
+							About me
+						</button>
+						</Link>
+						{
+						(props.user.id.length > 0 && props.user.blog_seq+"" === props.blog_seq)?
+						<>
+							<Link href={"/blog/"+props.blog_seq + "/aboutmeupdate"}>
+							<button className="border bg-gray-200 hover:bg-gray-400 text-black text-xs font-bold py-0.5 px-1 my-1 rounded"
+								>
+								AboutMe Update
+							</button>
+							</Link>
+							<Link href={"/blog/"+props.blog_seq + "/blogUpdate"}>
+							<button className="border ms-2 bg-gray-200 hover:bg-gray-400 text-black text-xs font-bold py-0.5 px-1 my-1 rounded"
+								>
+								Blog Update
+							</button>
+							</Link>
+
+						</>
+							
+						:""
+						}
+				</div>	
+
+			</div>
+
+
 			<div className="flex justify-start pt-6  ps-16 ms-[0px] 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
 				<p className="font-bold border-b-2 border-b-black w-[90%]">Categories</p>
 			</div>
@@ -173,10 +277,27 @@ const SideBar = (props: any) => {
 		<div className="absolute invisible  ms-4 w-[230px]
 		2xl:visible xl:visible lg:visible md:invisible sm:invisible mt-5 rounded-lg
 		p-2 border-2 border-black">
-			<div className="">
+			<div className=" ">
 				<div className="h-[100%] p-1 border-b">
-					<p className="mt-1 mb-1 font-bold truncate  ">{blogInfo.blogtitle}</p>
-					<div className='w-[100%] h-[200px] ring-2 ring-black rounded-xl relative' >
+					<div className="flex justify-between mb-2">
+						<p className="font-bold truncate  ">{blogInfo.blogtitle}</p>
+						{/* {
+							(props.user.id.length > 0 && props.user.blog_seq+"" === props.blog_seq)?
+							<div className="group">
+								<Link href={"/blog/"+props.blog_seq + "/blogUpdate"}>
+									<p className="mt-1 me-1 w-[10px] text-lg hover:text-xl" ><IoDocumentTextOutline /></p>
+								</Link>
+								<p className="text-center absolute left-[140px] scale-0 transition-all 
+								w-[80px] top-[6px] border rounded bg-yellow-50 text-xs text-black 
+								group-hover:scale-100">
+									Blog Update</p>
+							</div>
+							:""
+						} */}
+					</div>
+					
+
+					<div className='w-[200px] h-[200px] ring-2 ring-black rounded-xl relative' >
 						{blogInfo.blogimg?
 						(<Image 
 							src={blogInfo.blogimg}
@@ -188,23 +309,40 @@ const SideBar = (props: any) => {
 						
 					</div> 
 					<div className="flex justify-between border-b">
-						<p className="mt-1 mb-1 font-bold truncate  ">{blogInfo.name}</p>
-						{
-							(props.user.id.length > 0 && props.user.blog_seq+"" === props.blog_seq)?
-							<div className="flex justify-center">
-								<Link href={"/blog/"+props.blog_seq + "/blogUpdate"}>
-									<p className="mt-2 w-[10px] text-lg hover:text-xl" ><IoDocumentTextOutline /></p>
-								</Link>
-								{/* <Link href={"/blog/"+props.blog_seq + "/blogUpdate"}>
-									<p className="mt-2 ms-3 w-[10px] text-[19px] hover:text-xl" ><TfiWrite /></p>
-								</Link> */}
-							</div>
-							:""
-						}
-						
+						<p className="mt-2 mb-1 font-bold truncate  ">{blogInfo.name}</p>
 					</div>
-					<div className=" mt-2 text-xs line-clamp-7 break-all">{blogInfo.introduction}</div>
+					<div className="whitespace-pre-line mt-2 text-xs break-all">{blogInfo.introduction}</div>
 				</div>
+				
+					<div className="flex justify-center border-b p-1">
+						<Link href={"/blog/"+props.blog_seq + "/aboutme"}>
+						<button className="border me-1 bg-gray-200 hover:bg-gray-400 text-black text-xs font-bold py-0.5 px-1 my-1 rounded"
+						>
+							About me
+						</button>
+						</Link>
+						{
+						(props.user.id.length > 0 && props.user.blog_seq+"" === props.blog_seq)?
+							<>
+								<Link href={"/blog/"+props.blog_seq + "/aboutmeupdate"}>
+								<button className="border bg-gray-200 hover:bg-gray-400 text-black text-xs font-bold py-0.5  my-1 rounded"
+									>
+									AboutMe Update
+								</button>
+								</Link>
+								<Link href={"/blog/"+props.blog_seq + "/blogUpdate"}>
+								<button className="border ms-1 bg-gray-200 hover:bg-gray-400 text-black text-xs font-bold py-0.5  my-1 rounded"
+									>
+									Blog Update
+								</button>
+								</Link>
+							</>
+							
+						:""
+						}
+				</div>	
+				
+				
 				
 				<div className="mb-10">
 					<p className="font-bold mt-1 border-b pb-1 mb-2">Categories</p>

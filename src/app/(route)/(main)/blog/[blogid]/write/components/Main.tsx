@@ -4,6 +4,7 @@ import { userState } from "@/app/store/user";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import WriteForm from "./WriteForm";
+import LoginMove from "@/app/components/common/LoginMove";
 
 
 
@@ -13,6 +14,7 @@ const PriBlogWrite = (props: any) => {
 	
 
 	useEffect(()=>{
+		console.log(user);
 		if(user.id.length > 0 && user.blog_seq+"" === props.blog_seq){
 			setWriteYn(true);
 		}else{
@@ -27,7 +29,7 @@ const PriBlogWrite = (props: any) => {
 				(writeYn)?
 				// <><WriteForm></WriteForm></>:
 				<><WriteForm></WriteForm></>:
-				<>You need to Login.</>
+				<><LoginMove></LoginMove></>
 			}
 		</>
 	)

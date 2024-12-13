@@ -66,6 +66,7 @@ const SignUp = (props: any) => {
     }
   
     const retObj = checkInputData(checkObj);
+    console.log(retObj);
     
     if(retObj.yn === false && retObj.field === "email"){
       focusEmail.current?.focus()
@@ -99,11 +100,13 @@ const SignUp = (props: any) => {
     signupApi(checkObj);
   }
 
-  function signupApi(obj:any){
-    transaction("post", "signup", obj, signupApiCallback, true, true, setLoadingBarState);
+  async function signupApi(obj:any){
+    await transaction("post", "signup", obj, signupApiCallback, true, true, setLoadingBarState);
+    
   }
 
   function signupApiCallback(obj:any){
+   
     if(obj.sendObj.success === 'y'){
       setSignupSuccess("hidden");
       setSignupSuccessAf("flex")
@@ -192,7 +195,7 @@ const SignUp = (props: any) => {
                 <svg className="h-[20px] w-[20px]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-              </button>
+              </button> 
             </div>
           </div>  
           <p className='text-lg pt-16 pb-5'>

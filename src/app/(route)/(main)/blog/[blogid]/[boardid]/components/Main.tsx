@@ -1036,7 +1036,7 @@ const PriBlogListDetail = (props: any) => {
 													resize-none border  `} spellCheck={false} 
 													ref={(element) => {focusCommentReplyRegRef.current[index] = element;}}
 													onChange={(e)=>blogReplyListOnchangeHandler(e, item._id)}
-													value={item.reply}
+													// value={item.reply}
 													/>
 													:""
 												}

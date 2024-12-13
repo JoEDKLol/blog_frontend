@@ -4,6 +4,7 @@ import { userState } from "@/app/store/user";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import AboutMeUpdateForm from "./AboutMeUpdateForm";
+import LoginMove from "@/app/components/common/LoginMove";
 
 
 
@@ -27,7 +28,7 @@ const AboutMeUpdateMain = (props: any) => {
 			{
 				(writeYn)?
 				<><AboutMeUpdateForm blog_seq={props.blog_seq}></AboutMeUpdateForm></>:
-				<>You need to Login.</>
+				<><LoginMove></LoginMove></>
 			}
 			
 			

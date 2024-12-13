@@ -4,6 +4,7 @@ import { userState } from "@/app/store/user";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import BlogUpdateForm from "./BlogUpdateForm";
+import LoginMove from "@/app/components/common/LoginMove";
 
 
 
@@ -26,7 +27,7 @@ const PriBlogUpdate = (props: any) => {
 			{
 				(writeYn)?
 				<><BlogUpdateForm></BlogUpdateForm></>:
-				<>You need to Login.</>
+				<><LoginMove></LoginMove></>
 			}
 		</>
 	)

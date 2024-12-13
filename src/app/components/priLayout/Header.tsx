@@ -49,11 +49,11 @@ const PriHeader = (props: any) => {
 
   useEffect(() => {
 
-    if((blogInfo.blogtitle == "" || blogInfo.blogtitle == undefined || blogInfo.blogtitle == null )){
-     getBlogInfo();
-    }
+    // if((blogInfo.blogtitle == "" || blogInfo.blogtitle == undefined || blogInfo.blogtitle == null )){
+    getBlogInfo();
+    // }
     
-  }, []);
+  }, [searchParams]);
 
   // useEffect(() => {
   //   if(search === "refresh"){

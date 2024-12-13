@@ -449,12 +449,13 @@ import { FaAddressCard } from "react-icons/fa6";  //<FaAddressCard />
 							<p className="mb-2 text-3xl font-bold truncate">{name}</p>
 							<p className="mb-2 text-xl font-bold truncate">{jobTitle}</p>
 							<div className="w-[100%] ">
-								<textarea  
+								{/* <textarea  
 								value={summary}
 								id="summary" rows={9}
 								readOnly={true}
 								className="block w-full resize-none text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded
-								"/>
+								"/> */}
+								<div className="whitespace-pre-line mt-2 text-sm break-all">{summary}</div>
 							</div>
 						</div>
 					</div>

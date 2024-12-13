@@ -107,7 +107,7 @@ const BlogUpdateForm = (props: any) => {
 					totalByte++;
 				}
 
-				if(totalByte > 500){
+				if(totalByte > 300){
 					setIntroduction(introduction.substring(0, i));
 					break;
 				}
@@ -319,6 +319,8 @@ const BlogUpdateForm = (props: any) => {
 	}
 
 	function majorCategoryTextOnChange(e:any){
+
+		
 		if(!majorUpFlag){
 			setMajorCategoryText(e.target.value);
 		}else{
@@ -334,8 +336,15 @@ const BlogUpdateForm = (props: any) => {
 					}
 				}
 			);
+
+			console.log(e.target.value.length);
 			
+			if(e.target.value.length === 0){
+				return;
+			}
+
 			majorCategories[indext].categoryNm = e.target.value;
+			
 			setMajorCategories(majorCategories);
 		}
 	}
@@ -364,6 +373,9 @@ const BlogUpdateForm = (props: any) => {
 			
 			const indext = subCategories.findIndex((val:any) => val.seq === subIndex);
 			// console.log(indext);
+			if(e.target.value.length === 0){
+				return;
+			}
 			subCategories[indext].categoryNm = e.target.value;
 			setSubCategories(subCategories);
 		}
@@ -576,7 +588,7 @@ const BlogUpdateForm = (props: any) => {
 							// ref={focusTitle} 
 							onChange={(e)=>blogOnchangeHandler(e)}
 							value={introduction}
-							id="introduction" rows={2}  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+							id="introduction" rows={8}  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 						</div>
 					</div>
 					<div className="mb-2">
