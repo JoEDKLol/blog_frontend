@@ -5,16 +5,24 @@ import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import UpdateForm from "./UpdateForm";
 import LoginMove from "@/app/components/common/LoginMove";
+import { useRouter } from "next/navigation";
 
 
 const PriBlogUpdate = (props: any) => {
 	const [user, setUser] = useRecoilState(userState);
 	const [updateYn, setUpdateYn] = useState(false);
-	
+	const router = useRouter();
+
+	console.log("여기"); 
+
 	useEffect(()=>{
 		
-		if(user.id.length > 0 && user.blog_seq+"" === props.blog_seq){
-			setUpdateYn(true);
+		if(user.id.length > 0 ){
+			if(user.blog_seq != props.blog_seq){
+				router.push('/blog/' + user.blog_seq + "?refresh=refresh");
+			}else{
+				setUpdateYn(true); 
+			}
 		}else{
 			setUpdateYn(false);
 		}

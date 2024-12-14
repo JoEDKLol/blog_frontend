@@ -12,6 +12,7 @@ import PriMain from "./PriMain";
 import LoadingScreen from "../loadingScreen/Index";
 import { useRecoilState } from "recoil";
 import { loadingBarState } from "@/app/store/loadingBar";
+import ErrorPage from "../errorPage/Index";
 
 const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
   type typeMainHome = boolean;
@@ -36,9 +37,12 @@ const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
     {/* {children} */}
     {
       (path === "/")?
-      <><LoadingScreen/><MainHeader></MainHeader><MainContent>{children}</MainContent></>
+      <><LoadingScreen/>
+      <ErrorPage/>
+      <MainHeader></MainHeader><MainContent>{children}</MainContent></>
       :(path2 === "/blog")?<>
       <LoadingScreen/>
+      <ErrorPage/>
       <PriHeader></PriHeader><PriMain>{children}</PriMain>
       </>
       // :(path2 === "/blog")?<>{children}</>

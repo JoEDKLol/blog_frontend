@@ -217,18 +217,23 @@ import { InputMask } from '@react-input/mask';
 			// console.log(aboutmeRes.sendObj);
 
 			if(aboutmeRes.sendObj.success === "y"){
+				// console.log(aboutmeRes.sendObj.resObj);
+
 				const resObj = aboutmeRes.sendObj.resObj;
-				setImg(resObj.aboutme_img)
-				setThumbImg(resObj.aboutme_thumbnailimg)
-				setName(resObj.aboutme_name)
-				setJobTitle(resObj.jobtitle)
-				setEmail(resObj.aboutme_email)
-				setPhone(resObj.aboutme_phone)
-				setLinkedIn(resObj.aboutme_linkedin)
-				setAddress(resObj.aboutme_address)
-				setSummary(resObj.summary)
-				setContent(resObj.content)
-				setAboutMeId(resObj._id)
+				if(resObj){
+					setImg(resObj.aboutme_img)
+					setThumbImg(resObj.aboutme_thumbnailimg)
+					setName(resObj.aboutme_name)
+					setJobTitle(resObj.jobtitle)
+					setEmail(resObj.aboutme_email)
+					setPhone(resObj.aboutme_phone)
+					setLinkedIn(resObj.aboutme_linkedin)
+					setAddress(resObj.aboutme_address)
+					setSummary(resObj.summary)
+					setContent(resObj.content)
+					setAboutMeId(resObj._id)
+				}
+				
 			}
 		}
 		async function fileUploadHandler(e:any){

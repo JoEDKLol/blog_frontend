@@ -22,6 +22,7 @@ import { MdEmail } from "react-icons/md"; //<MdEmail />
 import { FaLinkedin } from "react-icons/fa"; //<FaLinkedin />
 import { FaPhoneSquare } from "react-icons/fa";  //<FaPhoneSquare />
 import { FaAddressCard } from "react-icons/fa6";  //<FaAddressCard />
+import { transaction } from "@/app/utils/axios";
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
@@ -77,13 +78,13 @@ import { FaAddressCard } from "react-icons/fa6";  //<FaAddressCard />
 
 		const focusContact = useRef<HTMLInputElement>(null);
 
-		useEffect(()=>{
-			if(confirmRes){ 
-				// focusCommentReplyRef.current[replyCommnetIndex]?.focus();
-				if(confirmStr.exeFunction === "updateButtenHandler") updateButtenHandler();
-				setConfirmRes(false);
-			}
-		},[confirmRes])
+		// useEffect(()=>{
+		// 	if(confirmRes){ 
+		// 		// focusCommentReplyRef.current[replyCommnetIndex]?.focus();
+		// 		if(confirmStr.exeFunction === "updateButtenHandler") updateButtenHandler();
+		// 		setConfirmRes(false);
+		// 	}
+		// },[confirmRes])
 	
 		function confirmScreen(showText:string, exeFunction:string, obj:any){
 			setShowConfirm(!showConfirm);
@@ -230,22 +231,25 @@ import { FaAddressCard } from "react-icons/fa6";  //<FaAddressCard />
 				blog_seq:props.blog_seq,
 			}
 
-			const aboutmeRes = await transactionAuth("get", "blog/aboutme", obj, "", false, true, setLoadingBarState);
-			// console.log(aboutmeRes.sendObj);
+			const aboutmeRes = await transaction("get", "blog/aboutme", obj, "", false, true, setLoadingBarState);
+			console.log(aboutmeRes);
 
 			if(aboutmeRes.sendObj.success === "y"){
 				const resObj = aboutmeRes.sendObj.resObj;
-				setImg(resObj.aboutme_img)
-				setThumbImg(resObj.aboutme_thumbnailimg)
-				setName(resObj.aboutme_name)
-				setJobTitle(resObj.jobtitle)
-				setEmail(resObj.aboutme_email)
-				setPhone(resObj.aboutme_phone)
-				setLinkedIn(resObj.aboutme_linkedin)
-				setAddress(resObj.aboutme_address)
-				setSummary(resObj.summary)
-				setContent(resObj.content)
-				setAboutMeId(resObj._id)
+				
+				if(resObj){
+					setImg(resObj.aboutme_img)
+					setThumbImg(resObj.aboutme_thumbnailimg)
+					setName(resObj.aboutme_name)
+					setJobTitle(resObj.jobtitle)
+					setEmail(resObj.aboutme_email)
+					setPhone(resObj.aboutme_phone)
+					setLinkedIn(resObj.aboutme_linkedin)
+					setAddress(resObj.aboutme_address)
+					setSummary(resObj.summary)
+					setContent(resObj.content)
+					setAboutMeId(resObj._id)
+				}
 			}
 		}
 
@@ -259,43 +263,44 @@ import { FaAddressCard } from "react-icons/fa6";  //<FaAddressCard />
 			[],
 		);
 
-		async function updateButtenHandler(){
+		// async function updateButtenHandler(){
 			
-			const obj = {
-				aboutme_id : aboutMeId,
-				user_id : user.id,
-				user_email : user.email,
-				blog_id:user.blog_id,
-				blog_seq:user.blog_seq,
-				temp_num:randomNum,
-				aboutme_thumbnailimg:thumbImg,
-				aboutme_img:img,
-				name:name,
-				jobTitle:jobTitle,
-				email:email,
-				phone:phone,
-				linkedIn:linkedIn,
-				address:address,
-				summary:summary,
-				content:content
+		// 	const obj = {
+		// 		aboutme_id : aboutMeId,
+		// 		user_id : user.id,
+		// 		user_email : user.email,
+		// 		blog_id:user.blog_id,
+		// 		blog_seq:user.blog_seq,
+		// 		temp_num:randomNum,
+		// 		aboutme_thumbnailimg:thumbImg,
+		// 		aboutme_img:img,
+		// 		name:name,
+		// 		jobTitle:jobTitle,
+		// 		email:email,
+		// 		phone:phone,
+		// 		linkedIn:linkedIn,
+		// 		address:address,
+		// 		summary:summary,
+		// 		content:content
 
-			}
+		// 	}
 
-			// console.log(obj);
+		// 	// console.log(obj);
 			
-			const aboutmeUpdateRes = await transactionAuth("post", "blog/aboutmeupdate", obj, "", false, true, setLoadingBarState);
-			// console.log(aboutmeUpdateRes.sendObj.success );
+		// 	const aboutmeUpdateRes = await transactionAuth("post", "blog/aboutmeupdate", obj, "", false, true, setLoadingBarState);
+		// 	// console.log(aboutmeUpdateRes.sendObj.success );
 
-			if(aboutmeUpdateRes.sendObj.success === 'y'){
-				setUpdateSuc(true);
-			}else{
+		// 	if(aboutmeUpdateRes.sendObj.success === 'y'){
 				
-			}
-		}
-		const router = useRouter();
-		function movetoAboutMe(){
-			router.push('/blog/' + props.blog_seq + "/aboutme")
-		} 
+		// 		setUpdateSuc(true);
+		// 	}else{
+				
+		// 	}
+		// }
+		// const router = useRouter();
+		// function movetoAboutMe(){
+		// 	router.push('/blog/' + props.blog_seq + "/aboutme")
+		// } 
 
 		// function changeMajorCategory(e:any){
 		// 	setMajorIndex(Number(e.target.value));

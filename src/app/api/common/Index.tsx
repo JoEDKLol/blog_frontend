@@ -9,6 +9,7 @@ import { userState } from "@/app/store/user";
 import { transactionAuth } from "@/app/utils/axiosAuth";
 import { getAccessToken, storeAccessToken } from "@/app/utils/common";
 import { loadingBarState } from "@/app/store/loadingBar";
+import { errorPageState } from "@/app/store/error";
 /*
     모든페이지에서 호출되는 공통 페이지
 */
@@ -20,6 +21,9 @@ const CommonTransaction = ({ children }: any) => {
     const path:any = usePathname();
     const router = useRouter();
     const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+    const [errorPage, setErrorPage] = useRecoilState(errorPageState);
+    
+    
 
     //페이지이동감지
     // console.log("토큰검증");

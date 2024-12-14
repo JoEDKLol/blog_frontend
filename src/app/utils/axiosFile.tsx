@@ -81,7 +81,12 @@ const transactionFile = async (url:string, fileObj:any, obj:any, callback:any, c
 			if(callbackYn){
 				callback("", error.response.data);
 			}else{
-				return error;
+				const resObj = {
+					sendObj : {
+						success : "n"
+					}
+				}
+				return resObj;
 			}
 			
 		}

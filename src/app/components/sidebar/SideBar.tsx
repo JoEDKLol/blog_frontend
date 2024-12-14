@@ -15,7 +15,7 @@ import Link from "next/link";
 import { priSearchKeywordState } from "@/app/store/priSearchkeyword";
 import { priSearchResArrState } from "@/app/store/priSearch";
 
-import { transaction, transaction2 } from "@/app/utils/axios";
+import { transaction } from "@/app/utils/axios";
 import { loadingBarState } from "@/app/store/loadingBar";
 
 const SideBar = (props: any) => {
@@ -49,8 +49,6 @@ const SideBar = (props: any) => {
 			blog_seq :props.blog_seq,
 		}
 		const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState);
-		
-		console.log(blogInfoRes);
 
 		setblogInfo(blogInfoRes.sendObj.resObj.blogInfo);
 		if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
@@ -65,7 +63,7 @@ const SideBar = (props: any) => {
 	}
 
 	async function searchCategories(majorSeqP:any, subSeqP:any, majorNameP:any, subNameP:any){
-		// console.log("여기~~~~~~~~~~~~~~~~~~~~~~~");
+		
 		let obj = {
 			blog_seq:props.blog_seq,
 			keyword:priSearchKeyword.keyword, 
@@ -163,7 +161,7 @@ const SideBar = (props: any) => {
 
 					">
 						<div className="flex justify-start mb-2 w-[90%]">
-							<p className="font-bold truncate me-2 ">{blogInfo.blogtitle+"asdfsasdfsasdfsasdfsasdfsasdfs"}</p>
+							<p className="font-bold truncate me-2 ">{blogInfo.blogtitle}</p>
 							
 						</div>
 						<div className="">
@@ -188,7 +186,7 @@ const SideBar = (props: any) => {
 					block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block
 					">
 					<div className="flex justify-start mb-2 w-[90%]">
-						<p className="font-bold truncate me-2 ">{blogInfo.blogtitle+"asdfsasdfsasdfsasdfsasdfsasdfs"}</p>
+						<p className="font-bold truncate me-2 ">{blogInfo.blogtitle}</p>
 						
 					</div>
 					<div className="">
@@ -227,6 +225,12 @@ const SideBar = (props: any) => {
 							<button className="border ms-2 bg-gray-200 hover:bg-gray-400 text-black text-xs font-bold py-0.5 px-1 my-1 rounded"
 								>
 								Blog Update
+							</button>
+							</Link>
+							<Link href={"/blog/"+props.blog_seq + "/write"}>
+							<button className="border ms-1 bg-gray-200 hover:bg-gray-400 text-black text-xs font-bold py-0.5 px-1  my-1 rounded"
+								>
+								Blog Write
 							</button>
 							</Link>
 
@@ -316,7 +320,7 @@ const SideBar = (props: any) => {
 				
 					<div className="flex justify-center border-b p-1">
 						<Link href={"/blog/"+props.blog_seq + "/aboutme"}>
-						<button className="border me-1 bg-gray-200 hover:bg-gray-400 text-black text-xs font-bold py-0.5 px-1 my-1 rounded"
+						<button className="border me-1 bg-gray-200 hover:bg-gray-400 text-black text-[10px] font-bold py-0.5 px-1 my-1 rounded"
 						>
 							About me
 						</button>
@@ -325,15 +329,21 @@ const SideBar = (props: any) => {
 						(props.user.id.length > 0 && props.user.blog_seq+"" === props.blog_seq)?
 							<>
 								<Link href={"/blog/"+props.blog_seq + "/aboutmeupdate"}>
-								<button className="border bg-gray-200 hover:bg-gray-400 text-black text-xs font-bold py-0.5  my-1 rounded"
+								<button className="border bg-gray-200 hover:bg-gray-400 text-black text-[10px] font-bold py-0.5  my-1 rounded"
 									>
 									AboutMe Update
 								</button>
 								</Link>
 								<Link href={"/blog/"+props.blog_seq + "/blogUpdate"}>
-								<button className="border ms-1 bg-gray-200 hover:bg-gray-400 text-black text-xs font-bold py-0.5  my-1 rounded"
+								<button className="border ms-1 bg-gray-200 hover:bg-gray-400 text-black text-[10px] font-bold py-0.5  my-1 rounded"
 									>
 									Blog Update
+								</button>
+								</Link>
+								<Link href={"/blog/"+props.blog_seq + "/write"}>
+								<button className="border ms-1 bg-gray-200 hover:bg-gray-400 text-black text-[10px] font-bold py-0.5  my-1 rounded"
+									>
+									Blog Write
 								</button>
 								</Link>
 							</>

@@ -72,17 +72,24 @@ const transactionAuth = async (type:string, url:string, obj:any, callback:any, c
 		if(callbackYn){
 			callback(data);
 		}else{
-			// console.log("여기");
+
 			return data;
 		}
 	}
 	catch(error:any){
 		if(loadingScreenYn === true) setLoadingYn(false);
+		// console.log(error.response.data.resObj.message);
+		// console.log(error.response.data.message);
 		if(error){
 			if(callbackYn){
 				callback("", error.response.data);
 			}else{
-				return error;
+				const resObj = {
+					sendObj : {
+						success : "n"
+					}
+				}
+				return resObj;
 			}
 			
 		}

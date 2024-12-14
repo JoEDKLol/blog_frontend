@@ -167,8 +167,8 @@ const PriHeader = (props: any) => {
     }
   }
 
-  function write(){
-    router.push('/blog/' + user.blog_seq + "/write");
+  function movetoMyBlogOnclickHandler(){
+    router.push('/blog/' + user.blog_seq + "?refresh=refresh");
   }
 
   return (
@@ -254,9 +254,9 @@ const PriHeader = (props: any) => {
                 <button className="
                 bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
                   
-                onClick={()=>write()}
+                onClick={()=>movetoMyBlogOnclickHandler()}
 
-                >Write
+                >MyBlog
                 </button>
                 <button className="
                 bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
