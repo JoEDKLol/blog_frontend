@@ -17,6 +17,8 @@ import imageCompression from "browser-image-compression";
 import Image from "next/image";
 
 import { InputMask } from '@react-input/mask';
+import { errorPageState } from "@/app/store/error";
+import { transaction } from "@/app/utils/axios";
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
@@ -48,6 +50,7 @@ import { InputMask } from '@react-input/mask';
 		
 
 		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+		const [errorPage, setErrorPage] = useRecoilState(errorPageState);
 
 
 		//confirm
@@ -213,7 +216,7 @@ import { InputMask } from '@react-input/mask';
 				blog_seq:props.blog_seq,
 			}
 
-			const aboutmeRes = await transactionAuth("get", "blog/aboutme", obj, "", false, true, setLoadingBarState);
+			const aboutmeRes = await transaction("get", "blog/aboutme", obj, "", false, true, setLoadingBarState, setErrorPage);
 			// console.log(aboutmeRes.sendObj);
 
 			if(aboutmeRes.sendObj.success === "y"){
@@ -265,7 +268,7 @@ import { InputMask } from '@react-input/mask';
 				}
 	
 				
-				const imgUploadRes = await transactionFile("blog/fileUpload", compressedFile, obj, "", false, true, setLoadingBarState);
+				const imgUploadRes = await transactionFile("blog/fileUpload", compressedFile, obj, "", false, true, setLoadingBarState, setErrorPage);
 		
 				if(imgUploadRes.sendObj.success === 'y'){
 					// console.log(imgUploadRes.sendObj.resObj);
@@ -330,7 +333,7 @@ import { InputMask } from '@react-input/mask';
 
 			// console.log(obj);
 			
-			const aboutmeUpdateRes = await transactionAuth("post", "blog/aboutmeupdate", obj, "", false, true, setLoadingBarState);
+			const aboutmeUpdateRes = await transactionAuth("post", "blog/aboutmeupdate", obj, "", false, true, setLoadingBarState, setErrorPage);
 			// console.log(aboutmeUpdateRes.sendObj.success );
 
 			if(aboutmeUpdateRes.sendObj.success === 'y'){

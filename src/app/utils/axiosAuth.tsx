@@ -11,7 +11,7 @@ axiosAuth.interceptors.request.use((config)=>{
 	return config;
 })
 
-const transactionAuth = async (type:string, url:string, obj:any, callback:any, callbackYn:boolean, loadingScreenYn:any, setLoadingYn:any) => {
+const transactionAuth = async (type:string, url:string, obj:any, callback:any, callbackYn:boolean, loadingScreenYn:any, setLoadingYn:any, setErrorPage:any) => {
 	if(loadingScreenYn === true) setLoadingYn(true);
 	try{
         let resp:any, data:any;
@@ -80,6 +80,7 @@ const transactionAuth = async (type:string, url:string, obj:any, callback:any, c
 		if(loadingScreenYn === true) setLoadingYn(false);
 		// console.log(error.response.data.resObj.message);
 		// console.log(error.response.data.message);
+		setErrorPage(true)
 		if(error){
 			if(callbackYn){
 				callback("", error.response.data);

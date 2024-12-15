@@ -13,6 +13,7 @@ import { transaction } from "@/app/utils/axios";
 import { useRouter } from "next/navigation";
 import { loadingBarState } from "@/app/store/loadingBar";
 import Confirm from "@/app/components/confirmModal";
+import { errorPageState } from "@/app/store/error";
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
@@ -52,6 +53,7 @@ import Confirm from "@/app/components/confirmModal";
 
 		const [blogDetail, setBlogDetail] = useState<any>({});
 		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+		const [errorPage, setErrorPage] = useRecoilState(errorPageState);
 		
 
 		//confirm
@@ -101,16 +103,16 @@ import Confirm from "@/app/components/confirmModal";
 				seq:props.seq
 			}
 	
-			const bloglistObj = await transaction("get", "blog/blogDetail", obj, "", false, true, setLoadingBarState);
+			const bloglistObj = await transaction("get", "blog/blogDetail", obj, "", false, true, setLoadingBarState, setErrorPage);
+
 			
-			// console.log(bloglistObj.sendObj.resObj.blogDetail);
-			setContent(bloglistObj.sendObj.resObj.blogDetail.content);
-			setTitle(bloglistObj.sendObj.resObj.blogDetail.title);
-			tempNum = bloglistObj.sendObj.resObj.blogDetail.temp_num;
-			setBlogDetail(bloglistObj.sendObj.resObj.blogDetail);
-			// console.log(bloglistObj.sendObj.resObj.blogDetail.m_category_seq);
-			setMajorIndex(bloglistObj.sendObj.resObj.blogDetail.m_category_seq);
-			// console.log(tempNum); 
+			if(bloglistObj.sendObj.success === 'y'){
+				setContent(bloglistObj.sendObj.resObj.blogDetail.content);
+				setTitle(bloglistObj.sendObj.resObj.blogDetail.title);
+				tempNum = bloglistObj.sendObj.resObj.blogDetail.temp_num;
+				setBlogDetail(bloglistObj.sendObj.resObj.blogDetail);
+				setMajorIndex(bloglistObj.sendObj.resObj.blogDetail.m_category_seq);
+			}
 		}
 
 		async function getCategoryInfo(){
@@ -120,16 +122,18 @@ import Confirm from "@/app/components/confirmModal";
 				email : user.email,
 				blog_seq :user.blog_seq,
 			}
-			const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState); 
+			const blogInfoRes = await transaction("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState, setErrorPage); 
 			
-			if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
-				setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
-				setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
-			}
-	
-			if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
-				setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
-				setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
+			if(blogInfoRes.sendObj.success === 'y'){
+				if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
+					setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
+					setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
+				}
+		
+				if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
+					setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
+					setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
+				}
 			}
 		}
 		
@@ -141,7 +145,7 @@ import Confirm from "@/app/components/confirmModal";
 				email : user.email,
 				randomNum : tempNum
 			}
-			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false, true, setLoadingBarState);
+			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false, true, setLoadingBarState, setErrorPage);
 			
 			if(imgUploadRes.sendObj.success === "y"){
 				const range = editor.getSelection();
@@ -201,7 +205,7 @@ import Confirm from "@/app/components/confirmModal";
 			
 			// console.log(obj);
 
-			const updateRes = await transactionAuth("post", "blog/update", obj, "", false, true, setLoadingBarState);
+			const updateRes = await transactionAuth("post", "blog/update", obj, "", false, true, setLoadingBarState, setErrorPage);
 			// console.log(imgUploadRes.sendObj.success );
 
 			if(updateRes.sendObj.success === 'y'){

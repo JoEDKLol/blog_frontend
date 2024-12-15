@@ -12,6 +12,8 @@ import { transactionAuth } from "@/app/utils/axiosAuth";
 import { useRouter,usePathname } from "next/navigation";
 import { loadingBarState } from "@/app/store/loadingBar";
 import Confirm from "@/app/components/confirmModal";
+import { errorPageState } from "@/app/store/error";
+import { transaction } from "@/app/utils/axios";
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
@@ -49,6 +51,7 @@ import Confirm from "@/app/components/confirmModal";
 		const [chooseMajor, setChooseMajor] = useState<any>();
 		const [chooseSub, setChooseSub] = useState<any>();
 		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+		const [errorPage, setErrorPage] = useRecoilState(errorPageState);
 
 
 		//confirm
@@ -98,17 +101,21 @@ import Confirm from "@/app/components/confirmModal";
 				email : user.email,
 				blog_seq :user.blog_seq,
 			}
-			const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState); 
+			const blogInfoRes = await transaction("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState, setErrorPage); 
+
+			if(blogInfoRes.sendObj.success === 'y'){
+				if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
+					setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
+					setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
+				}
+		
+				if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
+					setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
+					setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
+				}
+			}
 			
-			if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
-				setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
-				setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
-			}
-	
-			if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
-				setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
-				setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
-			}
+			
 		}
 
 		
@@ -119,16 +126,13 @@ import Confirm from "@/app/components/confirmModal";
 				email : user.email,
 				randomNum : randomNum
 			}
-			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false, true, setLoadingBarState);
+			const imgUploadRes = await transactionFile("blog/fileUpload", imageBlob, obj, "", false, true, setLoadingBarState, setErrorPage);
 
 
 			if(imgUploadRes.sendObj.success === "y"){
 				const range = editor.getSelection();
       		editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
-			}else{
-				console.log(imgUploadRes.sendObj.message);
 			}
-			
 			
 		}
 
@@ -179,7 +183,7 @@ import Confirm from "@/app/components/confirmModal";
 				s_category_seq:chooseSub
 			}
 			
-			const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false, true, setLoadingBarState);
+			const imgUploadRes = await transactionAuth("post", "blog/write", obj, "", false, true, setLoadingBarState, setErrorPage);
 			// console.log(imgUploadRes.sendObj.success );
 
 			if(imgUploadRes.sendObj.success === 'y'){

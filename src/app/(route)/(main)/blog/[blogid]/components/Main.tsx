@@ -16,6 +16,7 @@ import { TiDocumentText } from "react-icons/ti";
 import { BiLike } from "react-icons/bi"; //<BiLike />
 import { BiSolidLike } from "react-icons/bi"; //<BiSolidLike />
 import { loadingBarState } from "@/app/store/loadingBar";
+import { errorPageState } from "@/app/store/error";
 let keywordG = "";
 let majorSeqG = -1;
 let subSeqG = -1;
@@ -37,6 +38,7 @@ const PriMain = (props: any) => {
   const searchParams = useSearchParams()
   const search = searchParams.get('refresh')
   const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+  const [errorPage, setErrorPage] = useRecoilState(errorPageState);
   
   
   useEffect(()=>{
@@ -71,37 +73,41 @@ const PriMain = (props: any) => {
       searchYn:false
     }
 
-    const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false, true, setLoadingBarState);
+    const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false, true, setLoadingBarState, setErrorPage);
 
-    if(cPage > 1){
-      if(bloglistObj.sendObj.resObj.list.length > 0){
-        setPriSearchRes(blogList.concat(bloglistObj.sendObj.resObj.list)); 
-        currentPage++;
-        setPriSearchKeyword({...priSearchKeyword, currentPage});
-        
+    if(bloglistObj.sendObj.success === 'y'){
+      if(cPage > 1){
+        if(bloglistObj.sendObj.resObj.list.length > 0){
+          setPriSearchRes(blogList.concat(bloglistObj.sendObj.resObj.list)); 
+          currentPage++;
+          setPriSearchKeyword({...priSearchKeyword, currentPage});
+          
+        }else{
+          //다음 조회건수가 없을 경우 처리해야 됨.
+          // console.log("다음 조회건수가 없을 경우 처리해야 됨");
+          // console.log("여기는 아니지?");
+          // currentPage--;
+        }
       }else{
-        //다음 조회건수가 없을 경우 처리해야 됨.
-        // console.log("다음 조회건수가 없을 경우 처리해야 됨");
-        // console.log("여기는 아니지?");
-        // currentPage--;
+        // console.log("최초조회:::", cPage);
+        setPriSearchRes(bloglistObj.sendObj.resObj.list);
+        currentPage++;
+        let obj2 = {
+          blog_seq:blog_seq,
+          keyword:keyword,
+          majorSeq:majorSeq,
+          majorName:"",
+          subSeq:subSeq,
+          subName:"",
+          currentPage:currentPage,
+          searchYn:true
+        }
+        setPriSearchKeyword(obj2);
+  
       }
-    }else{
-      // console.log("최초조회:::", cPage);
-      setPriSearchRes(bloglistObj.sendObj.resObj.list);
-      currentPage++;
-      let obj2 = {
-        blog_seq:blog_seq,
-        keyword:keyword,
-        majorSeq:majorSeq,
-        majorName:"",
-        subSeq:subSeq,
-        subName:"",
-        currentPage:currentPage,
-        searchYn:true
-      }
-      setPriSearchKeyword(obj2);
-
     }
+
+    
       
   }
 

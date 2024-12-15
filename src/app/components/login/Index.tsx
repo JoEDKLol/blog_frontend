@@ -1,4 +1,5 @@
 'use client';
+import { errorPageState } from "@/app/store/error";
 import { loadingBarState } from "@/app/store/loadingBar";
 import { accesstokenState } from "@/app/store/token";
 import { userState } from "@/app/store/user";
@@ -18,6 +19,7 @@ const Login = (props: any) => {
   const [resLoginStr, setResLoginStr] = useState<any>("");
   // const sessionTest = useSession();
   const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+  const [errorPage, setErrorPage] = useRecoilState(errorPageState);
   useEffect(()=>{
     // console.log("여기");
     // console.log(sessionTest);
@@ -58,8 +60,8 @@ const Login = (props: any) => {
 
     }else{
       //resp.headers.accesstoken;
-      const retObj = await transaction("get", "getAccessToken", {}, "", false, true, setLoadingBarState);
-      console.log(retObj);
+      const retObj = await transaction("get", "getAccessToken", {}, "", false, true, setLoadingBarState, setErrorPage);
+
       if(retObj.sendObj.code === "2000"){
         //유저정보는 리코일에
         //access토큰 정보는 session storege클래스에 담아준다.

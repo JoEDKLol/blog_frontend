@@ -18,6 +18,8 @@ import { FaHouse } from "react-icons/fa6";
 import { TbHome } from "react-icons/tb";
 import { TfiWrite } from "react-icons/tfi";
 import { loadingBarState } from "@/app/store/loadingBar";
+import { errorPageState } from "@/app/store/error";
+import { transactionAuth } from "@/app/utils/axiosAuth";
 
 const PriHeader = (props: any) => {
 
@@ -31,7 +33,10 @@ const PriHeader = (props: any) => {
   const [searchText, setSearchText] = useState<any>();
   const [priSearchRes, setPriSearchRes] = useRecoilState(priSearchResArrState);
   const [priSearchKeyword, setPriSearchKeyword] = useRecoilState(priSearchKeywordState);
+  
   const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState); 
+  const [errorPage, setErrorPage] = useRecoilState(errorPageState);
+
   const path:any = usePathname();
   const blog_seq = path.split("/")[2];
 
@@ -86,7 +91,7 @@ const PriHeader = (props: any) => {
   async function logoutOnclickHandler(){
     signOut();
     sessionStorage.removeItem("myblog-accesstoken");
-    const retObj = await transaction("get", "logout", {}, "", false, true, setLoadingBarState);
+    const retObj = await transaction("get", "logout", {}, "", false, true, setLoadingBarState, setErrorPage);
   }
 
   //blog_seq로 블로그 정보를 조회한다.
@@ -94,8 +99,10 @@ const PriHeader = (props: any) => {
     let obj = {
       blog_seq:blog_seq
     }
-    const blogInfoObj = await transaction("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState);
-    setBlogInfo(blogInfoObj.sendObj.resObj.blogInfo);
+    const blogInfoObj = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState, setErrorPage);
+    if(blogInfoObj.sendObj.success === 'y'){
+      setBlogInfo(blogInfoObj.sendObj.resObj.blogInfo);
+    }
   }
   
   const router = useRouter();
@@ -137,21 +144,26 @@ const PriHeader = (props: any) => {
     }
     setPriSearchKeyword(obj);
 
-    const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false, true, setLoadingBarState);
+    const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false, true, setLoadingBarState, setErrorPage);
 
-    setPriSearchRes(bloglistObj.sendObj.resObj.list); 
-    let obj2 = {
-      blog_seq:blog_seq,
-      keyword:searchText,
-      majorSeq:priSearchKeyword.majorSeq,
-      majorName:priSearchKeyword.majorName,
-      subSeq:priSearchKeyword.subSeq,
-      subName:priSearchKeyword.subName,
-      currentPage:2,
-      searchYn:true
+    if(bloglistObj.sendObj.success === 'y'){
+      setPriSearchRes(bloglistObj.sendObj.resObj.list); 
+      let obj2 = {
+        blog_seq:blog_seq,
+        keyword:searchText,
+        majorSeq:priSearchKeyword.majorSeq,
+        majorName:priSearchKeyword.majorName,
+        subSeq:priSearchKeyword.subSeq,
+        subName:priSearchKeyword.subName,
+        currentPage:2,
+        searchYn:true
+      }
+      
+      setPriSearchKeyword(obj2);
     }
+
     
-    setPriSearchKeyword(obj2);
+    
 
 
   }

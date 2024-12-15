@@ -12,6 +12,8 @@ import { transactionAuth } from "@/app/utils/axiosAuth";
 import { useRouter } from "next/navigation";
 import { loadingBarState } from "@/app/store/loadingBar";
 import Confirm from "@/app/components/confirmModal";
+import { errorPageState } from "@/app/store/error";
+import { transaction } from "@/app/utils/axios";
 
 
 const randomNum = getRandomNumber(10);
@@ -41,6 +43,7 @@ const BlogUpdateForm = (props: any) => {
   	const focusSub = useRef<HTMLInputElement>(null);
 
 	const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+	const [errorPage, setErrorPage] = useRecoilState(errorPageState);
 
 	//confirm
 	const [showConfirm, setShowConfirm] = useState(false);
@@ -178,29 +181,35 @@ const BlogUpdateForm = (props: any) => {
 			email : user.email,
 			blog_seq :user.blog_seq,
 		}
-		const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState); 
-		
-		setUserName(blogInfoRes.sendObj.resObj.blogInfo.name);
-		setBlogName(blogInfoRes.sendObj.resObj.blogInfo.blogtitle);
-		setIntroduction(blogInfoRes.sendObj.resObj.blogInfo.introduction);
-		setImg(blogInfoRes.sendObj.resObj.blogInfo.blogimg_thumbnailimg);
-		setBlogInfo(blogInfoRes.sendObj.resObj.blogInfo);
-		
-		if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
-			setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
-			setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
-		}else{
-			setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
-			setMajorCategories([]);
-		}
+		const blogInfoRes = await transaction("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState, setErrorPage); 
 
-		if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
-			setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
-			setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
-		}else{
-			setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
-			setSubCategories([]);
+		if(blogInfoRes.sendObj.success === 'y'){
+
+			setUserName(blogInfoRes.sendObj.resObj.blogInfo.name);
+			setBlogName(blogInfoRes.sendObj.resObj.blogInfo.blogtitle);
+			setIntroduction(blogInfoRes.sendObj.resObj.blogInfo.introduction);
+			setImg(blogInfoRes.sendObj.resObj.blogInfo.blogimg_thumbnailimg);
+			setBlogInfo(blogInfoRes.sendObj.resObj.blogInfo);
+			
+			if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
+				setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
+				setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
+			}else{
+				setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
+				setMajorCategories([]);
+			}
+
+			if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
+				setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
+				setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
+			}else{
+				setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
+				setSubCategories([]);
+			}
+
 		}
+		
+		
 	}
 
 	async function fileUploadHandler(e:any){
@@ -232,7 +241,7 @@ const BlogUpdateForm = (props: any) => {
 			}
 
 			
-			const imgUploadRes = await transactionFile("blog/fileUpload", compressedFile, obj, "", false, true, setLoadingBarState);
+			const imgUploadRes = await transactionFile("blog/fileUpload", compressedFile, obj, "", false, true, setLoadingBarState, setErrorPage);
 	
 			if(imgUploadRes.sendObj.success === 'y'){
 				setImg(imgUploadRes.sendObj.resObj.img_url);
@@ -269,19 +278,21 @@ const BlogUpdateForm = (props: any) => {
 			// majorIndex:majorIndexR
 		}
 
-		const addMajorRes = await transactionAuth("post", "blog/majorAdd", majorCategory, "", false, true, setLoadingBarState); 
+		const addMajorRes = await transactionAuth("post", "blog/majorAdd", majorCategory, "", false, true, setLoadingBarState, setErrorPage); 
 		// console.log(addMajorRes.sendObj.resObj);
-
-		const indexM = majorCategories.findIndex((val:any) => val.seq === addMajorRes.sendObj.resObj.seq);
-		
-		if(indexM < 0){
-			if(majorCategories.length === 0){
-				setMajorCategoryCnt(1);
-			}
-			setMajorCategories([...majorCategories, addMajorRes.sendObj.resObj]);
+		if(addMajorRes.sendObj.success === 'y'){
+			const indexM = majorCategories.findIndex((val:any) => val.seq === addMajorRes.sendObj.resObj.seq);
 			
+			if(indexM < 0){
+				if(majorCategories.length === 0){
+					setMajorCategoryCnt(1);
+				}
+				setMajorCategories([...majorCategories, addMajorRes.sendObj.resObj]);
+				
+			}
 		}
-		
+			
+			
 		setMajorCategoryText("");
 		setSubCategoryText("");
 		setSubMajorCategoryText("");
@@ -304,7 +315,7 @@ const BlogUpdateForm = (props: any) => {
 			// majorIndex:majorIndexR
 		}
 
-		const deleteMajorRes = await transactionAuth("post", "blog/majorDelete", majorCategory, "", false, true, setLoadingBarState); 
+		const deleteMajorRes = await transactionAuth("post", "blog/majorDelete", majorCategory, "", false, true, setLoadingBarState, setErrorPage); 
 		// console.log(addMajorRes);
 
 		if(deleteMajorRes.sendObj.success === "y"){
@@ -397,15 +408,17 @@ const BlogUpdateForm = (props: any) => {
 			order:0,
 		}
 
-		const addSubRes = await transactionAuth("post", "blog/subAdd", subCategory, "", false, true, setLoadingBarState);
+		const addSubRes = await transactionAuth("post", "blog/subAdd", subCategory, "", false, true, setLoadingBarState, setErrorPage);
 
-		const indexS = subCategories.findIndex((val:any) => val.seq === addSubRes.sendObj.resObj.seq);
-		// console.log(indexM);
+		if(addSubRes.sendObj.success === 'y'){
+			const indexS = subCategories.findIndex((val:any) => val.seq === addSubRes.sendObj.resObj.seq);
+			// console.log(indexM);
 
-		if(indexS < 0){
-			setSubCategories([...subCategories, addSubRes.sendObj.resObj]);
+			if(indexS < 0){
+				setSubCategories([...subCategories, addSubRes.sendObj.resObj]);
+			}
 		}
-
+			
 		setSubCategoryText("");
 		subUpFlag = false;
 		subIndex = -1;
@@ -434,7 +447,7 @@ const BlogUpdateForm = (props: any) => {
 			order:0,
 		}
 
-		const deleteSubRes = await transactionAuth("post", "blog/subDelete", subCategory, "", false, true, setLoadingBarState); 
+		const deleteSubRes = await transactionAuth("post", "blog/subDelete", subCategory, "", false, true, setLoadingBarState, setErrorPage); 
 		// console.log(addMajorRes);
 
 		if(deleteSubRes.sendObj.success === "y"){
@@ -467,7 +480,7 @@ const BlogUpdateForm = (props: any) => {
 		
 		// console.log(obj);
 		// return;
-		const blogUpdateRes = await transactionAuth("post", "blog/blogUpdate", obj, "", false, true, setLoadingBarState);
+		const blogUpdateRes = await transactionAuth("post", "blog/blogUpdate", obj, "", false, true, setLoadingBarState, setErrorPage);
 		// console.log(blogUpdateRes.sendObj.success );
 
 		if(blogUpdateRes.sendObj.success === 'y'){

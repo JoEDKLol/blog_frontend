@@ -19,6 +19,7 @@ import { BiLike } from "react-icons/bi"; //<BiLike />
 import { BiSolidLike } from "react-icons/bi"; //<BiSolidLike />
 import { MdSubdirectoryArrowRight } from "react-icons/md"; //<MdSubdirectoryArrowRight />
 import Confirm from "@/app/components/confirmModal";
+import { errorPageState } from "@/app/store/error";
 
 
  
@@ -96,7 +97,9 @@ const PriBlogListDetail = (props: any) => {
 	const focusCommentReplyListRef = useRef<null[] | HTMLTextAreaElement[]>([]);
 	const focusCommentReplyRegRef = useRef<null[] | HTMLTextAreaElement[]>([]);
 	const focusCommentReplyRef = useRef<null[] | HTMLTextAreaElement[]>([]);
+
 	const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+	const [errorPage, setErrorPage] = useRecoilState(errorPageState);
 	
 	const [updateCommnetIndex, setUpdateCommentIndex] = useState<any>(-1);
 	const [replyRegCommnetIndex, setReplyRegCommnetIndex] = useState<any>(-1);
@@ -210,19 +213,15 @@ const PriBlogListDetail = (props: any) => {
 
 		console.log(obj);
 
-		const bloglistObj = await transaction("get", "blog/blogDetail", obj, "", false, true, setLoadingBarState);
+		const bloglistObj = await transaction("get", "blog/blogDetail", obj, "", false, true, setLoadingBarState, setErrorPage);
 		
 		if(bloglistObj.sendObj.success === "y"){
 			setBlogDetailObj(bloglistObj.sendObj.resObj.blogDetail);
 			setMajorCaName(bloglistObj.sendObj.resObj.majorCaName);
 			setSubCaName(bloglistObj.sendObj.resObj.subCaName);
-
-			// commentSearch();
 			currentSeqG = 0;
 			commentSearchUseSeq(currentSeqG);
-
 		}else{
-			console.log("There is not a board");
 			setBoardYn(false);
 			
 		}
@@ -269,7 +268,7 @@ const PriBlogListDetail = (props: any) => {
 			blog_seq :props.blog_seq,
 			seq:props.seq
 		}
-		const blogDeleteRes = await transactionAuth("post", "blog/bloglistdelete", obj, "", false, true, setLoadingBarState); 
+		const blogDeleteRes = await transactionAuth("post", "blog/bloglistdelete", obj, "", false, true, setLoadingBarState, setErrorPage); 
 		
 		if(blogDeleteRes.sendObj.success === 'y'){
 			setDeleteSuc(true);
@@ -295,7 +294,7 @@ const PriBlogListDetail = (props: any) => {
 			comment : blogComment
 		}
 		// console.log(obj);
-		const blogCommentWriteRes = await transactionAuth("post", "blog/commentwrite", obj, "", false, true, setLoadingBarState); 
+		const blogCommentWriteRes = await transactionAuth("post", "blog/commentwrite", obj, "", false, true, setLoadingBarState, setErrorPage); 
 
 		if(blogCommentWriteRes.sendObj.success === 'y'){
 			setShowComment(false);
@@ -323,32 +322,31 @@ const PriBlogListDetail = (props: any) => {
 			blog_list_seq:props.seq,
 			currentSeq:seq
 		}
-		const blogCommentSearchSeqRes = await transactionAuth("get", "blog/commentsseq", obj, "", false, true, setLoadingBarState); 
-		if(blogCommentSearchSeqRes.sendObj.resObj.blogComments.length > 0){
+		const blogCommentSearchSeqRes = await transaction("get", "blog/commentsseq", obj, "", false, true, setLoadingBarState, setErrorPage); 
+
+		if(blogCommentSearchSeqRes.sendObj.success === 'y'){
+			if(blogCommentSearchSeqRes.sendObj.resObj.blogComments.length > 0){
 			
-			for(let i = 0; i < blogCommentSearchSeqRes.sendObj.resObj.blogComments.length; i++){
-				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].readOnly = true;
-				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].style = " border-none outline-none bg-slate-50 ";
-				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].updateYn = false;
-				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].replyYn = false;
-				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].currentReplaySeq = 0;
-				blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].replies = [];
-
-				
+				for(let i = 0; i < blogCommentSearchSeqRes.sendObj.resObj.blogComments.length; i++){
+					blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].readOnly = true;
+					blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].style = " border-none outline-none bg-slate-50 ";
+					blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].updateYn = false;
+					blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].replyYn = false;
+					blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].currentReplaySeq = 0;
+					blogCommentSearchSeqRes.sendObj.resObj.blogComments[i].replies = [];
+				}
+	
+				if(seq > 0){
+					setCommentLists(blogCommentArr.concat(blogCommentSearchSeqRes.sendObj.resObj.blogComments));
+				}else{
+					setCommentLists(blogCommentSearchSeqRes.sendObj.resObj.blogComments);
+				}
+				currentSeqG = blogCommentSearchSeqRes.sendObj.resObj.lastCommentSeq;
+	
 			}
-
-
-			// console.log(blogCommentSearchSeqRes.sendObj.resObj.blogComments);
-		
-
-			if(seq > 0){
-				setCommentLists(blogCommentArr.concat(blogCommentSearchSeqRes.sendObj.resObj.blogComments));
-			}else{
-				setCommentLists(blogCommentSearchSeqRes.sendObj.resObj.blogComments);
-			}
-			currentSeqG = blogCommentSearchSeqRes.sendObj.resObj.lastCommentSeq;
-
 		}
+		
+		
 	}
 
 	const observerEl = useRef<HTMLDivElement>(null);
@@ -390,7 +388,7 @@ const PriBlogListDetail = (props: any) => {
 			user_email : user.email,
 			blog_list_seq:props.seq,
 		}
-		const commentDeleteRes = await transactionAuth("post", "blog/commentdelete", obj, "", false, true, setLoadingBarState); 
+		const commentDeleteRes = await transactionAuth("post", "blog/commentdelete", obj, "", false, true, setLoadingBarState, setErrorPage); 
 		
 		if(commentDeleteRes.sendObj.success === 'y'){
 			// console.log("삭제 성공");
@@ -463,7 +461,7 @@ const PriBlogListDetail = (props: any) => {
 			user_id : user.id,
 			blog_list_seq:props.seq,
 		}
-		const searchBlogListLikeUpdateRes = await transactionAuth("get", "blog/searchbloglistlike", obj, "", false, true, setLoadingBarState);
+		const searchBlogListLikeUpdateRes = await transaction("get", "blog/searchbloglistlike", obj, "", false, true, setLoadingBarState, setErrorPage);
 		// console.log(searchBlogListLikeUpdateRes);
 
 		if(searchBlogListLikeUpdateRes.sendObj.success === 'y'){
@@ -479,7 +477,7 @@ const PriBlogListDetail = (props: any) => {
 			like_yn : likeYn,
 			email : user.email
 		}
-		const blogListLikeUpdateRes = await transactionAuth("post", "blog/bloglistlikeupdate", obj, "", false, true, setLoadingBarState);
+		const blogListLikeUpdateRes = await transactionAuth("post", "blog/bloglistlikeupdate", obj, "", false, true, setLoadingBarState, setErrorPage);
 		// console.log(blogListLikeUpdateRes.sendObj);
 
 		if(blogListLikeUpdateRes.sendObj.success === 'y'){
@@ -519,7 +517,7 @@ const PriBlogListDetail = (props: any) => {
 				email : user.email
 			}
 		
-			const blogCommentUpdateRes = await transactionAuth("post", "blog/commentupdate", obj, "", false, true, setLoadingBarState);
+			const blogCommentUpdateRes = await transactionAuth("post", "blog/commentupdate", obj, "", false, true, setLoadingBarState, setErrorPage);
 			// console.log(blogListLikeUpdateRes.sendObj);
 	
 			if(blogCommentUpdateRes.sendObj.success === 'y'){
@@ -607,7 +605,7 @@ const PriBlogListDetail = (props: any) => {
 				
 			}
 
-			const blogReplyWriteRes = await transactionAuth("post", "blog/replywrite", obj, "", false, true, setLoadingBarState);	
+			const blogReplyWriteRes = await transactionAuth("post", "blog/replywrite", obj, "", false, true, setLoadingBarState, setErrorPage);	
 		
 			
 
@@ -651,34 +649,28 @@ const PriBlogListDetail = (props: any) => {
 			currentReplaySeq:currentReplaySeq
 		}
 		
-		const blogCommentSearchSeqRes = await transactionAuth("get", "blog/replyseq", obj, "", false, true, setLoadingBarState); 
+		const blogCommentSearchSeqRes = await transaction("get", "blog/replyseq", obj, "", false, true, setLoadingBarState, setErrorPage); 
 		// console.log(blogCommentSearchSeqRes);
-		if(blogCommentSearchSeqRes.sendObj.resObj.blogReplies.length > 0){
+		if(blogCommentSearchSeqRes.sendObj.success === 'y'){
+			if(blogCommentSearchSeqRes.sendObj.resObj.blogReplies.length > 0){
 
-			const replies = blogCommentSearchSeqRes.sendObj.resObj;
-			const choosenIndex = commentLists.findIndex((val) => val._id === id);
-			let preReplies:any = commentLists[choosenIndex].replies;
-			
-			
-			
-			for(let i = 0; i < replies.blogReplies.length; i++){
-				replies.blogReplies[i].readOnly = true;
-				replies.blogReplies[i].style = " border-none outline-none bg-slate-50 ";
-				replies.blogReplies[i].updateYn = false;
+				const replies = blogCommentSearchSeqRes.sendObj.resObj;
+				const choosenIndex = commentLists.findIndex((val) => val._id === id);
+				let preReplies:any = commentLists[choosenIndex].replies;
+				
+				for(let i = 0; i < replies.blogReplies.length; i++){
+					replies.blogReplies[i].readOnly = true;
+					replies.blogReplies[i].style = " border-none outline-none bg-slate-50 ";
+					replies.blogReplies[i].updateYn = false;
+				}
+
+				preReplies = preReplies.concat(replies.blogReplies);
+				commentLists[choosenIndex].replies = preReplies;
+				commentLists[choosenIndex].currentReplaySeq = replies.lastReplySeq;
+
+				setCommentLists([...commentLists]);  
 			}
-
-			preReplies = preReplies.concat(replies.blogReplies);
-			// console.log(preReplies);
-			commentLists[choosenIndex].replies = preReplies;
-			commentLists[choosenIndex].currentReplaySeq = replies.lastReplySeq;
-			
-			// console.log([...commentLists[choosenIndex].replies]);
-			
-			// setCommentLists([...commentLists[choosenIndex].replies, preReplies]);
-			setCommentLists([...commentLists]);  
-			// console.log(commentLists);
 		}
-
 	}
 
 	async function replyUpdateYn(commentId:any, reply_id:any, replyIndex:any, replyUpdateYn:any){
@@ -699,7 +691,7 @@ const PriBlogListDetail = (props: any) => {
 				email : user.email
 			}
 
-			const blogReplyUpdateRes = await transactionAuth("post", "blog/replyupdate", obj, "", false, true, setLoadingBarState);
+			const blogReplyUpdateRes = await transactionAuth("post", "blog/replyupdate", obj, "", false, true, setLoadingBarState, setErrorPage);
 			
 			if(blogReplyUpdateRes.sendObj.success === 'y'){
 				
@@ -748,7 +740,7 @@ const PriBlogListDetail = (props: any) => {
 			email : user.email,
 		}
 
-		const replyDeleteRes = await transactionAuth("post", "blog/replydelete", obj, "", false, true, setLoadingBarState); 
+		const replyDeleteRes = await transactionAuth("post", "blog/replydelete", obj, "", false, true, setLoadingBarState, setErrorPage); 
 		
 		if(replyDeleteRes.sendObj.success === 'y'){
 

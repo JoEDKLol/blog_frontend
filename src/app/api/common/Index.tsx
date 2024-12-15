@@ -46,7 +46,7 @@ const CommonTransaction = ({ children }: any) => {
     }, [path]);
     
     async function getAccessTokenApi(){
-        const retObj = await transaction("get", "getAccessToken", {}, "", false, true, setLoadingBarState);
+        const retObj = await transaction("get", "getAccessToken", {}, "", false, true, setLoadingBarState, setErrorPage);
         if(retObj.sendObj.code === "2000"){
             
             //유저정보는 리코일에
@@ -62,9 +62,9 @@ const CommonTransaction = ({ children }: any) => {
 
     async function getAccessTokenCheck(){
         
-        const retObj = await transactionAuth("post", "checkaccessToken", {}, "", false, true, setLoadingBarState);
+        const retObj = await transactionAuth("post", "checkaccessToken", {}, "", false, true, setLoadingBarState, setErrorPage);
         
-        if(retObj.sendObj.success){
+        if(retObj.sendObj.success === 'y'){
             setUser(retObj.sendObj.resObj);
         }else{
             getAccessTokenApi();

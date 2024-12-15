@@ -17,6 +17,7 @@ import { priSearchResArrState } from "@/app/store/priSearch";
 
 import { transaction } from "@/app/utils/axios";
 import { loadingBarState } from "@/app/store/loadingBar";
+import { errorPageState } from "@/app/store/error";
 
 const SideBar = (props: any) => {
 	const [blogInfo, setblogInfo] = useState<any>({});
@@ -34,10 +35,8 @@ const SideBar = (props: any) => {
 	const [chooseMajor, setChooseMajor] = useState<any>("2");
 	const [chooseSub, setChooseSub] = useState<any>(0);
 
-
-
 	const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
-
+	const [errorPage, setErrorPage] = useRecoilState(errorPageState);
 
 
 	useEffect(()=>{
@@ -48,18 +47,21 @@ const SideBar = (props: any) => {
 		const obj = {
 			blog_seq :props.blog_seq,
 		}
-		const blogInfoRes = await transactionAuth("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState);
+		const blogInfoRes = await transaction("get", "blog/blogInfo", obj, "", false, true, setLoadingBarState, setErrorPage);
+		if(blogInfoRes.sendObj.success === 'y'){
 
-		setblogInfo(blogInfoRes.sendObj.resObj.blogInfo);
-		if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
-			setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
-			setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
-		}
+			setblogInfo(blogInfoRes.sendObj.resObj.blogInfo);
+			if(Number(blogInfoRes.sendObj.resObj.majorCategoryCnt) > 0){
+				setMajorCategoryCnt(blogInfoRes.sendObj.resObj.majorCategoryCnt);
+				setMajorCategories(blogInfoRes.sendObj.resObj.majorCategory);
+			}
 
-		if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
-			setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
-			setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
+			if(Number(blogInfoRes.sendObj.resObj.subCategoryCnt) > 0){
+				setSubCategoryCnt(blogInfoRes.sendObj.resObj.subCategoryCnt);
+				setSubCategories(blogInfoRes.sendObj.resObj.subCategory);
+			}
 		}
+		
 	}
 
 	async function searchCategories(majorSeqP:any, subSeqP:any, majorNameP:any, subNameP:any){
@@ -88,22 +90,22 @@ const SideBar = (props: any) => {
 		// return;
 		// const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false);
 
-		const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false, true, setLoadingBarState);
+		const bloglistObj = await transaction("get", "blog/bloglistEa", obj, "", false, true, setLoadingBarState, setErrorPage);
 		
-
-		setPriSearchRes(bloglistObj.sendObj.resObj.list);
-		let obj2 = {
-			blog_seq:props.blog_seq,
-			keyword:priSearchKeyword.keyword, 
-			majorSeq:majorSeqP,
-			majorName:majorNameP, 
-			subSeq:subSeqP,
-			subName:subNameP,
-			currentPage:2,
-			searchYn:true
+		if(bloglistObj.sendObj.success === 'y'){
+			setPriSearchRes(bloglistObj.sendObj.resObj.list);
+			let obj2 = {
+				blog_seq:props.blog_seq,
+				keyword:priSearchKeyword.keyword, 
+				majorSeq:majorSeqP,
+				majorName:majorNameP, 
+				subSeq:subSeqP,
+				subName:subNameP,
+				currentPage:2,
+				searchYn:true
+			}
+			setPriSearchKeyword(obj2);
 		}
-		setPriSearchKeyword(obj2);
-
 	}
 
 	function changeMajorCategory(e:any){

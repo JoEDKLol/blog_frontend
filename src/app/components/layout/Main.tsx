@@ -14,6 +14,7 @@ import { TiDocumentText } from "react-icons/ti";
 import { BiLike } from "react-icons/bi"; //<BiLike />
 import { BiSolidLike } from "react-icons/bi"; //<BiSolidLike />
 import { loadingBarState } from "@/app/store/loadingBar";
+import { errorPageState } from "@/app/store/error";
 
 let keywordG = "";
 let searchYnG = true;
@@ -33,6 +34,7 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
   const searchParams = useSearchParams()
   const search = searchParams.get('refresh')
   const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+  const [errorPage, setErrorPage] = useRecoilState(errorPageState);
   // let currentPage = 0;
   // let searchYn = true;
   // let blogListDB:any = [];
@@ -65,35 +67,38 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
     
     
     // console.log("조회전:::", currentPage);
-    const bloglistObj = await transaction("get", "blog/bloglist", obj, "", false, true, setLoadingBarState);
+    const bloglistObj = await transaction("get", "blog/bloglist", obj, "", false, true, setLoadingBarState, setErrorPage);
     // console.log("중간:::", currentPage);
-    if(cPage > 1){
-      // console.log("최초에는 안옴");
-      if(bloglistObj.sendObj.resObj.list.length > 0){
-        setSearchRes(blogListDB.concat(bloglistObj.sendObj.resObj.list)); 
-        currentPage++;
-        setSearchKeyword({...searchKeyword, currentPage});
-        
+    if(bloglistObj.sendObj.success === 'y'){
+      if(cPage > 1){
+        // console.log("최초에는 안옴");
+        if(bloglistObj.sendObj.resObj.list.length > 0){
+          setSearchRes(blogListDB.concat(bloglistObj.sendObj.resObj.list)); 
+          currentPage++;
+          setSearchKeyword({...searchKeyword, currentPage});
+          
+        }else{
+          //다음 조회건수가 없을 경우 처리해야 됨.
+          // console.log("다음 조회건수가 없을 경우 처리해야 됨");
+          // console.log("여기는 아니지?");
+          // currentPage--;
+        }
       }else{
-        //다음 조회건수가 없을 경우 처리해야 됨.
-        // console.log("다음 조회건수가 없을 경우 처리해야 됨");
-        // console.log("여기는 아니지?");
-        // currentPage--;
-      }
-    }else{
-     
-      // console.log("최초조회:::", currentPage);
-      setSearchRes(bloglistObj.sendObj.resObj.list);
-      currentPage++;
+      
+        // console.log("최초조회:::", currentPage);
+        setSearchRes(bloglistObj.sendObj.resObj.list);
+        currentPage++;
 
-      let obj2 = {
-        keyword:keyword,
-        currentPage:currentPage,
-        searchYn:true
-      }
-      setSearchKeyword(obj2);
+        let obj2 = {
+          keyword:keyword,
+          currentPage:currentPage,
+          searchYn:true
+        }
+        setSearchKeyword(obj2);
 
+      }
     }
+      
 
     // if(bloglistObj.sendObj.resObj.list.length > 0){
     //   blogListDB = blogListDB.concat(bloglistObj.sendObj.resObj.list)

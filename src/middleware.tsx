@@ -1,10 +1,9 @@
 // middleware.tsx
 import { NextResponse } from 'next/server'
 import type { NextRequest, NextFetchEvent } from "next/server";
-import { transaction } from '@/app/utils/axios';
 //
 export function middleware(request: NextRequest) {
-  console.log('미들웨어::', request.url);   
+  // console.log('미들웨어::', request.url);   
   // 
   
   // if (request.nextUrl.pathname.startsWith('/home')) {

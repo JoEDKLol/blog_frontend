@@ -23,6 +23,7 @@ import { FaLinkedin } from "react-icons/fa"; //<FaLinkedin />
 import { FaPhoneSquare } from "react-icons/fa";  //<FaPhoneSquare />
 import { FaAddressCard } from "react-icons/fa6";  //<FaAddressCard />
 import { transaction } from "@/app/utils/axios";
+import { errorPageState } from "@/app/store/error";
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
@@ -54,6 +55,7 @@ import { transaction } from "@/app/utils/axios";
 		
 
 		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+		const [errorPage, setErrorPage] = useRecoilState(errorPageState);
 
 
 		//confirm
@@ -231,8 +233,7 @@ import { transaction } from "@/app/utils/axios";
 				blog_seq:props.blog_seq,
 			}
 
-			const aboutmeRes = await transaction("get", "blog/aboutme", obj, "", false, true, setLoadingBarState);
-			console.log(aboutmeRes);
+			const aboutmeRes = await transaction("get", "blog/aboutme", obj, "", false, true, setLoadingBarState, setErrorPage);
 
 			if(aboutmeRes.sendObj.success === "y"){
 				const resObj = aboutmeRes.sendObj.resObj;

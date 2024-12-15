@@ -5,7 +5,7 @@ const axiosNoAuth = axios.create({
 	withCredentials: true,
 })
 
-const transaction = async (type:string, url:string, obj:any, callback:any, callbackYn:boolean, loadingScreenYn:any, setLoadingYn:any) => {
+const transaction = async (type:string, url:string, obj:any, callback:any, callbackYn:boolean, loadingScreenYn:any, setLoadingYn:any, setErrorPage:any) => {
 	
 	if(loadingScreenYn === true) setLoadingYn(true);
 	try{
@@ -54,6 +54,7 @@ const transaction = async (type:string, url:string, obj:any, callback:any, callb
 		if(loadingScreenYn === true) setLoadingYn(false);
 		// console.log(error.response.data.resObj.message);
 		// console.log(error.response.data.message);
+		if(setErrorPage !== null) setErrorPage(true);
 		if(error){
 			if(callbackYn){
 				callback("", error.response.data);

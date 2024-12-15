@@ -8,6 +8,7 @@ import { getRandomNumber } from '@/app/utils/common'
 import { sendEmail } from "@/app/utils/email";
 import { useRecoilState } from "recoil";
 import { loadingBarState } from "@/app/store/loadingBar";
+import { errorPageState } from "@/app/store/error";
 
 const Password = (props: any) => {
   const { clickModal } = props;
@@ -35,7 +36,10 @@ const Password = (props: any) => {
   
   let [changePwSuccess, setChangePwSuccess] = useState<string|null>("flex");
   let [changePwSuccessAf, setChangePwSuccessAf] = useState<string|null>("hidden");
+  
   const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+  const [errorPage, setErrorPage] = useRecoilState(errorPageState);
+  
   const focusEmail = useRef<HTMLInputElement>(null);
   const focusNumber = useRef<HTMLInputElement>(null);
   const focusPassword = useRef<HTMLInputElement>(null);
@@ -76,7 +80,7 @@ const Password = (props: any) => {
       return;
     }
 
-    transaction("post", "updatePassword", pwObj, updatePasswordCallback, true, true, setLoadingBarState);
+    transaction("post", "updatePassword", pwObj, updatePasswordCallback, true, true, setLoadingBarState, setErrorPage);
   }
 
   function updatePasswordCallback(obj:any){
@@ -106,7 +110,7 @@ const Password = (props: any) => {
   }
   //이메일 인증 이력 저장
   function emailVerifySendApi(){
-    transaction("post", "emailverify", pwObj, emailVerifySendApiCallback, true, true, setLoadingBarState);
+    transaction("post", "emailverify", pwObj, emailVerifySendApiCallback, true, true, setLoadingBarState, setErrorPage);
   }
 
   function emailVerifySendApiCallback(obj:any){
@@ -128,7 +132,7 @@ const Password = (props: any) => {
   function sendEmailCallback(res:string, yn:string, obj:object){
     if(yn==="y"){
       //DB에 인증한 이메일에 보내 번호 저장 
-      transaction("post", "emailverifysave", obj, emailverifysaveApiCallback, true, true, setLoadingBarState);
+      transaction("post", "emailverifysave", obj, emailverifysaveApiCallback, true, true, setLoadingBarState, setErrorPage);
     }else{
       setEmailMsg(res);
     }
@@ -155,7 +159,7 @@ const Password = (props: any) => {
     //02. 확인되면 비활성화 및 password, repassword 창 활성화 및 change password 버튼 활성화
     // console.log(pwObj);
     setNumberMsg("");
-    transaction("post", "emailverifynumber", pwObj, verifyClickHandlerCallback, true, true, setLoadingBarState);
+    transaction("post", "emailverifynumber", pwObj, verifyClickHandlerCallback, true, true, setLoadingBarState, setErrorPage);
   }
 
   function verifyClickHandlerCallback(obj:any){

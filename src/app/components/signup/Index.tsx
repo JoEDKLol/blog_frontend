@@ -6,6 +6,7 @@ import { checkInputData } from '../../utils/checkUserValidation';
 import { transaction } from '../../utils/axios';
 import { useRecoilState } from "recoil";
 import { loadingBarState } from "@/app/store/loadingBar";
+import { errorPageState } from "@/app/store/error";
 
 
 const SignUp = (props: any) => {
@@ -28,6 +29,8 @@ const SignUp = (props: any) => {
   let [signupMsg, setSignupMsg] = useState<string|null>(null); 
   let [signupSuccess, setSignupSuccess] = useState<string|null>("flex");
   let [signupSuccessAf, setSignupSuccessAf] = useState<string|null>("hidden");
+  
+  const [errorPage, setErrorPage] = useRecoilState(errorPageState);
   
   const focusEmail = useRef<HTMLInputElement>(null);
   const focusName = useRef<HTMLInputElement>(null);
@@ -101,7 +104,7 @@ const SignUp = (props: any) => {
   }
 
   async function signupApi(obj:any){
-    await transaction("post", "signup", obj, signupApiCallback, true, true, setLoadingBarState);
+    await transaction("post", "signup", obj, signupApiCallback, true, true, setLoadingBarState, setErrorPage);
     
   }
 

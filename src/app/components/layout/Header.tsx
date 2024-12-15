@@ -15,6 +15,7 @@ import { transaction } from "@/app/utils/axios";
 import { searchResArrState } from "@/app/store/search";
 import { searchKeywordState } from "@/app/store/searchkeyword";
 import { loadingBarState } from "@/app/store/loadingBar";
+import { errorPageState } from "@/app/store/error";
 
 
 const MainHeader = (props: any) => {
@@ -31,6 +32,7 @@ const MainHeader = (props: any) => {
   const searchParams = useSearchParams()
   const search = searchParams.get('refresh')
   const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
+  const [errorPage, setErrorPage] = useRecoilState(errorPageState);
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     // setTheme(document.body.className as Theme);
@@ -85,7 +87,7 @@ const MainHeader = (props: any) => {
   async function logoutOnclickHandler(){
     signOut();
     sessionStorage.removeItem("myblog-accesstoken");
-    const retObj = await transaction("get", "logout", {}, "", false, true, setLoadingBarState);
+    const retObj = await transaction("get", "logout", {}, "", false, true, setLoadingBarState, setErrorPage);
   }
 
   function movetoMyBlogOnclickHandler(){
@@ -124,10 +126,13 @@ const MainHeader = (props: any) => {
     }
     setSearchKeyword(obj);
     
-    const bloglistObj = await transaction("get", "blog/bloglist", obj, "", false, true, setLoadingBarState);
-    // console.log(bloglistObj);
+    const bloglistObj = await transaction("get", "blog/bloglist", obj, "", false, true, setLoadingBarState, setErrorPage);
+    
+    if(bloglistObj.sendObj.success === 'y'){
+      setSearchRes(bloglistObj.sendObj.resObj.list);
+    }
 
-    setSearchRes(bloglistObj.sendObj.resObj.list); 
+    
     let obj2 = {
       keyword:searchText,
       currentPage:2,
