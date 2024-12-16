@@ -1,6 +1,6 @@
 import Layout from "../[boardid]/components/Layout";
 
-const BlogBoard = ({ children }: { children: React.ReactNode }) => {
+const BlogBoard = () => {
   
   return(<>  
     <Layout />
