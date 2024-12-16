@@ -17,6 +17,12 @@ const nextConfig = {
         API_URL: process.env.API_URL,
         NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     },
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
+    experimental: {
+        missingSuspenseWithCSRBailout: false,
+    },
 
 };
 

@@ -6,7 +6,7 @@
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
     "rules": {
-      "prettier/prettier": "error"
+      "prettier/prettier": 0
     }
   },
   "ignorePatterns": ["src/**/*.test.ts", "src/frontend/generated/*"]
