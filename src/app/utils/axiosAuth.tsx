@@ -80,6 +80,7 @@ const transactionAuth = async (type:string, url:string, obj:any, callback:any, c
 		if(loadingScreenYn === true) setLoadingYn(false);
 		// console.log(error.response.data.resObj.message);
 		// console.log(error.response.data.message);
+		if(setErrorPage !== null) setErrorPage(true);
 		setErrorPage(true)
 		if(error){
 			if(callbackYn){
