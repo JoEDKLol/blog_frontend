@@ -11,7 +11,7 @@ const checkInputData = (userObj:any) => {
     let retObj:retType = {yn:true, str:"", field:""}
 
 
-    let regExp = /^[a-zA-Z0-9]{6,12}$/; //name check
+    let regExp = /^[a-zA-Z0-9]{6,20}$/; //name check
     let e_regExp = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
     var pw_regex = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,20}$/;
 
@@ -49,11 +49,10 @@ const checkInputData = (userObj:any) => {
         retObj.str = "Please check your email";
         return retObj;
     }
-
     if(!regExp.test(userObj.name.replaceAll(" ", ""))){
         retObj.yn = false;
         retObj.field = "name";
-        retObj.str = "Please enter 6 to 12 digits (alphabet, numbers)";
+        retObj.str = "Please enter 6 to 20 digits (alphabet, numbers)";
         return retObj;
     }
 

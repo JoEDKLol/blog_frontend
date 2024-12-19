@@ -7,7 +7,6 @@ import dynamic from "next/dynamic";
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
 import { transactionFile } from "@/app/utils/axiosFile";
-import { getRandomNumber } from "@/app/utils/common";
 import { transactionAuth } from "@/app/utils/axiosAuth";
 import { transaction } from "@/app/utils/axios";
 import { useRouter } from "next/navigation";
@@ -150,8 +149,6 @@ import { errorPageState } from "@/app/store/error";
 			if(imgUploadRes.sendObj.success === "y"){
 				const range = editor.getSelection();
       			editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
-			}else{
-				console.log(imgUploadRes.sendObj.message);
 			}
 			
 			// const range = editor.getSelection();
@@ -273,7 +270,7 @@ import { errorPageState } from "@/app/store/error";
 					border-b border-gray-200 pb-2 mb-2 w-[100%]
 					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
 					">
-						<div className="font-bold w-[0px]
+						<div className="font-bold w-[0px] invisible
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Title
@@ -296,12 +293,12 @@ import { errorPageState } from "@/app/store/error";
 					border-b border-gray-200 pb-2 mb-2 w-[100%]
 					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
 					">
-						<div className="font-bold w-[0px]
+						<div className="font-bold w-[0px] invisible
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Category</div> 
-						<div className="w-[100%]">
-							<select id="majorCategory" value={majorIndex} className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] px-3 py-2 outline-none"
+						<div className="flex justify-between w-[100%]">
+							<select id="majorCategory" value={majorIndex} className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] mx-1 px-3 py-2 outline-none"
 							onChange={(e)=>changeMajorCategory(e)}
 							>
 								<option >Choose a MajorCategory</option>
@@ -315,7 +312,7 @@ import { errorPageState } from "@/app/store/error";
 									})
 								}
 							</select>
-							<select id="subCategory" value={chooseSub} className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] ms-2 px-3 py-2 outline-none"
+							<select id="subCategory" value={chooseSub} className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] mx-1 ms-2 px-3 py-2 outline-none"
 							onChange={(e)=>changeSubCategory(e)}
 							>
 								<option>Choose a SubCategory</option>
@@ -350,7 +347,7 @@ import { errorPageState } from "@/app/store/error";
 						<div className="h-[400px] w-[100%]">  
 							<QuillNoSSRWrapper 
 							theme="snow" 
-							style={{height: "100%"}}
+							style={{height: "90vw"}}
 							forwardedRef={quillRef}
 							value={content}
 							onChange={setContent}

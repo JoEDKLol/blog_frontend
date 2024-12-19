@@ -21,7 +21,7 @@ import { MdSubdirectoryArrowRight } from "react-icons/md"; //<MdSubdirectoryArro
 import Confirm from "@/app/components/confirmModal";
 import { errorPageState } from "@/app/store/error";
 
-
+import { RiDeleteBinLine } from "react-icons/ri";
  
 
 interface ForwardedQuillComponent extends ReactQuillProps {
@@ -807,15 +807,22 @@ const PriBlogListDetail = (props: any) => {
 							{
 							(user.id.length > 0)?
 							<div className="flex justify-start">
-								<div>
-									<button className="tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
+								<div className="">
+									<button className="tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold 
+									py-0.5 px-1 text-xs 
+									2xl:py-1 xl:py-1 lg:py-1 md:py-1 sm:py-0.5
+									2xl:px-4 xl:px-4 lg:px-4 md:px-4 sm:px-1
+									2xl:text-base  xl:text-base  lg:text-base  md:text-base  sm:text-xs 
+									rounded mb-5"
 									onClick={()=>showCommentClickHandler()}
 									>
-										comment
+										Comment
 									</button>
 								</div>
 								<div className="flex justify-normal ">
-									<p className="text-[20px] pt-2 ms-2 cursor-pointer"
+									<p className="text-sm pt-2 ms-2 cursor-pointer
+									2xl:text-xl xl:text-xl lg:text-xl md:text-xl sm:text-sm
+									"
 									onClick={()=>likeOnclickHandler()}
 									>
 										{
@@ -832,12 +839,22 @@ const PriBlogListDetail = (props: any) => {
 							(user.id.length > 0 && user.blog_seq+"" === props.blog_seq)?
 							
 							<div className="flex justify-end ">
-								<button className="tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
+								<button className="tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold
+								py-0.5 px-1 text-xs 
+								2xl:py-1 xl:py-1 lg:py-1 md:py-1 sm:py-0.5
+								2xl:px-4 xl:px-4 lg:px-4 md:px-4 sm:px-1
+								2xl:text-base  xl:text-base  lg:text-base  md:text-base  sm:text-xs 
+								rounded mb-5"
 								onClick={()=>updatePageMove()}
 								>
 									Update page
 								</button>
-								<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
+								<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold 
+								py-0.5 px-1 text-xs 
+								2xl:py-1 xl:py-1 lg:py-1 md:py-1 sm:py-0.5
+								2xl:px-4 xl:px-4 lg:px-4 md:px-4 sm:px-1
+								2xl:text-base  xl:text-base  lg:text-base  md:text-base  sm:text-xs 
+								rounded mb-5"
 								// onClick={()=>deleteHandler()}
 								onClick={()=>confirmScreen("Would you like to delete?", "deleteHandler", null)}
 								>
@@ -897,7 +914,7 @@ const PriBlogListDetail = (props: any) => {
 										)
 										:(<div key={index} className="mt-1 p-1 w-[90vw] border ">
 												<div className="flex justify-start h-[30px]">
-													<p className="mx-2 my-2 text-[12px] w-[70%]">
+													<p className="mx-2 my-2 text-[12px] w-[70%] ">
 														<Link href={"/blog/"+item.blog_seq}>
 														<span className="font-bold">{item.bloginfo.name}</span>
 														{
@@ -931,7 +948,7 @@ const PriBlogListDetail = (props: any) => {
 																	onClick={()=>confirmScreen("Would you like to reply-write?", "showReplyClickHandler", {id:item._id, index:index, replyYn:item.replyYn, seq:item.seq})}
 																	>
 																	{
-																		(item.replyYn)?"reply-write":"reply"
+																		(item.replyYn)?"write":"reply"
 																	}
 																</button>
 																}
@@ -968,22 +985,22 @@ const PriBlogListDetail = (props: any) => {
 
 													</p>
 													
-													<div className="w-[49%]">
+													<div className="w-[30%]">
 
-														<div className="flex justify-end ">
-															<p className="me-1">
+														<div className=" flex justify-end  ">
+															<p className="me-1 pt-1">
 															
 															
 															{
 																(item.deleteyn === 'y' && item.repliescnt > 0)?""
 																:(user.email === item.email)?(
-																	<button className="
+																	<button className=" block
 																	tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
 																	// onClick={()=>commentUpdateYn(item._id, index, item.updateYn)}
 																	onClick={()=>confirmScreen("Would you like to comment-update?", "commentUpdateYn", {id:item._id, index:index, updateYn:item.updateYn})}
 																	>
 																		{
-																			(item.updateYn)?"update-save":"update"
+																			(item.updateYn)?"save":"update"
 																		}
 
 																	</button>
@@ -993,18 +1010,26 @@ const PriBlogListDetail = (props: any) => {
 															
 															</p>
 															
-															<p className="me-1">
+															<p className="me-1 pt-1">
 
 																{
 																(item.deleteyn === 'y' && item.repliescnt > 0)?""
 																:(user.email === item.email)?(
-																	<button className="
+																	<>
+																	<button className=" hidden 
+																	2xl:block xl:block lg:block md:block sm:hidden
 																	tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold text-[12px]  px-1 rounded"
 																	// onClick={()=>deleteComment(item._id)}
 																	onClick={()=>confirmScreen("Would you like to delete?", "deleteComment", {id:item._id})}
 																	>
 																		delete
 																	</button>
+																	<p className="block pt-0.5 cursor-pointer
+																	2xl:hidden xl:hidden lg:hidden md:hidden sm:block
+																	"
+																	onClick={()=>confirmScreen("Would you like to delete?", "deleteComment", {id:item._id})}
+																	><RiDeleteBinLine/></p>
+																	</>
 																):""
 																}
 
@@ -1214,8 +1239,14 @@ const PriBlogListDetail = (props: any) => {
 									id="introduction" rows={4}  className="resize-none border w-full px-3 py-1 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 									</div>
 									<div className="flex justify-end">
-									<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
-										onClick={()=>commentWriteHandler()}
+									<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold 
+									py-0.5 px-1 text-xs 
+									2xl:py-1 xl:py-1 lg:py-1 md:py-1 sm:py-0.5
+									2xl:px-4 xl:px-4 lg:px-4 md:px-4 sm:px-1
+									2xl:text-base  xl:text-base  lg:text-base  md:text-base  sm:text-xs  
+									rounded mb-5"
+										// onClick={()=>commentWriteHandler()}
+										onClick={()=>confirmScreen("Would you like to comment-write?", "commentWriteHandler", null)}
 									>
 									Comment Write
 									</button>

@@ -6,17 +6,9 @@ import { useRecoilState } from "recoil";
 import dynamic from "next/dynamic";
 import 'react-quill/dist/quill.snow.css';
 import ReactQuill, { ReactQuillProps } from 'react-quill';
-import { transactionFile } from "@/app/utils/axiosFile";
-import { getRandomNumber } from "@/app/utils/common";
-import { transactionAuth } from "@/app/utils/axiosAuth";
-import { useRouter,usePathname } from "next/navigation";
 import { loadingBarState } from "@/app/store/loadingBar";
 import Confirm from "@/app/components/confirmModal";
-
-import imageCompression from "browser-image-compression";
 import Image from "next/image";
-
-import { InputMask } from '@react-input/mask';
 
 import { MdEmail } from "react-icons/md"; //<MdEmail />
 import { FaLinkedin } from "react-icons/fa"; //<FaLinkedin />
@@ -449,21 +441,16 @@ import { errorPageState } from "@/app/store/error";
 
 
 						
-						<div className="w-[95%] mx-5 mt-10
+						<div className=" w-[100%] mt-10 
 						2xl:mt-0 xl:mt-0 lg:mt-0 md:mt-0 sm:mt-10
 						">
-							<p className="mb-2 text-3xl font-bold truncate">{name}</p>
-							<p className="mb-2 text-xl font-bold truncate">{jobTitle}</p>
-							<div className="w-[100%] ">
-								{/* <textarea  
-								value={summary}
-								id="summary" rows={9}
-								readOnly={true}
-								className="block w-full resize-none text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded
-								"/> */}
-								<div className="whitespace-pre-line mt-2 text-sm break-all">{summary}</div>
+							<p className="mx-2 mb-2 text-3xl font-bold truncate">{name}</p>
+							<p className="mx-2 mb-2 text-xl font-bold truncate">{jobTitle}</p>
+							<div className="w-[100%]">
+								<div className=" mx-2 whitespace-pre-line mt-2 text-sm break-all">{summary}</div>
 							</div>
 						</div>
+						
 					</div>
 						
 					<div className="flex justify-center pb-2  mb-2 w-[100%]

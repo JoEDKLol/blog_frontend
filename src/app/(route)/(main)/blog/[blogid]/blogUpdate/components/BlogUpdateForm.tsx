@@ -246,13 +246,11 @@ const BlogUpdateForm = (props: any) => {
 			if(imgUploadRes.sendObj.success === 'y'){
 				setImg(imgUploadRes.sendObj.resObj.img_url);
 				setImgDelete(false);
-			}else{
-	
 			}
 
 
 		} catch (error) {
-			console.log(error)
+			console.log(error);
 		}
 
 
@@ -545,58 +543,69 @@ const BlogUpdateForm = (props: any) => {
 					</div>
 				):(
 					<div className="grid place-items-center grid-cols-1">
-					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
-								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
-								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
-								">
-					User Name</div>
-					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
-						<div className="font-bold w-[0px] invisible
-						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
-						2xl:visible xl:visible lg:visible md:visible sm:invisible
-						">User Name
+						<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
+									2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+									2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+									">
+						User Name</div>
+						<div className="flex justify-center 
+						border-b border-gray-200 pb-2 mb-2 w-[100%]
+						2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
+						">
+							<div className="font-bold w-[0px] invisible
+							2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px] me-1 
+							2xl:visible xl:visible lg:visible md:visible sm:invisible 
+							">User Name
+							</div>
+							<div className="w-[98%] ">
+								<input 
+								// ref={focusTitle} 
+								onChange={(e)=>blogOnchangeHandler(e)}
+								value={userName}
+								autoComplete="off" id="username" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+							</div>
 						</div>
-						<div className="w-[470px] ">
-							<input 
-							// ref={focusTitle} 
-							onChange={(e)=>blogOnchangeHandler(e)}
-							value={userName}
-							autoComplete="off" id="username" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
-						</div>
-					</div>
 	
-					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
-								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
-								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
-								">
-					Blog Name</div>
-					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
-						<div className="font-bold w-[0px] invisible
-						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
-						2xl:visible xl:visible lg:visible md:visible sm:invisible
-						">Blog Name
+						<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
+									2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
+									2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
+									">
+						Blog Name</div>
+						<div className="flex justify-center 
+						border-b border-gray-200 pb-2 mb-2 w-[100%]
+						2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
+						">
+
+							<div className="font-bold w-[0px] invisible
+							2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+							2xl:visible xl:visible lg:visible md:visible sm:invisible
+							">Blog Name
+							</div>
+							<div className="w-[98%] ">
+								<input 
+								// ref={focusTitle} 
+								onChange={(e)=>blogOnchangeHandler(e)}
+								value={blogName}
+								autoComplete="off" id="blogname" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
+							</div>
 						</div>
-						<div className="w-[470px] ">
-							<input 
-							// ref={focusTitle} 
-							onChange={(e)=>blogOnchangeHandler(e)}
-							value={blogName}
-							autoComplete="off" id="blogname" type="text"  className="border w-full px-3 py-2 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
-						</div>
-					</div>
 	
-					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
+					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
 								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
 								">
 					Introduction</div>
-					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
+					<div className="flex justify-center 
+						border-b border-gray-200 pb-2 mb-2 w-[100%]
+						2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
+						">
+
 						<div className="font-bold w-[0px] invisible
-						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
+						2xl:w-[120px] xl:w-[120px] lg:w-[120px] md:w-[120px] sm:w-[0px]
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Introduction
 						</div>
-						<div className="w-[470px] ">
+						<div className="w-[98%] ">
 							<textarea  
 							// ref={focusTitle} 
 							onChange={(e)=>blogOnchangeHandler(e)}
@@ -644,7 +653,7 @@ const BlogUpdateForm = (props: any) => {
 							</label>
 						</div>
 					</div>
-					<div className="font-bold w-[470px] h-[30px] text-start visible ps-2
+					<div className="font-bold w-[100%] h-[30px] text-start visible ps-2
 								2xl:h-[0px] xl:h-[0px] lg:h-[0px] md:h-[0px] sm:h-[30px]
 								2xl:invisible xl:invisible lg:invisible md:invisible sm:visible
 								">
@@ -652,17 +661,21 @@ const BlogUpdateForm = (props: any) => {
 					
 					
 					</div>
-					<div className="flex justify-center border-b border-gray-200 pb-2 mb-2">
+					<div className="flex justify-center 
+						border-b border-gray-200 pb-2 mb-2 w-[100%]
+						2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
+						">
+
 						<div className="font-bold w-[0px] invisible
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Categories
 						</div>
-						<div className="flex justify-center w-[470px]">
-							<div className="w-[235px] border-e border-gray-200 text-bold">Major
+						<div className="flex justify-center w-[100%]">
+							<div className="w-[49%] border-e border-gray-200 text-bold">Major
 								<div className="flex justify-center">	
 								<input 
-								className="relative flex flex-col w-[155px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
+								className="relative flex flex-col w-[99%] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
 								px-2"
 								onChange={(e)=>majorCategoryTextOnChange(e)}
 								value={majorCategoryText}
@@ -693,7 +706,7 @@ const BlogUpdateForm = (props: any) => {
 	
 									(majorCategoryCnt > 0) ?
 									
-									<div className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200">
+									<div className="relative flex flex-col w-[99%] mt-1 rounded-lg bg-white shadow-sm border border-slate-200">
 										<nav className="flex flex-col p-1">
 											{
 												majorCategories.map((item:any, index:any)=>{
@@ -717,10 +730,10 @@ const BlogUpdateForm = (props: any) => {
 									:""
 								}
 							</div>
-							<div className="w-[235px] ms-2 text-bold">Sub
+							<div className="w-[49%] ms-2 text-bold">Sub
 								<div className="flex justify-center">	
 									<input 
-									className="relative flex flex-col w-[225px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
+									className="relative flex flex-col w-[99%] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
 									px-2"
 									value={subMajorCategoryText}
 									autoComplete="off" id="subCategoryText" type="text"
@@ -730,7 +743,7 @@ const BlogUpdateForm = (props: any) => {
 								</div>
 								<div className="flex justify-center">	
 									<input 
-									className="relative flex flex-col w-[155px] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
+									className="relative flex flex-col w-[99%] mt-1 rounded-lg bg-white shadow-sm border border-slate-200
 									px-2"
 									onChange={(e)=>subCategoryTextOnChange(e)}
 									value={subCategoryText}
@@ -795,10 +808,7 @@ const BlogUpdateForm = (props: any) => {
 								
 					</div>
 	
-					<div className="flex justify-end 
-					w-[470px]
-					2xl:w-[570px] xl:w-[570px] lg:w-[570px] md:w-[570px] sm:w-[470px]
-					mt-2 mb-5">
+					<div className="flex justify-end w-[90%] mt-2 mb-5">
 						<button className="
 						border hover:bg-gray-400 text-black font-bold py-1 px-4 rounded bg-gray-200
 						"

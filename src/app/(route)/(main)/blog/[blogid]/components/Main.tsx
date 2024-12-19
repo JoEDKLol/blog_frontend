@@ -155,8 +155,10 @@ const PriMain = (props: any) => {
         <SideBar user={user} blog_seq={props.blog_seq} getBlogLists={getBlogLists} priSearchKeyword={priSearchKeyword} setPriSearchKeyword={setPriSearchKeyword} />
          
         <div className="">
-          <div className="flex justify-start pt-3 ms-[0px] ps-16 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
-            <p className="font-bold  px-2 py-2 border-b-2 border-b-black w-[90%]
+          <div className="flex justify-start pt-3 
+          mx-[16px] 2xl:ms-[20px] xl:ms-[270px] lg:ms-[270px] md:mx-[16px] sm:mx-[16px]
+          ">
+            <p className="font-bold  px-2 py-2 border-b-2 border-b-black w-[100%]
             ">
               {
                 (!priSearchKeyword.majorName)?
@@ -171,9 +173,13 @@ const PriMain = (props: any) => {
             </p>
           </div>
 
-          <div className="ms-[0px] px-64 grid place-items-center grid-cols-1 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1
-                        2xl:px-16 xl:px-16 lg:px-20 md:px-20 z-1 
-                        2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]
+          <div className="
+          px-20 grid place-items-center 
+          grid-cols-1 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1
+                        
+          2xl:px-16 xl:px-16 lg:px-20 md:px-20 z-1 
+          
+          2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]
 
           " >
             {

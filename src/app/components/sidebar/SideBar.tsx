@@ -136,9 +136,10 @@ const SideBar = (props: any) => {
 
 	return (
 		<>
-		<div className="block w-[100%] 2xl:hidden xl:hidden lg:hidden md:block sm:block" >
+		<div className="block w-[100%] 2xl:hidden xl:hidden lg:hidden md:block sm:block " >
 
-			<div className="pt-6  ps-16 ms-[0px] 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
+			<div className="pt-6
+			 mx-[16px] 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:mx-[16px] sm:mx-[16px]">
 				
 				
 				
@@ -159,8 +160,6 @@ const SideBar = (props: any) => {
 					</div>
 					<div className="w-[90%] hidden 
 					2xl:hidden xl:hidden lg:block md:block sm:hidden
-					
-
 					">
 						<div className="flex justify-start mb-2 w-[90%]">
 							<p className="font-bold truncate me-2 ">{blogInfo.blogtitle}</p>
@@ -245,12 +244,15 @@ const SideBar = (props: any) => {
 			</div>
 
 
-			<div className="flex justify-start pt-6  ps-16 ms-[0px] 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
-				<p className="font-bold border-b-2 border-b-black w-[90%]">Categories</p>
+			<div className="flex justify-start pt-6  
+			mx-[16px] 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:mx-[16px] sm:mx-[16px]
+			">
+				<p className="font-bold border-b-2 border-b-black w-[100%]">Categories</p>
 			</div>
-			<div className="flex justify-start pt-6  ps-16 ms-[0px] 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:ms-[0px] sm:ms-[0px]">
-				<p className=" border-black w-[90%]
-				">
+			<div className="flex justify-start pt-6  
+			mx-[16px] 2xl:ms-[200px] xl:ms-[200px] lg:ms-[200px] md:mx-[16px] sm:mx-[16px]
+			">
+				<p className=" border-black w-[100%]">
 				<select value={chooseMajor} id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[48%] px-3 py-2 outline-none"
 					onChange={(e)=>changeMajorCategory(e)}
 					>

@@ -9,7 +9,7 @@ const ErrorPage = (props: any) => {
 
   const [errorPage, seterrorPage] = useRecoilState(errorPageState);
   function closeButtonHandler(){
-    seterrorPage(!errorPage);
+    seterrorPage(false);
   }
   return(
     <>
@@ -24,7 +24,7 @@ const ErrorPage = (props: any) => {
               <button className='className="border bg-gray-200 hover:bg-gray-400 text-black text-xl font-bold py-1 px-3 my-2 rounded'
               onClick={(e)=>{closeButtonHandler()}}
               >
-                닫기
+                Close
               </button>
             </p>
           </div>

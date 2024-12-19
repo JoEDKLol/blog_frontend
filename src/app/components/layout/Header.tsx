@@ -16,7 +16,12 @@ import { searchResArrState } from "@/app/store/search";
 import { searchKeywordState } from "@/app/store/searchkeyword";
 import { loadingBarState } from "@/app/store/loadingBar";
 import { errorPageState } from "@/app/store/error";
-
+import { TbHome } from "react-icons/tb";
+import { TbHomeStar } from "react-icons/tb";
+import { TbHomeMove } from "react-icons/tb";
+import { PiSignOutFill } from "react-icons/pi";
+import { PiSignInBold } from "react-icons/pi";
+import { LuPenLine } from "react-icons/lu";
 
 const MainHeader = (props: any) => {
   const router = useRouter();
@@ -147,16 +152,26 @@ const MainHeader = (props: any) => {
           {/* <head><title>Lola's Home</title></head> */}
           <header
             ref={headerRef}
-            className="sticky top-0 left-0 w-full z-40 h-30 font-mono transition duration-500 bg-white dark:bg-[#111111]"
+            className=" sticky top-0 left-0 w-full z-40 h-30 font-mono transition duration-500 bg-white dark:bg-[#111111]"
           >
             <nav className="flex items-center justify-between flex-wrap p-3">
               <div className="flex items-center flex-shrink-0 text-dark mr-6">
-                <p className="font-semibold text-sm tracking-tight block
-                2xl:block xl:block lg:block md:block sm:block
+                <p className="font-semibold text-sm tracking-tight hidden
+                2xl:block xl:block lg:block md:block sm:hidden
                  px-2 py-2 rounded-md border
                   border-yellow-800 
                  bg-gradient-to-r from-yellow-600 via-yellow-200 to-yellow-200
                 ">Lola's Blog
+                </p>
+
+                <p className="font-semibold tracking-tight block
+                2xl:hidden xl:hidden lg:hidden md:hidden sm:block
+                 px-1 py-1 rounded-md border
+                  border-yellow-800 
+                 bg-gradient-to-r from-yellow-600 via-yellow-200 to-yellow-200
+                 
+                ">
+                  <span className="text-2xl"><TbHome/></span>
                 </p>
 
                 {/* <p className="font-semibold text-sm tracking-tight block
@@ -165,7 +180,7 @@ const MainHeader = (props: any) => {
                 ">L
                 </p> */}
                 
-                <div className="relative pl-3  text-gray-600">
+                <div className="relative pl-1  text-gray-600">
                   <input type="search" name="serch" placeholder="Search" className="w-[150px] 
                   2xl:w-[300px] xl:w-[300px] lg:w-[300px] md:w-[300px] sm:w-[260px]
                   border bg-white h-10 px-5 pr-10 rounded text-sm focus:outline-none"
@@ -181,43 +196,69 @@ const MainHeader = (props: any) => {
                   </button>
                 </div>
               </div>
-              <div>
+              <div className="flex justify-end">
                 {
                 (user.id)?
                 <>
-                <button className="
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
-                  
+                <button className="group hidden 2xl:block xl:block lg:block md:block sm:hidden
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold  py-1 px-2 mr-2 border border-black hover:border-transparent rounded"
                 onClick={()=>movetoMyBlogOnclickHandler()}
-
-                >MyBlog
+                >
+                <span className="group-hover:text-white block black text-gray-700">MyBlog</span>
                 </button>
+                <p className="block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block 
+                border border-black text-2xl mr-1 rounded hover:bg-gray-500
+                cursor-pointer p-1
+                "
+                onClick={()=>movetoMyBlogOnclickHandler()}
+                ><span><TbHomeStar /></span></p>
 
-                <button className="
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
-                  
+                <button className="group hidden 2xl:block xl:block lg:block md:block sm:hidden
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold   py-1 px-2 mr-2 border border-black hover:border-transparent rounded"
                 onClick={()=>logoutOnclickHandler()}
 
-                >Logout
+                >
+                <span className="group-hover:text-white block black text-gray-700">Logout</span>
                 </button>
+                <p className="block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block 
+                border border-black text-2xl rounded hover:bg-gray-500
+                cursor-pointer p-1
+                "
+                onClick={()=>logoutOnclickHandler()}
+                ><span><PiSignOutFill /></span></p>
                 </>
+                
+
                 :
                 <>
-                <button className="
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
-                  
+                <button className="group hidden 2xl:block xl:block lg:block md:block sm:hidden
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold   py-1 px-2 mr-2 border border-black hover:border-transparent rounded"
                 onClick={()=>loginOnclickHandler()}
+                >
+                <span className="group-hover:text-white block black text-gray-700">Sign In</span>
+                </button>
+                <p className="block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block mr-1
+                border border-black text-2xl rounded hover:bg-gray-500
+                cursor-pointer p-1
+                "
+                onClick={()=>loginOnclickHandler()}
+                ><span><PiSignInBold /></span></p>
 
-                >Sign In
-                </button>
-                <button className="
-                
-                bg-transparent hover:bg-gray-500 text-black-700 font-semibold hover:text-white py-1 px-2 border border-black-500 hover:border-transparent rounded"
+                <button className="group hidden 2xl:block xl:block lg:block md:block sm:hidden
+                bg-transparent hover:bg-gray-500 text-black-700 font-semibold   py-1 px-2 border border-black hover:border-transparent rounded"
                   onClick={()=>siginUpOnclickHandler()}
-                >Sign Up
+                >
+                <span className="group-hover:text-white block black text-gray-700">Sign Up</span>
                 </button>
+                <p className="block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block 
+                border border-black text-2xl rounded hover:bg-gray-500
+                cursor-pointer p-1
+                "
+                onClick={()=>siginUpOnclickHandler()}
+                ><span><LuPenLine /></span></p>
                 </>
                 }
+                
                 
               </div>
               

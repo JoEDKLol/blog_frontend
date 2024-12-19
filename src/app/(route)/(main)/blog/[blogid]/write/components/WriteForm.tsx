@@ -131,7 +131,7 @@ import { transaction } from "@/app/utils/axios";
 
 			if(imgUploadRes.sendObj.success === "y"){
 				const range = editor.getSelection();
-      		editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
+      			editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
 			}
 			
 		}
@@ -264,12 +264,12 @@ import { transaction } from "@/app/utils/axios";
 					border-b border-gray-200 pb-2 mb-2 w-[100%]
 					2xl:w-[80%] xl:w-[80%] lg:w-[80%] md:w-[80%] sm:w-[100%]
 					">
-						<div className="font-bold w-[0%]
+						<div className="font-bold w-[0%] invisible
 						2xl:w-[100px] xl:w-[100px] lg:w-[100px] md:w-[100px] sm:w-[0px]
 						2xl:visible xl:visible lg:visible md:visible sm:invisible
 						">Category</div>
-						<div className="w-[100%]">
-							<select id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] px-3 py-2 outline-none"
+						<div className="flex justify-between w-[100%]">
+							<select id="majorCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] mx-1 px-3 py-2 outline-none"
 							onChange={(e)=>changeMajorCategory(e)}
 							>
 								<option>Choose a MajorCategory</option>
@@ -281,7 +281,7 @@ import { transaction } from "@/app/utils/axios";
 									})
 								}
 							</select>
-							<select id="subCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] ms-2 px-3 py-2 outline-none"
+							<select id="subCategory" className="border border-gray-300 text-gray-900 text-sm rounded focus:border-black w-[49%] mx-1 px-3 py-2 outline-none"
 							onChange={(e)=>changeSubCategory(e)}
 							>
 								<option>Choose a SubCategory</option>
@@ -314,7 +314,7 @@ import { transaction } from "@/app/utils/axios";
 						<div className="h-[400px] w-[100%]">  
 							<QuillNoSSRWrapper 
 							theme="snow" 
-							style={{height: "100%"}}
+							style={{height: "90vw"}}
 							forwardedRef={quillRef}
 							onChange={setContent}
 							modules={

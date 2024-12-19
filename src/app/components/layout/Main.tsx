@@ -151,7 +151,7 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
 
   return(
     <>
-      <div className="px-60 grid place-items-center grid-cols-1 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1
+      <div className="px-20 grid place-items-center grid-cols-1 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 sm:grid-cols-1
                     lg:px-20 md:px-20 z-1 
       " >
         {

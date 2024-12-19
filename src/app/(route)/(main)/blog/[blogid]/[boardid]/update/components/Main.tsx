@@ -13,7 +13,6 @@ const PriBlogUpdate = (props: any) => {
 	const [updateYn, setUpdateYn] = useState(false);
 	const router = useRouter();
 
-	console.log("여기"); 
 
 	useEffect(()=>{
 		

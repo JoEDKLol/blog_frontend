@@ -55,7 +55,7 @@ const Login = (props: any) => {
     // console.log(data);
     if (result.error) {
       // 로그인 실패 시 오류 메시지를 처리할 수 있습니다.
-      console.error(result);
+      // console.error(result);
       setResLoginStr("login failed")
 
     }else{
@@ -65,7 +65,7 @@ const Login = (props: any) => {
       if(retObj.sendObj.code === "2000"){
         //유저정보는 리코일에
         //access토큰 정보는 session storege클래스에 담아준다.
-        console.log("access토큰 정보는 session storege클래스에 담아준다");
+        // console.log("access토큰 정보는 session storege클래스에 담아준다");
         setUser(retObj.sendObj.resObj);
         // sessionStorage.setItem('myblog-accesstoken', retObj.accessToken);
         storeAccessToken(retObj.accessToken);
@@ -84,6 +84,13 @@ const Login = (props: any) => {
     signIn('google');
     
   }
+
+  function searchTextOnKeyDownHandler(e:any){
+    if(e.key === 'Enter') {
+      e.preventDefault();
+    }
+  }
+
 
   return(
     <>
@@ -108,10 +115,14 @@ const Login = (props: any) => {
               </div>
           </div>
           <label htmlFor="email" className="mb-2 mt-10 text-m text-start text-grey-900">Email*</label>
-          <input id="email" type="email" placeholder="Email" className="border flex items-center w-full px-5 py-3 mr-2 text-m outline-none focus:bg-grey-400 mb-7 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded"/>
+          <input id="email" type="email" placeholder="Email" 
+          onKeyDown={(e)=>searchTextOnKeyDownHandler(e)}
+          className="border flex items-center w-full px-5 py-3 mr-2 text-m outline-none focus:bg-grey-400 mb-7 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded"/>
           
           <label htmlFor="password" className="mb-2 text-m text-start text-grey-900">Password*</label>
-          <input id="password" type="password" placeholder="Password" className="border flex items-center w-full px-5 py-3 mb-3 mr-2 text-m  outline-none focus:bg-grey-400 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded"/>
+          <input id="password" type="password" placeholder="Password" 
+          onKeyDown={(e)=>searchTextOnKeyDownHandler(e)}
+          className="border flex items-center w-full px-5 py-3 mb-3 mr-2 text-m  outline-none focus:bg-grey-400 placeholder:text-grey-700 bg-grey-200 text-dark-grey-900 rounded"/>
           
           <div className="flex justify-between mb-8">
             <span className="text-red-500" >{resLoginStr}</span >
