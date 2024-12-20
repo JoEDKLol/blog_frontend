@@ -250,7 +250,7 @@ const BlogUpdateForm = (props: any) => {
 
 
 		} catch (error) {
-			console.log(error);
+			//console.log(error);
 		}
 
 
@@ -346,7 +346,7 @@ const BlogUpdateForm = (props: any) => {
 				}
 			);
 
-			console.log(e.target.value.length);
+			//console.log(e.target.value.length);
 			
 			if(e.target.value.length === 0){
 				return;

@@ -211,7 +211,6 @@ const PriBlogListDetail = (props: any) => {
 			seq:props.seq
 		}
 
-		console.log(obj);
 
 		const bloglistObj = await transaction("get", "blog/blogDetail", obj, "", false, true, setLoadingBarState, setErrorPage);
 		

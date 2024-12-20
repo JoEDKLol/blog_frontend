@@ -282,7 +282,7 @@ import { transaction } from "@/app/utils/axios";
 	
 	
 			} catch (error) {
-				console.log(error)
+				//console.log(error)
 			}
 
 		}

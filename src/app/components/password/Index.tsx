@@ -178,7 +178,7 @@ const Password = (props: any) => {
 
   return(
     <>
-      <div className= "border border-black w-[400px] h-[600px] rounded bg-white font-sans"
+      <div className= "border border-black w-[350px] h-[600px] rounded bg-white font-sans"
       // onClick={clickModal}
       >
       {/* <!-- Modal content --> */}

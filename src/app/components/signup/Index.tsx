@@ -123,7 +123,7 @@ const SignUp = (props: any) => {
 
   return(
     <>
-      <div className= "border border-black w-[400px] h-[600px] rounded bg-white font-sans">
+      <div className= "border border-black w-[350px] h-[600px] rounded bg-white font-sans">
       {/* <!-- Modal content --> */}
         <form onSubmit={(e)=>signUpClickHandler(e)} 
         className={"flex-col w-full h-full p-6 text-center bg-white rounded-3xl " + signupSuccess} autoComplete="none" >
