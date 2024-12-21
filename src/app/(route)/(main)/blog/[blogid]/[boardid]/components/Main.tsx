@@ -879,7 +879,12 @@ const PriBlogListDetail = (props: any) => {
 									id="introduction" rows={4}  className="resize-none border w-full px-3 py-1 text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded"/>
 									</div>
 									<div className="flex justify-end">
-									<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold py-1 px-4 rounded mb-5"
+									<button className="ms-2 tracking-tight border bg-gray-200 hover:bg-gray-400 text-black font-bold 
+									py-0.5 px-1 text-xs 
+									2xl:py-1 xl:py-1 lg:py-1 md:py-1 sm:py-0.5
+									2xl:px-4 xl:px-4 lg:px-4 md:px-4 sm:px-1
+									2xl:text-base  xl:text-base  lg:text-base  md:text-base  sm:text-xs  
+									rounded mb-5"
 										// onClick={()=>commentWriteHandler()}
 										onClick={()=>confirmScreen("Would you like to comment-write?", "commentWriteHandler", null)}
 										

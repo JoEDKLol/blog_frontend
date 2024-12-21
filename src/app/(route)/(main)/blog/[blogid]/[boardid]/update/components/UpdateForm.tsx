@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 import { loadingBarState } from "@/app/store/loadingBar";
 import Confirm from "@/app/components/confirmModal";
 import { errorPageState } from "@/app/store/error";
+import { errorFilePageState } from '@/app/store/errorFile';
+
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
@@ -53,6 +55,7 @@ import { errorPageState } from "@/app/store/error";
 		const [blogDetail, setBlogDetail] = useState<any>({});
 		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 		const [errorPage, setErrorPage] = useRecoilState(errorPageState);
+		const [errorFilePage, seterrorFilePage] = useRecoilState(errorFilePageState);
 		
 
 		//confirm
@@ -149,10 +152,10 @@ import { errorPageState } from "@/app/store/error";
 			if(imgUploadRes.sendObj.success === "y"){
 				const range = editor.getSelection();
       			editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
+			}else{
+				seterrorFilePage({screenYn:true, contents:imgUploadRes.sendObj.resObj.errMassage});
+				
 			}
-			
-			// const range = editor.getSelection();
-      		// editor.insertEmbed(range.index, "image", `${imgUploadRes.sendObj.resObj.img_url}`, "user");
 		}
 
 		const modules = useMemo( 

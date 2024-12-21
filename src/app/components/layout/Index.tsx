@@ -13,6 +13,7 @@ import LoadingScreen from "../loadingScreen/Index";
 import { useRecoilState } from "recoil";
 import { loadingBarState } from "@/app/store/loadingBar";
 import ErrorPage from "../errorPage/Index";
+import ErrorFilePage from "../errorPageFile/Index";
 
 const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
   type typeMainHome = boolean;
@@ -39,10 +40,12 @@ const LayoutIndex = ({ children }: { children: React.ReactNode }) => {
       (path === "/")?
       <><LoadingScreen/>
       <ErrorPage/>
+      <ErrorFilePage/>
       <MainHeader></MainHeader><MainContent>{children}</MainContent></>
       :(path2 === "/blog")?<>
       <LoadingScreen/>
       <ErrorPage/>
+      <ErrorFilePage/>
       <PriHeader></PriHeader><PriMain>{children}</PriMain>
       </>
       // :(path2 === "/blog")?<>{children}</>

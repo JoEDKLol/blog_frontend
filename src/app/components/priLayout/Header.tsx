@@ -227,7 +227,12 @@ const PriHeader = (props: any) => {
                 </p>
                 </Link>
 
-                <Link href={"/blog/"+blog_seq}>
+                <Link href={{
+                  pathname: "/blog/"+blog_seq,
+                  query: { refresh: 'refresh' },
+                }}
+                
+                >
                 <p className="pl-3 font-semibold text-xl tracking-tight block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block
                 px-3 rounded-md border border-black
                 bg-gradient-to-r from-slate-500 via-slate-200 to-white
@@ -268,7 +273,7 @@ const PriHeader = (props: any) => {
                 {
                 (user.id)?
                 <>
-                <button className="group  hidden 2xl:block xl:block lg:block md:block sm:hidden
+                <button className="group  hidden 2xl:block xl:block lg:block md:block sm:hidden bg-white
                 bg-transparent hover:bg-gray-500 text-black-700 font-semibold  hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
                   
                 onClick={()=>movetoMyBlogOnclickHandler()}
@@ -276,7 +281,7 @@ const PriHeader = (props: any) => {
                 ><span className="group-hover:text-white block black text-gray-700">MyBlog</span>
                 </button>
                 
-                <p className="block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block 
+                <p className="block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block bg-white
                 border border-black text-2xl mr-1 rounded hover:bg-gray-500
                 cursor-pointer p-1
                 "
@@ -284,13 +289,13 @@ const PriHeader = (props: any) => {
                 ><span><TbHomeStar /></span></p>
 
 
-                <button className="group hidden 2xl:block xl:block lg:block md:block sm:hidden
+                <button className="group hidden 2xl:block xl:block lg:block md:block sm:hidden bg-white
                 bg-transparent hover:bg-gray-500 text-black-700 font-semibold  hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
                 onClick={()=>logoutOnclickHandler()}
                 ><span className="group-hover:text-white block black text-gray-700">Logout</span>
                 </button>
 
-                <p className="block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block 
+                <p className="block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block bg-white
                 border border-black text-2xl rounded hover:bg-gray-500
                 cursor-pointer p-1
                 "
@@ -300,26 +305,26 @@ const PriHeader = (props: any) => {
                 </>
                 :
                 <>
-                <button className="group  hidden 2xl:block xl:block lg:block md:block sm:hidden
+                <button className="group  hidden 2xl:block xl:block lg:block md:block sm:hidden bg-white
                 bg-transparent hover:bg-gray-500 text-black-700 font-semibold  hover:text-white py-1 px-2 mr-2 border border-black-500 hover:border-transparent rounded"
                 onClick={()=>loginOnclickHandler()}
                 ><span className="group-hover:text-white block black text-gray-700">Sign In</span>
                 </button>
 
-                <p className="block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block mr-1
+                <p className="block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block mr-1 bg-white
                 border border-black text-2xl rounded hover:bg-gray-500
                 cursor-pointer p-1
                 "
                 onClick={()=>loginOnclickHandler()}
                 ><span><PiSignInBold /></span></p>
 
-                <button className="group hidden 2xl:block xl:block lg:block md:block sm:hidden
+                <button className="group hidden 2xl:block xl:block lg:block md:block sm:hidden bg-white
                 bg-transparent hover:bg-gray-500 text-black-700 font-semibold  hover:text-white py-1 px-2 border border-black-500 hover:border-transparent rounded"
                   onClick={()=>siginUpOnclickHandler()}
                 ><span className="group-hover:text-white block black text-gray-700">Sign Up</span>
                 </button>
 
-                <p className="block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block 
+                <p className="block 2xl:hidden xl:hidden lg:hidden md:hidden sm:block bg-white
                 border border-black text-2xl rounded hover:bg-gray-500
                 cursor-pointer p-1
                 "

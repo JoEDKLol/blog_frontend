@@ -14,7 +14,7 @@ import { loadingBarState } from "@/app/store/loadingBar";
 import Confirm from "@/app/components/confirmModal";
 import { errorPageState } from "@/app/store/error";
 import { transaction } from "@/app/utils/axios";
-
+import { errorFilePageState } from '@/app/store/errorFile';
 
 const randomNum = getRandomNumber(10);
 let majorUpFlag = false;
@@ -44,6 +44,7 @@ const BlogUpdateForm = (props: any) => {
 
 	const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 	const [errorPage, setErrorPage] = useRecoilState(errorPageState);
+	const [errorFilePage, seterrorFilePage] = useRecoilState(errorFilePageState);
 
 	//confirm
 	const [showConfirm, setShowConfirm] = useState(false);
@@ -246,6 +247,8 @@ const BlogUpdateForm = (props: any) => {
 			if(imgUploadRes.sendObj.success === 'y'){
 				setImg(imgUploadRes.sendObj.resObj.img_url);
 				setImgDelete(false);
+			}else{
+				seterrorFilePage({screenYn:true, contents:imgUploadRes.sendObj.resObj.errMassage});
 			}
 
 

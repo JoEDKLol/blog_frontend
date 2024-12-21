@@ -19,6 +19,7 @@ import Image from "next/image";
 import { InputMask } from '@react-input/mask';
 import { errorPageState } from "@/app/store/error";
 import { transaction } from "@/app/utils/axios";
+import { errorFilePageState } from '@/app/store/errorFile';
 	
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
@@ -51,6 +52,7 @@ import { transaction } from "@/app/utils/axios";
 
 		const [loadingBar, setLoadingBarState] = useRecoilState(loadingBarState);
 		const [errorPage, setErrorPage] = useRecoilState(errorPageState);
+		const [errorFilePage, seterrorFilePage] = useRecoilState(errorFilePageState);
 
 
 		//confirm
@@ -277,7 +279,7 @@ import { transaction } from "@/app/utils/axios";
 					setThumbImg(imgUploadRes.sendObj.resObj.thumbImg_url);
 					
 				}else{
-					
+					seterrorFilePage({screenYn:true, contents:imgUploadRes.sendObj.resObj.errMassage});
 				}
 	
 	
