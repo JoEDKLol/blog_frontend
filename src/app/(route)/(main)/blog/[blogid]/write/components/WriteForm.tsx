@@ -153,7 +153,7 @@ import { errorFilePageState } from '@/app/store/errorFile';
 					],
 				},
 				imageCompress: {
-					quality: 0.7,
+					quality: 0.9,
 					maxWidth: 1000, 
 					maxHeight: 1000, 
 					debug: false, // default
