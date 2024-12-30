@@ -146,7 +146,7 @@ const SideBar = (props: any) => {
 				<div className="flex justify-center
 				 2xl:justify-start xl:justify-start lg:justify-start md:justify-start sm:justify-center
 				">
-					<div className="w-[230px]">
+					<div className="">
 						<div className='w-[200px] h-[200px] me-4 ring-2 ring-black rounded-xl relative' >
 								{blogInfo.blogimg?
 								(<Image 

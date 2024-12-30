@@ -256,54 +256,6 @@ import { errorPageState } from "@/app/store/error";
 			[],
 		);
 
-		// async function updateButtenHandler(){
-			
-		// 	const obj = {
-		// 		aboutme_id : aboutMeId,
-		// 		user_id : user.id,
-		// 		user_email : user.email,
-		// 		blog_id:user.blog_id,
-		// 		blog_seq:user.blog_seq,
-		// 		temp_num:randomNum,
-		// 		aboutme_thumbnailimg:thumbImg,
-		// 		aboutme_img:img,
-		// 		name:name,
-		// 		jobTitle:jobTitle,
-		// 		email:email,
-		// 		phone:phone,
-		// 		linkedIn:linkedIn,
-		// 		address:address,
-		// 		summary:summary,
-		// 		content:content
-
-		// 	}
-
-		// 	// console.log(obj);
-			
-		// 	const aboutmeUpdateRes = await transactionAuth("post", "blog/aboutmeupdate", obj, "", false, true, setLoadingBarState);
-		// 	// console.log(aboutmeUpdateRes.sendObj.success );
-
-		// 	if(aboutmeUpdateRes.sendObj.success === 'y'){
-				
-		// 		setUpdateSuc(true);
-		// 	}else{
-				
-		// 	}
-		// }
-		// const router = useRouter();
-		// function movetoAboutMe(){
-		// 	router.push('/blog/' + props.blog_seq + "/aboutme")
-		// } 
-
-		// function changeMajorCategory(e:any){
-		// 	setMajorIndex(Number(e.target.value));
-		// 	setChooseMajor(Number(e.target.value));
-		// }
-		// function changeSubCategory(e:any){
-		// 	setChooseSub(Number(e.target.value));
-		// }
-
-
 		
 		function nameOnchangeHandler(e:any){
 			setName(e.target.value);
@@ -335,6 +287,12 @@ import { errorPageState } from "@/app/store/error";
 
 		function contactsClickHandler(sel:any){
 			setGoshow(false);
+
+			if(contactShow === "block"){
+				setContactShow("hidden");
+				return;	
+			}
+
 			if(sel==="email") setContact(email);
 			if(sel==="linkedIn"){
 				setContact(linkedIn); 
@@ -359,8 +317,6 @@ import { errorPageState } from "@/app/store/error";
 			setContactShow("hidden");
 			setGoshow(false);
 		}
-
-	
 
 		return (
 			

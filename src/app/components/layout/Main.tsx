@@ -202,7 +202,7 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
                           {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
                         </div>  
                       ):(
-                        <div className=" m-1 h-[264px] my-4 break-all line-clamp-5">
+                        <div className=" m-1 h-[264px] my-4 break-all line-clamp-[11]">
                           {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
                         </div>
 

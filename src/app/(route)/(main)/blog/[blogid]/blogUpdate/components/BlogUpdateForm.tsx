@@ -111,7 +111,7 @@ const BlogUpdateForm = (props: any) => {
 					totalByte++;
 				}
 
-				if(totalByte > 300){
+				if(totalByte > 1000){
 					setIntroduction(introduction.substring(0, i));
 					break;
 				}
