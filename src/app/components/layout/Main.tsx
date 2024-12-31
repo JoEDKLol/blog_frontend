@@ -198,12 +198,12 @@ const MainContent = ({ children }: { children: React.ReactNode }) => {
                       <div className="font-bold text-xl mb-2 mt-1 group-hover:text-2xl truncate">{item.title}</div>
                       
                       {item.pic ? (
-                        <div className=" m-1 h-[120px] my-4 break-all line-clamp-5">
-                          {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
+                        <div className="whitespace-pre-line m-1 h-[120px] my-4 break-words line-clamp-5">
+                          {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')}
                         </div>  
                       ):(
-                        <div className=" m-1 h-[264px] my-4 break-all line-clamp-[11]">
-                          {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
+                        <div className="whitespace-pre-line m-1 h-[264px] my-4 break-words line-clamp-[11]">
+                          {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')}
                         </div>
 
                       )

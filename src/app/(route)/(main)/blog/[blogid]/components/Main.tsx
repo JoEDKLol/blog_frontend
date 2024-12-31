@@ -156,7 +156,7 @@ const PriMain = (props: any) => {
          
         <div className="">
           <div className="flex justify-start pt-3 
-          mx-[16px] 2xl:ms-[20px] xl:ms-[270px] lg:ms-[270px] md:mx-[16px] sm:mx-[16px]
+          ms-[270px] 2xl:ms-[270px] xl:ms-[270px] lg:ms-[270px] md:mx-[16px] sm:mx-[16px]
           ">
             <p className="font-bold  px-2 py-2 border-b-2 border-b-black w-[100%]
             ">
@@ -220,12 +220,12 @@ const PriMain = (props: any) => {
                         <div className="font-bold text-xl mb-2 truncate group-hover:text-2xl">{item.title}</div>
                         
                         {item.pic ? (
-                          <div className=" m-1 h-[120px] my-4 break-all line-clamp-5">
-                            {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
+                          <div className="whitespace-pre-line m-1 h-[120px] my-4 break-words  line-clamp-5">
+                            {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')}
                           </div>  
                         ):(
-                          <div className=" m-1 h-[264px] my-4 break-all line-clamp-[11]">
-                            {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ')}
+                          <div className="whitespace-pre-line m-1 h-[264px] my-4 break-words line-clamp-[11]">
+                            {item.content.replace(/(<([^>]+)>)/gi, '').replace(/&nbsp;/gi, ' ').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')}
                           </div>
 
                         )
@@ -236,7 +236,7 @@ const PriMain = (props: any) => {
                     </div>
                     </Link>
                     <div className="border-t border-black ">
-                      {/* <p className="mt-2">태그</p> */}
+                      {/* <p className="mt-2">tag</p> */}
                     </div>
                   </div>
                 </div>  

@@ -169,14 +169,14 @@ const SideBar = (props: any) => {
 							<p className="mb-1 font-bold truncate  ">{blogInfo.name}</p>
 						</div>
 						{/* <div className=" mt-2 text-xs line-clamp-7 break-all">{blogInfo.introduction}</div> */}
-						<div className="w-[90%] ">
+						<div className="w-[100%] ">
 								{/* <textarea  
 								value={blogInfo.introduction}
 								readOnly={true}
 								className="overflow-hidden block w-full p-1 h-[150px] resize-none text-sm bg-grey-200 focus:border-black text-gray-900 outline-none rounded
 								"/> */}
 
-							<div className="whitespace-pre-line mt-2 text-sm break-all">{blogInfo.introduction}</div>
+							<div className="whitespace-pre-line mt-2 text-sm break-words">{blogInfo.introduction}</div>
 
 						</div>
 
@@ -194,14 +194,14 @@ const SideBar = (props: any) => {
 						<p className="mb-1 font-bold truncate  ">{blogInfo.name}</p>
 					</div>
 					{/* <div className=" mt-2 text-xs line-clamp-7 break-all">{blogInfo.introduction}</div> */}
-					<div className="w-[90%]">
+					<div className="w-[100%]">
 						{/* <textarea  
 						value={blogInfo.introduction + ""}
 						
 						readOnly={true}
 						className="block w-full h-[150px] p-1 resize-none text-xs bg-grey-200 focus:border-black text-gray-900 outline-none rounded
 						"/> */}
-						<div className="whitespace-pre-line mt-2 text-sm break-all">{blogInfo.introduction}</div>
+						<div className="whitespace-pre-line mt-2 text-sm break-words">{blogInfo.introduction}</div>
 					</div>
 
 				</div>
@@ -319,7 +319,7 @@ const SideBar = (props: any) => {
 					<div className="flex justify-between border-b">
 						<p className="mt-2 mb-1 font-bold truncate  ">{blogInfo.name}</p>
 					</div>
-					<div className="whitespace-pre-line mt-2 text-xs break-all">{blogInfo.introduction}</div>
+					<div className="whitespace-pre-line mt-2 text-xs break-words">{blogInfo.introduction}</div>
 				</div>
 				
 					<div className="flex justify-center border-b p-1">
