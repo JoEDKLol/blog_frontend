@@ -24,7 +24,10 @@ import { errorFilePageState } from '@/app/store/errorFile';
 		async () => {
 			const { default: QuillComponent } = await import('react-quill')
 			const { default: ImageCompress } = await import('quill-image-compress');
+			const { ImageResize } = await import('quill-image-resize-module-ts'); //2025-01-02 add
 			QuillComponent.Quill.register('modules/imageCompress', ImageCompress);
+			QuillComponent.Quill.register('modules/ImageResize', ImageResize);  //2025-01-02 add
+
 			const Quill = ({ forwardedRef, ...props }: ForwardedQuillComponent) => (
 				<QuillComponent ref={forwardedRef} {...props} />
 			)
@@ -171,6 +174,11 @@ import { errorFilePageState } from '@/app/store/errorFile';
 						[{ align: [] }],
 					],
 				},
+
+				ImageResize : {
+					modules: ["Resize", "DisplaySize"],
+				},
+				
 				imageCompress: {
 					quality: 0.9,
 					maxWidth: 1000, 

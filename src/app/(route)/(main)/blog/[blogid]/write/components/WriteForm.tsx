@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import dynamic from "next/dynamic";
 import 'react-quill/dist/quill.snow.css';
-import ReactQuill, { ReactQuillProps } from 'react-quill';
+import ReactQuill, { ReactQuillProps, Quill  } from 'react-quill';
 import { transactionFile } from "@/app/utils/axiosFile";
 import { getRandomNumber } from "@/app/utils/common";
 import { transactionAuth } from "@/app/utils/axiosAuth";
@@ -19,12 +19,16 @@ import { errorFilePageState } from '@/app/store/errorFile';
 	interface ForwardedQuillComponent extends ReactQuillProps {
 		forwardedRef: React.Ref<ReactQuill>;
 	}
+	
 	const randomNum = getRandomNumber(10);
 	const QuillNoSSRWrapper = dynamic(
 		async () => {
 			const { default: QuillComponent } = await import('react-quill')
 			const { default: ImageCompress } = await import('quill-image-compress');
+			const { ImageResize } = await import('quill-image-resize-module-ts'); //2025-01-02 add
 			QuillComponent.Quill.register('modules/imageCompress', ImageCompress);
+			QuillComponent.Quill.register('modules/ImageResize', ImageResize);  //2025-01-02 add
+			
 			const Quill = ({ forwardedRef, ...props }: ForwardedQuillComponent) => (
 				<QuillComponent ref={forwardedRef} {...props} />
 			)
@@ -32,10 +36,8 @@ import { errorFilePageState } from '@/app/store/errorFile';
 		},
 		{ loading: () => <div>...loading</div>, ssr: false },
 	)
-	// let majorIndex = -1;
-	// let subIndex = -1;
-	// export default function QuillEditor(){
 	const QuillEditor = (props: any) => {
+
 		const focusTitle = useRef<HTMLInputElement>(null);
 		const quillRef = useRef<any>(ReactQuill);
 		const [content, setContent] = useState("");
@@ -143,15 +145,23 @@ import { errorFilePageState } from '@/app/store/errorFile';
 			() => ({
 				toolbar: {
 					container: [
-						[{ header: [1, 2, false] }],
-						['bold', 'italic', 'underline', 'strike', 'blockquote'],
+						[{ header: [1, 2, 3, 4, 5, 6, false] }],
+						[{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
 						[{ list: 'ordered' }, { list: 'bullet' }],
 						["link", "image", "video"],
 						['clean'],
 						[{ color: [] }, { background: [] }],
 						[{ align: [] }],
+
+
 					],
+					
 				},
+
+				ImageResize : {
+					modules: ["Resize", "DisplaySize"],
+				},
+
 				imageCompress: {
 					quality: 0.9,
 					maxWidth: 1000, 
@@ -163,6 +173,8 @@ import { errorFilePageState } from '@/app/store/errorFile';
 						imageHandler(imageBase64URL, imageBlob, editor)
 					}
 				},
+
+				
 			}),
 			[],
 		);
