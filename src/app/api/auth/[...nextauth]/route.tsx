@@ -118,8 +118,8 @@ const handler = NextAuth({
 		
 	},
 	pages: {
-		signIn: "/", // 내가 원하는 커스텀 sign-in 페이지의 url 
-		error: '/',
+		signIn: "/home", // 내가 원하는 커스텀 sign-in 페이지의 url 
+		error: '/home',
 	},
     
   });

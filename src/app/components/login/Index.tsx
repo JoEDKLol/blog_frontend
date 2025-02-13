@@ -82,7 +82,6 @@ const Login = (props: any) => {
 
   async function socialLogin(event:any) {
     signIn('google');
-    
   }
 
   function searchTextOnKeyDownHandler(e:any){
